@@ -66,5 +66,11 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 - State machine + engine: duration rules sustain-then-alert exactly once per episode (tests: 40s open = 1 alert; flapping = 0; two episodes = 2), deadline rule alerts once, dark frames move to CANNOT_SEE and recover.
 - API: sources CRUD-lite, POST /watch/demo-run compiles a sentence and runs the real engine on a scripted timeline, GET /watch/events. Frontend: WatchSetup (guard wired) + WatchLive (state timeline, alert count).
 
+## Phase 7 - Real Meta API plug-in (Oct 28) - READY, WAITING FOR KEY (by design)
+- Adapters written against best-known section 12 shapes; every unverified detail is TODO(API) in providers/meta/ only: chat payload builder + content normalizer, SAM normalizer (polygon/flat-points; RLE fails loudly with the fix location), image normalizer (b64/url), transcript normalizer (both segment families).
+- Normalizers unit-tested on sample payloads (7 tests), including the hard rule: payload builder can only emit standard-tier model ids.
+- scripts/smoke_meta.py is real: probes spark + SAM and prints actual response shapes when a key exists; without a key it reports and exits 0 (verified).
+- docs/API_INTEGRATION.md rewritten as the keys-arrived runbook: key -> smoke -> fix adapters (fixture-test first) -> measure image tokens and update PRICE_TABLE -> tune thresholds on one real video -> record demo runs -> switch to replay. Target under 3 hours. NO live call has been made (no key yet).
+
 ### Next
 Human review of schemas, packs and skeleton. On approval: Phase 1 (capture) and Phase 2 (scan pipeline on mocks), workers per spec section 16.

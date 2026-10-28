@@ -18,3 +18,4 @@ Built with Muse Code (Muse Spark 1.3). This log is shown in the demo.
 | 2026-10-28 | 4 | Re-check diff + scores, rule precheck/compiler/validator/evaluator (Appendix B 40/40 in tests), rules + recheck UI | Muse Code (main session) | - |
 | 2026-10-28 | 5 | Eval harness: metrics, 4-way ablation, charts, /eval page; SAM ablation story verified (0.94 -> 1.0 precision) | Muse Code (main session) | - |
 | 2026-10-28 | 6 | Watch mode: sources, room guard, camera health, gate, state machine + engine, demo-run API, watch UI | Muse Code (main session) | - |
+| 2026-10-28 | 7-prep | Meta adapters + tested normalizers, real smoke_meta, API_INTEGRATION runbook (<3h to live). No live calls - waiting for META_API_KEY | Muse Code (main session) | - |
