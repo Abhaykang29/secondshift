@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend check check-backend check-frontend test demo eval smoke-meta
+.PHONY: setup dev dev-backend dev-frontend check check-backend check-frontend test demo eval smoke-meta types
 
 VENV=.venv
 PY=$(VENV)/bin/python
@@ -28,7 +28,7 @@ check-backend:
 	$(PY) -m pytest -q
 
 check-frontend:
-	cd frontend && npx tsc --noEmit
+	cd frontend && npx tsc --noEmit && npx eslint src
 
 test:
 	$(PY) -m pytest -q
@@ -41,3 +41,6 @@ eval:
 
 smoke-meta:
 	$(PY) scripts/smoke_meta.py
+
+types:
+	$(PY) scripts/generate_types.py

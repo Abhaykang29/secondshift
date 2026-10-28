@@ -1,23 +1,132 @@
 scenario: baby_home_demo
-pack_ids: [babyproofing]
+pack_ids:
+- babyproofing
+rooms_seen:
+- nursery
+- living
+- kitchen
+- stairs
+narration:
+- t_start: 8.0
+  t_end: 11.0
+  text: The baby is starting to crawl.
+  language: en
 proposals:
-  - item_id: BABY-CRIB-SOFT-ITEMS
-    room: nursery
-    t: [20.0]
-    sam_prompts: ["stuffed toy in crib"]
-    confidence: 0.88
-    why_risky: "Soft items in a crib are a safe-sleep hazard; a bare crib is safer."
-    mask_polygon: [[0.35, 0.40], [0.65, 0.40], [0.65, 0.75], [0.35, 0.75]]
-  - item_id: BABY-STAIRS-NO-GATE
-    room: stairs
-    t: [45.0]
-    sam_prompts: ["staircase"]
-    safety_prompts: ["baby gate"]
-    confidence: 0.82
-    why_risky: "There is no gate at the top of the stairs."
-    anchor_polygon: [[0.20, 0.20], [0.80, 0.20], [0.80, 0.90], [0.20, 0.90]]
-    safety_found: false
+- item_id: BABY-SMALL-OBJECTS
+  room: nursery
+  t:
+  - 10.0
+  sam_prompts: small toy
+  confidence: 0.72
+  why_risky: Small objects on the nursery floor can be picked up and put in the mouth.
+  mask_polygon:
+  - - 0.4
+    - 0.75
+  - - 0.55
+    - 0.75
+  - - 0.55
+    - 0.88
+  - - 0.4
+    - 0.88
+- item_id: BABY-CRIB-SOFT-ITEMS
+  room: nursery
+  t:
+  - 20.0
+  sam_prompts: stuffed toy in crib
+  confidence: 0.88
+  why_risky: Soft items in a crib are a safe-sleep hazard; a bare crib is safer.
+  mask_polygon:
+  - - 0.35
+    - 0.4
+  - - 0.65
+    - 0.4
+  - - 0.65
+    - 0.75
+  - - 0.35
+    - 0.75
+- item_id: BABY-BLIND-CORD
+  room: living
+  t:
+  - 28.0
+  sam_prompts: blind cord
+  confidence: 0.84
+  why_risky: A blind cord hangs within reach and is a strangulation hazard.
+  mask_polygon:
+  - - 0.78
+    - 0.1
+  - - 0.84
+    - 0.1
+  - - 0.84
+    - 0.6
+  - - 0.78
+    - 0.6
+- item_id: BABY-OUTLET-UNCOVERED
+  room: living
+  t:
+  - 33.0
+  sam_prompts: electrical outlet
+  confidence: 0.79
+  why_risky: A low outlet is open, with no cover.
+  mask_polygon:
+  - - 0.15
+    - 0.7
+  - - 0.22
+    - 0.7
+  - - 0.22
+    - 0.8
+  - - 0.15
+    - 0.8
+- item_id: BABY-TV-UNSECURED
+  room: living
+  t:
+  - 38.0
+  sam_prompts: television on dresser
+  confidence: 0.81
+  why_risky: The TV sits on a dresser and is not wall-mounted or strapped.
+  mask_polygon:
+  - - 0.3
+    - 0.15
+  - - 0.7
+    - 0.15
+  - - 0.7
+    - 0.45
+  - - 0.3
+    - 0.45
+- item_id: BABY-CHEMICALS-ACCESSIBLE
+  room: kitchen
+  t:
+  - 48.0
+  sam_prompts: cleaning spray bottle
+  confidence: 0.86
+  why_risky: Cleaning bottles sit on a low, open shelf within reach.
+  mask_polygon:
+  - - 0.1
+    - 0.55
+  - - 0.3
+    - 0.55
+  - - 0.3
+    - 0.85
+  - - 0.1
+    - 0.85
+- item_id: BABY-STAIRS-NO-GATE
+  room: stairs
+  t:
+  - 45.0
+  sam_prompts: staircase
+  confidence: 0.82
+  why_risky: There is no safety gate at the top of the stairs.
+  anchor_polygon:
+  - - 0.2
+    - 0.2
+  - - 0.8
+    - 0.2
+  - - 0.8
+    - 0.9
+  - - 0.2
+    - 0.9
+  safety_prompts:
+  - baby gate
+  safety_found: false
 routine:
   support_contacts: []
   path_obstacles: []
-# NOTE: Phase 2 expands this to the full 6-8 hazard scenario (spec 11.2).

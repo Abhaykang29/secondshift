@@ -1,0 +1,85 @@
+scenario: parent_home_fixed
+pack_ids:
+- falls_older_adults
+rooms_seen:
+- entry
+- living
+- hallway
+- kitchen
+- bedroom
+- bathroom
+- stairs
+narration: []
+proposals:
+- item_id: FALL-FLOOR-CLUTTER
+  room: entry
+  t:
+  - 5.0
+  sam_prompts: shoes on floor
+  confidence: 0.78
+  why_risky: Shoes are still in the entry path.
+  mask_polygon:
+  - - 0.1
+    - 0.7
+  - - 0.35
+    - 0.7
+  - - 0.37
+    - 0.95
+  - - 0.08
+    - 0.95
+- item_id: FALL-FLOOR-CORD
+  room: living
+  t:
+  - 22.0
+  sam_prompts: electrical cord
+  confidence: 0.83
+  why_risky: The cord still crosses the living room path.
+  mask_polygon:
+  - - 0.05
+    - 0.8
+  - - 0.9
+    - 0.82
+  - - 0.9
+    - 0.88
+  - - 0.05
+    - 0.86
+- item_id: FALL-STAIRS-OBJECTS
+  room: stairs
+  t:
+  - 55.0
+  sam_prompts: shoes on stairs
+  confidence: 0.88
+  why_risky: Shoes are still left on a stair tread.
+  mask_polygon:
+  - - 0.35
+    - 0.55
+  - - 0.6
+    - 0.55
+  - - 0.62
+    - 0.75
+  - - 0.33
+    - 0.75
+- item_id: FALL-BED-LIGHT-REACH
+  room: bedroom
+  t:
+  - 70.0
+  sam_prompts: bed
+  confidence: 0.75
+  why_risky: There is no lamp within reach of the bed.
+  anchor_polygon:
+  - - 0.2
+    - 0.4
+  - - 0.75
+    - 0.4
+  - - 0.78
+    - 0.9
+  - - 0.18
+    - 0.9
+  safety_prompts:
+  - bedside lamp
+  safety_found: false
+routine:
+  support_contacts: []
+  path_obstacles: []
+notes: 'Re-check scenario: rug removed, grab bar + night light + non-slip mat installed (their absence proposals
+  are gone), cord/clutter/stairs objects still present, one NEW hazard (bed light).'

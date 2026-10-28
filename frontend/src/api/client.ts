@@ -2,7 +2,8 @@
  * Typed API client for the SecondShift backend.
  * Thin fetch wrappers only - pages own their own state.
  */
-import type { PackSummary, Report } from "./types";
+import type { CostsResponse, HealthResponse, PackSummary } from "./extra";
+import type { Report } from "./types";
 
 const BASE = "/api";
 
@@ -13,8 +14,8 @@ async function getJson<T>(path: string): Promise<T> {
 }
 
 export const api = {
-  health: () => getJson<{ status: string }>("/health"),
+  health: () => getJson<HealthResponse>("/health"),
   packs: () => getJson<{ packs: PackSummary[] }>("/packs"),
-  costs: () => getJson<{ spent_usd: number; call_count: number }>("/costs"),
+  costs: () => getJson<CostsResponse>("/costs"),
   report: (checkupId: string) => getJson<Report>(`/reports/${checkupId}`),
 };

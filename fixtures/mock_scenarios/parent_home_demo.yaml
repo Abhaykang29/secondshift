@@ -1,23 +1,192 @@
 scenario: parent_home_demo
-pack_ids: [falls_older_adults]
+pack_ids:
+- falls_older_adults
+rooms_seen:
+- entry
+- living
+- hallway
+- kitchen
+- bedroom
+- bathroom
+- stairs
+narration:
+- t_start: 30.0
+  t_end: 34.0
+  text: Mom gets up twice a night to use the bathroom.
+  language: en
+- t_start: 58.0
+  t_end: 61.0
+  text: She holds the dresser when she walks to the door.
+  language: en
 proposals:
-  - item_id: FALL-FLOOR-RUG
-    room: hallway
-    t: [12.5, 13.0]
-    sam_prompts: ["throw rug"]
-    confidence: 0.86
-    why_risky: "A loose rug in the hallway can catch a foot, especially at night."
-    mask_polygon: [[0.30, 0.70], [0.62, 0.70], [0.66, 0.95], [0.26, 0.95]]
-  - item_id: FALL-BATH-GRAB-MISSING
-    room: bathroom
-    t: [88.0]
-    sam_prompts: ["toilet"]
-    safety_prompts: ["grab bar"]
-    confidence: 0.80
-    why_risky: "There is nothing sturdy to hold next to the toilet."
-    anchor_polygon: [[0.40, 0.45], [0.58, 0.45], [0.60, 0.85], [0.38, 0.85]]
-    safety_found: false
+- item_id: FALL-FLOOR-CLUTTER
+  room: entry
+  t:
+  - 5.0
+  sam_prompts: shoes on floor
+  confidence: 0.78
+  why_risky: Shoes in the entry path can trip someone coming in or out.
+  mask_polygon:
+  - - 0.1
+    - 0.7
+  - - 0.35
+    - 0.7
+  - - 0.37
+    - 0.95
+  - - 0.08
+    - 0.95
+- item_id: FALL-FLOOR-RUG
+  room: hallway
+  t:
+  - 12.5
+  - 13.0
+  sam_prompts: throw rug
+  confidence: 0.86
+  why_risky: A loose rug in the hallway can catch a foot, especially at night.
+  mask_polygon:
+  - - 0.3
+    - 0.7
+  - - 0.62
+    - 0.7
+  - - 0.66
+    - 0.95
+  - - 0.26
+    - 0.95
+- item_id: FALL-FLOOR-CORD
+  room: living
+  t:
+  - 22.0
+  sam_prompts: electrical cord
+  confidence: 0.83
+  why_risky: A cord across the living room path is easy to catch a foot on.
+  mask_polygon:
+  - - 0.05
+    - 0.8
+  - - 0.9
+    - 0.82
+  - - 0.9
+    - 0.88
+  - - 0.05
+    - 0.86
+- item_id: FALL-PATH-NIGHT-LIGHT
+  room: hallway
+  t:
+  - 35.0
+  sam_prompts: hallway
+  confidence: 0.8
+  why_risky: The hallway to the bathroom has no night light, and this path is used at night.
+  anchor_polygon:
+  - - 0.2
+    - 0.1
+  - - 0.8
+    - 0.1
+  - - 0.8
+    - 0.9
+  - - 0.2
+    - 0.9
+  safety_prompts:
+  - night light
+  safety_found: false
+- item_id: FALL-PET-PATH
+  room: living
+  t:
+  - 40.0
+  sam_prompts: pet bowl
+  confidence: 0.62
+  why_risky: A pet bowl sits in the walking path.
+  mask_polygon:
+  - - 0.45
+    - 0.8
+  - - 0.55
+    - 0.8
+  - - 0.55
+    - 0.9
+  - - 0.45
+    - 0.9
+  segment_missing: true
+  expect: rejected - SAM finds no pet bowl; this is the ablation false positive
+- item_id: FALL-STAIRS-OBJECTS
+  room: stairs
+  t:
+  - 55.0
+  sam_prompts: shoes on stairs
+  confidence: 0.88
+  why_risky: Shoes left on a stair tread can cause a fall on the stairs.
+  mask_polygon:
+  - - 0.35
+    - 0.55
+  - - 0.6
+    - 0.55
+  - - 0.62
+    - 0.75
+  - - 0.33
+    - 0.75
+- item_id: FALL-KITCHEN-HIGH-STORAGE
+  room: kitchen
+  t:
+  - 65.0
+  sam_prompts: items on high shelf
+  confidence: 0.74
+  why_risky: Everyday items are stored high, so a stool or stretch is needed to reach them.
+  mask_polygon:
+  - - 0.15
+    - 0.05
+  - - 0.7
+    - 0.05
+  - - 0.7
+    - 0.3
+  - - 0.15
+    - 0.3
+- item_id: FALL-BATH-GRAB-MISSING
+  room: bathroom
+  t:
+  - 88.0
+  sam_prompts: toilet
+  confidence: 0.8
+  why_risky: There is nothing sturdy to hold next to the toilet.
+  anchor_polygon:
+  - - 0.4
+    - 0.45
+  - - 0.58
+    - 0.45
+  - - 0.6
+    - 0.85
+  - - 0.38
+    - 0.85
+  safety_prompts:
+  - grab bar
+  safety_found: false
+- item_id: FALL-BATH-NONSLIP-MISSING
+  room: bathroom
+  t:
+  - 92.0
+  sam_prompts: bathtub
+  confidence: 0.77
+  why_risky: The tub floor has no non-slip mat or strips.
+  anchor_polygon:
+  - - 0.1
+    - 0.5
+  - - 0.7
+    - 0.5
+  - - 0.72
+    - 0.9
+  - - 0.08
+    - 0.9
+  safety_prompts:
+  - non-slip mat
+  safety_found: false
+- item_id: FALL-FURNITURE-SUPPORT
+  room: hallway
+  t:
+  - 10.0
+  sam_prompts: dresser
+  confidence: 0.7
+  why_risky: In the routine clip, support is taken from furniture along this path.
+  kind: interaction
+  observed_interaction: Touched the dresser 3 times between the bed and the door.
 routine:
-  support_contacts: [{object: "dresser", count: 3}]
-  path_obstacles: ["FALL-FLOOR-RUG"]
-# NOTE: Phase 2 expands this to the full 8-10 hazard scenario (spec 11.2).
+  support_contacts:
+  - object: dresser
+    count: 3
+  path_obstacles:
+  - FALL-FLOOR-RUG

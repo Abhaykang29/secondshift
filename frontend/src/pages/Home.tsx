@@ -7,7 +7,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
-import type { PackSummary } from "../api/types";
+import type { PackSummary } from "../api/extra";
 import en from "../i18n/en.json";
 
 export default function Home() {
