@@ -59,5 +59,12 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 - Every report carries the honest caveat: mock numbers validate the harness, NOT product accuracy; human-labelled captures remain TODO(TEAM) (see open TODO list).
 - /eval page renders the latest run (GET /api/eval/latest); labelling UI page exists; the human labelling itself is TODO(TEAM).
 
+## Phase 6 - Watch mode (Oct 28) - DONE
+- Sources behind one frames() interface: FileSource (real, OpenCV), RtspSource (OpenCV), PhoneSource stub with TODO(TEAM) for the phone endpoint choice.
+- Room guard in code: bathrooms always refused with the product wording; bedrooms require resident consent (API returns 422; RTSP URLs never listed).
+- Camera health (dark/uniform/frozen/moved), running-average change detection, model-call gate (min interval + hourly cap + daily budget via CostGuard).
+- State machine + engine: duration rules sustain-then-alert exactly once per episode (tests: 40s open = 1 alert; flapping = 0; two episodes = 2), deadline rule alerts once, dark frames move to CANNOT_SEE and recover.
+- API: sources CRUD-lite, POST /watch/demo-run compiles a sentence and runs the real engine on a scripted timeline, GET /watch/events. Frontend: WatchSetup (guard wired) + WatchLive (state timeline, alert count).
+
 ### Next
 Human review of schemas, packs and skeleton. On approval: Phase 1 (capture) and Phase 2 (scan pipeline on mocks), workers per spec section 16.
