@@ -33,5 +33,11 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 - TODO(TEAM): no real footage, labels or consent artefacts yet; eval datasets are empty manifests.
 - Frontend eslint is not yet in `make check` (tsc is); add eslint config before Phase 3 UI work grows.
 
+## Phase 2 - Scan pipeline on mocks (Oct 28) - DONE
+- Mock providers are now scenario-driven and mutually consistent: vision proposes the scenario, SAM returns nothing for scenario-absent objects, transcriber speaks scenario narration.
+- Pipeline: propose (batched, pack-ids only) -> verify (presence/absence/measurement/interaction per section 9.5, verify modes none/sam/sam_plus_judge) -> routine (pure geometry: support contacts, path obstacles) -> dedupe -> rank (exact section 9.7 formula).
+- Job runner persists steps; re-runs skip completed steps. Scan API: POST /checkups/{id}/scan, GET report + job status.
+- Acceptance snapshot (locked in tests): parent scenario = 9 confirmed + 1 rejected (the planted pet-bowl false positive SAM kills), rug #1 (risk 5.7, on routine path), 2 routine insights, deterministic across runs. Baby scenario = 7/7 confirmed.
+
 ### Next
 Human review of schemas, packs and skeleton. On approval: Phase 1 (capture) and Phase 2 (scan pipeline on mocks), workers per spec section 16.
