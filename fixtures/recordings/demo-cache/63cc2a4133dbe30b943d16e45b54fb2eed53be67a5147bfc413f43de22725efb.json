@@ -1,0 +1,122 @@
+{
+  "model": "recorded",
+  "response": {
+    "proposals": [
+      {
+        "item_id": "FALL-FLOOR-CLUTTER",
+        "room": "entry",
+        "description": "Shoes are still in the entry path.",
+        "evidence_timestamps": [
+          5.0
+        ],
+        "sam_prompts": [
+          "s",
+          "h",
+          "o",
+          "e",
+          "s",
+          " ",
+          "o",
+          "n",
+          " ",
+          "f",
+          "l",
+          "o",
+          "o",
+          "r"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.78,
+        "why_risky": "Shoes are still in the entry path.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-FLOOR-CORD",
+        "room": "living",
+        "description": "The cord still crosses the living room path.",
+        "evidence_timestamps": [
+          22.0
+        ],
+        "sam_prompts": [
+          "e",
+          "l",
+          "e",
+          "c",
+          "t",
+          "r",
+          "i",
+          "c",
+          "a",
+          "l",
+          " ",
+          "c",
+          "o",
+          "r",
+          "d"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.83,
+        "why_risky": "The cord still crosses the living room path.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-STAIRS-OBJECTS",
+        "room": "stairs",
+        "description": "Shoes are still left on a stair tread.",
+        "evidence_timestamps": [
+          55.0
+        ],
+        "sam_prompts": [
+          "s",
+          "h",
+          "o",
+          "e",
+          "s",
+          " ",
+          "o",
+          "n",
+          " ",
+          "s",
+          "t",
+          "a",
+          "i",
+          "r",
+          "s"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.88,
+        "why_risky": "Shoes are still left on a stair tread.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-BED-LIGHT-REACH",
+        "room": "bedroom",
+        "description": "There is no lamp within reach of the bed.",
+        "evidence_timestamps": [
+          70.0
+        ],
+        "sam_prompts": [
+          "b",
+          "e",
+          "d"
+        ],
+        "safety_prompts": [
+          "bedside lamp"
+        ],
+        "confidence": 0.75,
+        "why_risky": "There is no lamp within reach of the bed.",
+        "observed_interaction": null
+      }
+    ],
+    "rooms_seen": [
+      "entry",
+      "living",
+      "hallway",
+      "kitchen",
+      "bedroom",
+      "bathroom",
+      "stairs"
+    ],
+    "cannot_assess": []
+  }
+}

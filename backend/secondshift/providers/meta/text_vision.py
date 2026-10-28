@@ -146,8 +146,8 @@ class MetaVisionReasoner:
             f"from this pack list:\n{req.pack_items_yaml}\n"
             f"Narration facts: {req.narration_facts}\nMeasurements: {req.measurements}\n"
             f"Already found: {req.previous_findings_summary}\n"
-            "Respond with JSON: {\"proposals\": [...], \"rooms_seen\": [...], "
-            "\"cannot_assess\": []} where each proposal matches the HazardProposal schema."
+            'Respond with JSON: {"proposals": [...], "rooms_seen": [...], '
+            '"cannot_assess": []} where each proposal matches the HazardProposal schema.'
         )
         images = [ImageRef(path=k.image_path, keyframe_id=k.id) for k in req.keyframes]
         data = self._post_chat(build_chat_payload(prompt, images, "fast"))
@@ -162,9 +162,11 @@ class MetaVisionReasoner:
 
     def judge(self, req: JudgeRequest) -> JudgeResponse:
         """Judge one contested claim (deep model)."""
-        prompt = (f"Claim: {req.claim}\nContext: {req.context}\n"
-                  "Decide the verification: confirmed, needs_human, or rejected. "
-                  "Respond with JSON: {\"verification\": ..., \"reason\": ...}")
+        prompt = (
+            f"Claim: {req.claim}\nContext: {req.context}\n"
+            "Decide the verification: confirmed, needs_human, or rejected. "
+            'Respond with JSON: {"verification": ..., "reason": ...}'
+        )
         data = self._post_chat(build_chat_payload(prompt, req.images, "deep"))
         parsed = extract_json(normalize_chat_content(data))
         return JudgeResponse(

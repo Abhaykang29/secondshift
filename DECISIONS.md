@@ -19,3 +19,12 @@ Spec section 9.2 defines scene-change as 1 - histogram correlation with SCENE_CH
 
 ## D6 - Storage: JSON file repository behind the Repository interface
 Spec section 7.2 names sqlite3 stdlib with a thin repository layer. Phase 1 ships a JSON-file-backed repository with the identical interface (simpler to inspect during the hackathon; data volumes are tiny). SQLite can replace it behind the interface without caller changes.
+
+## D7 - Demo replay keys are scenario-level
+Production cache keys (section 11.3) hash the full request. The Phase 8
+demo recording keys responses by (endpoint, scenario) instead, because
+the demo must replay deterministically against synthetic keyframes whose
+image hashes do not exist as files. The guarantee that matters is kept:
+replay mode raises CacheMiss rather than ever calling through. When real
+recordings are made in Phase 7 step 5, record them through the same
+wrappers - the keying is contained in providers/replay.py.

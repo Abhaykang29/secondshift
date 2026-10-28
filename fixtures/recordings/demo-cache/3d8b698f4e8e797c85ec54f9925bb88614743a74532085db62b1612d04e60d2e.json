@@ -1,0 +1,220 @@
+{
+  "model": "recorded",
+  "response": {
+    "proposals": [
+      {
+        "item_id": "BABY-SMALL-OBJECTS",
+        "room": "nursery",
+        "description": "Small objects on the nursery floor can be picked up and put in the mouth.",
+        "evidence_timestamps": [
+          10.0
+        ],
+        "sam_prompts": [
+          "s",
+          "m",
+          "a",
+          "l",
+          "l",
+          " ",
+          "t",
+          "o",
+          "y"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.72,
+        "why_risky": "Small objects on the nursery floor can be picked up and put in the mouth.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "BABY-CRIB-SOFT-ITEMS",
+        "room": "nursery",
+        "description": "Soft items in a crib are a safe-sleep hazard; a bare crib is safer.",
+        "evidence_timestamps": [
+          20.0
+        ],
+        "sam_prompts": [
+          "s",
+          "t",
+          "u",
+          "f",
+          "f",
+          "e",
+          "d",
+          " ",
+          "t",
+          "o",
+          "y",
+          " ",
+          "i",
+          "n",
+          " ",
+          "c",
+          "r",
+          "i",
+          "b"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.88,
+        "why_risky": "Soft items in a crib are a safe-sleep hazard; a bare crib is safer.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "BABY-BLIND-CORD",
+        "room": "living",
+        "description": "A blind cord hangs within reach and is a strangulation hazard.",
+        "evidence_timestamps": [
+          28.0
+        ],
+        "sam_prompts": [
+          "b",
+          "l",
+          "i",
+          "n",
+          "d",
+          " ",
+          "c",
+          "o",
+          "r",
+          "d"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.84,
+        "why_risky": "A blind cord hangs within reach and is a strangulation hazard.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "BABY-OUTLET-UNCOVERED",
+        "room": "living",
+        "description": "A low outlet is open, with no cover.",
+        "evidence_timestamps": [
+          33.0
+        ],
+        "sam_prompts": [
+          "e",
+          "l",
+          "e",
+          "c",
+          "t",
+          "r",
+          "i",
+          "c",
+          "a",
+          "l",
+          " ",
+          "o",
+          "u",
+          "t",
+          "l",
+          "e",
+          "t"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.79,
+        "why_risky": "A low outlet is open, with no cover.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "BABY-TV-UNSECURED",
+        "room": "living",
+        "description": "The TV sits on a dresser and is not wall-mounted or strapped.",
+        "evidence_timestamps": [
+          38.0
+        ],
+        "sam_prompts": [
+          "t",
+          "e",
+          "l",
+          "e",
+          "v",
+          "i",
+          "s",
+          "i",
+          "o",
+          "n",
+          " ",
+          "o",
+          "n",
+          " ",
+          "d",
+          "r",
+          "e",
+          "s",
+          "s",
+          "e",
+          "r"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.81,
+        "why_risky": "The TV sits on a dresser and is not wall-mounted or strapped.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "BABY-CHEMICALS-ACCESSIBLE",
+        "room": "kitchen",
+        "description": "Cleaning bottles sit on a low, open shelf within reach.",
+        "evidence_timestamps": [
+          48.0
+        ],
+        "sam_prompts": [
+          "c",
+          "l",
+          "e",
+          "a",
+          "n",
+          "i",
+          "n",
+          "g",
+          " ",
+          "s",
+          "p",
+          "r",
+          "a",
+          "y",
+          " ",
+          "b",
+          "o",
+          "t",
+          "t",
+          "l",
+          "e"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.86,
+        "why_risky": "Cleaning bottles sit on a low, open shelf within reach.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "BABY-STAIRS-NO-GATE",
+        "room": "stairs",
+        "description": "There is no safety gate at the top of the stairs.",
+        "evidence_timestamps": [
+          45.0
+        ],
+        "sam_prompts": [
+          "s",
+          "t",
+          "a",
+          "i",
+          "r",
+          "c",
+          "a",
+          "s",
+          "e"
+        ],
+        "safety_prompts": [
+          "baby gate"
+        ],
+        "confidence": 0.82,
+        "why_risky": "There is no safety gate at the top of the stairs.",
+        "observed_interaction": null
+      }
+    ],
+    "rooms_seen": [
+      "nursery",
+      "living",
+      "kitchen",
+      "stairs"
+    ],
+    "cannot_assess": []
+  }
+}

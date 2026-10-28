@@ -1,0 +1,21 @@
+{
+  "model": "recorded",
+  "response": {
+    "segments": [
+      {
+        "capture_id": "",
+        "t_start": 30.0,
+        "t_end": 34.0,
+        "text": "Mom gets up twice a night to use the bathroom.",
+        "language": "en"
+      },
+      {
+        "capture_id": "",
+        "t_start": 58.0,
+        "t_end": 61.0,
+        "text": "She holds the dresser when she walks to the door.",
+        "language": "en"
+      }
+    ]
+  }
+}

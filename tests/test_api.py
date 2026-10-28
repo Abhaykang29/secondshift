@@ -22,10 +22,13 @@ def test_packs_endpoint_lists_real_packs() -> None:
     assert packs["babyproofing"]["item_count"] == 13
 
 
-def test_stubbed_resource_is_an_honest_501() -> None:
-    """Still-stubbed resources return 501, never fake data (settings = later phase)."""
-    res = client.get("/api/settings")
-    assert res.status_code == 501
+def test_unknown_resource_is_an_honest_404() -> None:
+    """Unknown resources 404 - the API never invents data.
+
+    (Every Phase 0 stub route has since been implemented for real.)
+    """
+    res = client.get("/api/definitely-not-a-route")
+    assert res.status_code == 404
 
 
 def test_checkups_list_is_implemented() -> None:

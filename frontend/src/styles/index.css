@@ -7,3 +7,6 @@
 html { font-size: 18px; }
 html.large-text { font-size: 22px; }
 button, a { min-height: 48px; }
+
+:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

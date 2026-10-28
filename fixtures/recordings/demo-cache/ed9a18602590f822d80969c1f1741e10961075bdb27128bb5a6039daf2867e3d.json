@@ -1,0 +1,271 @@
+{
+  "model": "recorded",
+  "response": {
+    "proposals": [
+      {
+        "item_id": "FALL-FLOOR-CLUTTER",
+        "room": "entry",
+        "description": "Shoes in the entry path can trip someone coming in or out.",
+        "evidence_timestamps": [
+          5.0
+        ],
+        "sam_prompts": [
+          "s",
+          "h",
+          "o",
+          "e",
+          "s",
+          " ",
+          "o",
+          "n",
+          " ",
+          "f",
+          "l",
+          "o",
+          "o",
+          "r"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.78,
+        "why_risky": "Shoes in the entry path can trip someone coming in or out.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-FLOOR-RUG",
+        "room": "hallway",
+        "description": "A loose rug in the hallway can catch a foot, especially at night.",
+        "evidence_timestamps": [
+          12.5,
+          13.0
+        ],
+        "sam_prompts": [
+          "t",
+          "h",
+          "r",
+          "o",
+          "w",
+          " ",
+          "r",
+          "u",
+          "g"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.86,
+        "why_risky": "A loose rug in the hallway can catch a foot, especially at night.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-FLOOR-CORD",
+        "room": "living",
+        "description": "A cord across the living room path is easy to catch a foot on.",
+        "evidence_timestamps": [
+          22.0
+        ],
+        "sam_prompts": [
+          "e",
+          "l",
+          "e",
+          "c",
+          "t",
+          "r",
+          "i",
+          "c",
+          "a",
+          "l",
+          " ",
+          "c",
+          "o",
+          "r",
+          "d"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.83,
+        "why_risky": "A cord across the living room path is easy to catch a foot on.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-PATH-NIGHT-LIGHT",
+        "room": "hallway",
+        "description": "The hallway to the bathroom has no night light, and this path is used at night.",
+        "evidence_timestamps": [
+          35.0
+        ],
+        "sam_prompts": [
+          "h",
+          "a",
+          "l",
+          "l",
+          "w",
+          "a",
+          "y"
+        ],
+        "safety_prompts": [
+          "night light"
+        ],
+        "confidence": 0.8,
+        "why_risky": "The hallway to the bathroom has no night light, and this path is used at night.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-PET-PATH",
+        "room": "living",
+        "description": "A pet bowl sits in the walking path.",
+        "evidence_timestamps": [
+          40.0
+        ],
+        "sam_prompts": [
+          "p",
+          "e",
+          "t",
+          " ",
+          "b",
+          "o",
+          "w",
+          "l"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.62,
+        "why_risky": "A pet bowl sits in the walking path.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-STAIRS-OBJECTS",
+        "room": "stairs",
+        "description": "Shoes left on a stair tread can cause a fall on the stairs.",
+        "evidence_timestamps": [
+          55.0
+        ],
+        "sam_prompts": [
+          "s",
+          "h",
+          "o",
+          "e",
+          "s",
+          " ",
+          "o",
+          "n",
+          " ",
+          "s",
+          "t",
+          "a",
+          "i",
+          "r",
+          "s"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.88,
+        "why_risky": "Shoes left on a stair tread can cause a fall on the stairs.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-KITCHEN-HIGH-STORAGE",
+        "room": "kitchen",
+        "description": "Everyday items are stored high, so a stool or stretch is needed to reach them.",
+        "evidence_timestamps": [
+          65.0
+        ],
+        "sam_prompts": [
+          "i",
+          "t",
+          "e",
+          "m",
+          "s",
+          " ",
+          "o",
+          "n",
+          " ",
+          "h",
+          "i",
+          "g",
+          "h",
+          " ",
+          "s",
+          "h",
+          "e",
+          "l",
+          "f"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.74,
+        "why_risky": "Everyday items are stored high, so a stool or stretch is needed to reach them.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-BATH-GRAB-MISSING",
+        "room": "bathroom",
+        "description": "There is nothing sturdy to hold next to the toilet.",
+        "evidence_timestamps": [
+          88.0
+        ],
+        "sam_prompts": [
+          "t",
+          "o",
+          "i",
+          "l",
+          "e",
+          "t"
+        ],
+        "safety_prompts": [
+          "grab bar"
+        ],
+        "confidence": 0.8,
+        "why_risky": "There is nothing sturdy to hold next to the toilet.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-BATH-NONSLIP-MISSING",
+        "room": "bathroom",
+        "description": "The tub floor has no non-slip mat or strips.",
+        "evidence_timestamps": [
+          92.0
+        ],
+        "sam_prompts": [
+          "b",
+          "a",
+          "t",
+          "h",
+          "t",
+          "u",
+          "b"
+        ],
+        "safety_prompts": [
+          "non-slip mat"
+        ],
+        "confidence": 0.77,
+        "why_risky": "The tub floor has no non-slip mat or strips.",
+        "observed_interaction": null
+      },
+      {
+        "item_id": "FALL-FURNITURE-SUPPORT",
+        "room": "hallway",
+        "description": "In the routine clip, support is taken from furniture along this path.",
+        "evidence_timestamps": [
+          10.0
+        ],
+        "sam_prompts": [
+          "d",
+          "r",
+          "e",
+          "s",
+          "s",
+          "e",
+          "r"
+        ],
+        "safety_prompts": [],
+        "confidence": 0.7,
+        "why_risky": "In the routine clip, support is taken from furniture along this path.",
+        "observed_interaction": "Touched the dresser 3 times between the bed and the door."
+      }
+    ],
+    "rooms_seen": [
+      "entry",
+      "living",
+      "hallway",
+      "kitchen",
+      "bedroom",
+      "bathroom",
+      "stairs"
+    ],
+    "cannot_assess": []
+  }
+}

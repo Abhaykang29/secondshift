@@ -72,5 +72,27 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 - scripts/smoke_meta.py is real: probes spark + SAM and prints actual response shapes when a key exists; without a key it reports and exits 0 (verified).
 - docs/API_INTEGRATION.md rewritten as the keys-arrived runbook: key -> smoke -> fix adapters (fixture-test first) -> measure image tokens and update PRICE_TABLE -> tune thresholds on one real video -> record demo runs -> switch to replay. Target under 3 hours. NO live call has been made (no key yet).
 
+## Phase 8 - Demo mode on mocks, hardening (Oct 28) - DONE
+- Demo mode proven end to end on mocks THROUGH the record/replay path: record phase stores mock provider responses; replay phase runs the whole demo script (parent scan 9 confirmed, rug #1, refusal with alternatives, re-check 32.1 -> 78.2, watch exactly 1 alert, baby scan 7 confirmed) with replay-only providers. An empty-cache replay raises CacheMiss - the demo can never silently go live. scripts/run_demo.py; fixtures/recordings/demo-cache is pre-recorded in the repo.
+- Settings API + page are real (provider/budget/languages + working Delete everything). Ask API + page are real (report-scoped answers, honest out-of-scope reply). Accessibility: focus-visible outlines, reduced-motion support, aria labels/roles on the money screens, 48px targets, 18px base / 22px large text from Phase 0.
+
+## OPEN TODO(TEAM) - needs a human, in demo order
+1. META_API_KEY - unblocks Phase 7 via docs/API_INTEGRATION.md (<3h runbook).
+2. Real footage: walkthrough + routine clip + re-check clip of a real parent's home and a real baby's home, filmed per docs/CAPTURE_GUIDE.md, WITH the resident's consent. Person A.
+3. Labels for 20-30 captures (eval/labelling; Appendix D protocol, two labellers on 20%). Person A. Without this, eval numbers stay harness-validation only.
+4. Babyproofing impact statistics - currently TODO(STAT) everywhere; source from CPSC/AAP before any public claim.
+5. Native-speaker review of Hindi strings (hi.json); translations for pa/es/fr/zh/ar.
+6. A clinician / OT / certified home-safety professional to review pack wording, severity assignments and fix steps.
+7. Physical capability checklist answers (the spec's Appendix E questions: device loan pool, Prolific, print/distribution partners).
+8. Phone-endpoint choice for PhoneSource (Phase 6.5): which old-phone app/endpoint the watch demo uses.
+9. Privacy review pass on docs/PRIVACY.md with counsel before any real home is filmed.
+
+## Top risks (honest, Oct 28)
+1. Meta API shapes are unverified - adapters are best-known-shape with TODO(API) markers; the runbook budgets 45 min for surprises, but a very different SAM payload (e.g., RLE-only) could take longer.
+2. All accuracy numbers so far are on self-labelled mock scenarios - they validate the harness, not the product. Real precision/recall is unknown until TODO(TEAM) labels exist.
+3. SAM verification of ABSENCE items depends on anchor visibility + filmed coverage; real homes with poor coverage will push many items to CANNOT TELL (by design - honesty over coverage).
+4. Watch mode has no real camera source yet (PhoneSource endpoint undecided); the engine is proven on synthetic timelines and FileSource only.
+5. Demo depends on the pre-recorded cache matching the scenario fixtures; if scenario YAMLs change, re-run scripts/run_demo.py to re-record before demo day.
+
 ### Next
 Human review of schemas, packs and skeleton. On approval: Phase 1 (capture) and Phase 2 (scan pipeline on mocks), workers per spec section 16.
