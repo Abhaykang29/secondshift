@@ -1,0 +1,137 @@
+pack_id: fire_safety
+title: Fire safety (stretch)
+audience: Any home
+high_risk_zones:
+- bedroom
+- hallway
+- kitchen
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: FIRE-SMOKE-ALARM-ABSENT
+  title: No smoke alarm visible
+  kind: absence
+  rooms:
+  - bedroom
+  - hallway
+  severity: 3
+  observable_evidence: Ceiling area of a bedroom/hallway visible with no smoke alarm
+  sam_prompts:
+  - ceiling
+  - hallway
+  safety_prompts:
+  - smoke alarm
+  - smoke detector
+  cannot_see_note: We cannot tell whether an alarm works - press the test button monthly.
+  fixes:
+  - id: smoke-install
+    title: Install a smoke alarm
+    how: Fit a smoke alarm and test it monthly.
+    difficulty: easy
+    cost_estimate: ~$15-30 (estimate)
+    visualization_prompt: null
+  sources:
+  - NFPA home fire safety guidance (paraphrased)
+- id: FIRE-HEATER-NEAR-COMBUSTIBLE
+  title: Space heater close to fabric or paper
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Space heater close to curtains, bedding, paper
+  sam_prompts:
+  - space heater
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: heater-clear
+    title: Keep a 3-foot clear zone
+    how: Move the heater at least 3 feet from anything that can burn.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources:
+  - NFPA home fire safety guidance (paraphrased)
+- id: FIRE-POWER-STRIP-CHAIN
+  title: Power strip plugged into another power strip
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Power strip plugged into another power strip
+  sam_prompts:
+  - power strip
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: strip-unchain
+    title: Plug strips directly into wall outlets
+    how: Never chain power strips; plug each into a wall outlet.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources:
+  - NFPA home fire safety guidance (paraphrased)
+- id: FIRE-STOVE-COMBUSTIBLES
+  title: Things that can burn on or next to the stovetop
+  kind: presence
+  rooms:
+  - kitchen
+  severity: 2
+  observable_evidence: Towels, paper or packaging on or next to the stovetop
+  sam_prompts:
+  - dish towel near stove
+  - paper towel near stove
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: stove-clear
+    title: Keep the stovetop clear
+    how: Move towels and paper away from the stovetop.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources:
+  - NFPA - unattended cooking is the leading factor in home cooking fires
+- id: FIRE-CANDLE-NEAR-FABRIC
+  title: Candle near curtains or fabric
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Candle near curtains or fabric
+  sam_prompts:
+  - candle
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: candle-move
+    title: Move candles away from fabric
+    how: Keep candles at least 1 foot from anything that can burn.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources:
+  - NFPA home fire safety guidance (paraphrased)
+- id: FIRE-EXIT-BLOCKED
+  title: Clutter blocking a door or exit
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Clutter blocking a door or exit path
+  sam_prompts:
+  - clutter blocking door
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: exit-clear
+    title: Clear the exit path
+    how: Remove everything blocking doors and exit paths.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources:
+  - NFPA home fire safety guidance (paraphrased)

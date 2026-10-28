@@ -1,0 +1,291 @@
+pack_id: babyproofing
+title: Baby's home (babyproofing)
+audience: Babies and toddlers at home
+high_risk_zones:
+- nursery
+- stairs
+- kitchen
+- bathroom
+- living
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: BABY-TIPOVER-FURNITURE
+  title: Furniture that could tip over is not anchored
+  kind: absence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Dresser, bookcase or TV stand; no anti-tip strap visible
+  sam_prompts:
+  - dresser
+  - bookshelf
+  - tv stand
+  safety_prompts:
+  - anti-tip strap
+  - wall anchor
+  cannot_see_note: 'Anti-tip straps are often hidden behind furniture - this usually needs a human check:
+    look behind it.'
+  fixes:
+  - id: tip-anchor
+    title: Anchor furniture to the wall
+    how: Fit anti-tip straps from the furniture into wall studs.
+    difficulty: medium
+    cost_estimate: ~$10-20 per kit
+    visualization_prompt: null
+  sources: &id001
+  - 'Pack basis: common babyproofing guidance (CPSC / AAP categories, paraphrased). TODO(STAT): team to
+    add sourced statistics.'
+- id: BABY-TV-UNSECURED
+  title: TV not secured
+  kind: presence
+  rooms:
+  - living
+  - bedroom
+  severity: 3
+  observable_evidence: A TV on top of a dresser or a stand, not wall-mounted
+  sam_prompts:
+  - television on dresser
+  - tv
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: tv-secure
+    title: Wall-mount or strap the TV
+    how: Wall-mount the TV or strap it to the stand/wall.
+    difficulty: medium
+    cost_estimate: ~$15-60
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-OUTLET-UNCOVERED
+  title: Open electrical outlet at low height
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: An open electrical outlet at low height
+  sam_prompts:
+  - electrical outlet
+  safety_prompts:
+  - outlet cover
+  cannot_see_note: null
+  fixes:
+  - id: outlet-cover
+    title: Outlet covers or sliding plates
+    how: Fit covers or sliding outlet plates on low outlets.
+    difficulty: easy
+    cost_estimate: ~$10
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-BLIND-CORD
+  title: Blind or curtain cords within reach
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Window blind or curtain cords hanging within reach
+  sam_prompts:
+  - blind cord
+  - curtain cord
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: blind-cleat
+    title: Cord cleats up high or cordless blinds
+    how: Fit cord cleats up high, or replace with cordless blinds.
+    difficulty: easy
+    cost_estimate: ~$5-50
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-SMALL-OBJECTS
+  title: Small objects within reach
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Small objects within reach on the floor or low surfaces (coins, button batteries,
+    magnets, small toy parts)
+  sam_prompts:
+  - coin
+  - button battery
+  - small magnet
+  - small toy
+  safety_prompts: []
+  cannot_see_note: Very small objects may be missed on video - check floors by hand too.
+  fixes:
+  - id: small-move
+    title: Move small items above 1.2 m; check floors daily
+    how: Move small items up high and check floors every day.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-CHEMICALS-ACCESSIBLE
+  title: Cleaning products or medicines within reach
+  kind: presence
+  rooms:
+  - kitchen
+  - bathroom
+  severity: 3
+  observable_evidence: Cleaning products or medicines on low or open shelves
+  sam_prompts:
+  - cleaning spray bottle
+  - detergent pod
+  - medicine bottle
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: chem-lock
+    title: Move up high or use cabinet locks
+    how: Move products up high or fit cabinet locks.
+    difficulty: easy
+    cost_estimate: ~$10-20
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-STAIRS-NO-GATE
+  title: No safety gate at the stairs
+  kind: absence
+  rooms:
+  - stairs
+  severity: 3
+  observable_evidence: Top or bottom of the stairs with no safety gate
+  sam_prompts:
+  - staircase
+  safety_prompts:
+  - baby gate
+  - safety gate
+  cannot_see_note: null
+  fixes:
+  - id: gate-hardware
+    title: Hardware-mounted gate at the top of the stairs
+    how: Fit a hardware-mounted gate at the top of the stairs.
+    difficulty: medium
+    cost_estimate: ~$40-80
+    visualization_prompt: Add a baby safety gate at the top of the staircase.
+  sources: *id001
+- id: BABY-SHARP-CORNERS
+  title: Sharp table corners at toddler height
+  kind: presence
+  rooms:
+  - living
+  severity: 1
+  observable_evidence: Sharp or glass table corners at toddler height
+  sam_prompts:
+  - glass coffee table
+  - table corner
+  safety_prompts:
+  - corner guard
+  cannot_see_note: null
+  fixes:
+  - id: corner-guard
+    title: Corner guards
+    how: Fit corner guards on sharp table corners.
+    difficulty: easy
+    cost_estimate: ~$10
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-CRIB-SOFT-ITEMS
+  title: Soft items in the crib
+  kind: presence
+  rooms:
+  - nursery
+  severity: 3
+  observable_evidence: 'Pillows, blankets, bumpers or stuffed toys in the crib (safe-sleep guidance: a
+    bare crib)'
+  sam_prompts:
+  - pillow in crib
+  - blanket in crib
+  - crib bumper
+  - stuffed toy in crib
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: crib-clear
+    title: Remove soft items from the crib
+    how: Take pillows, blankets, bumpers and toys out of the crib.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Remove all soft items from the crib, leaving a bare crib.
+  sources: *id001
+- id: BABY-WINDOW-CLIMB
+  title: Climbable furniture under a window
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Climbable furniture under a window
+  sam_prompts:
+  - chair under window
+  - sofa under window
+  safety_prompts:
+  - window guard
+  cannot_see_note: null
+  fixes:
+  - id: window-move
+    title: Move furniture away from windows; window guards/stops
+    how: Move climbable furniture away from windows and fit guards or stops.
+    difficulty: easy
+    cost_estimate: ~$15-40
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-DANGLING-APPLIANCE-CORD
+  title: Appliance cord dangling off the counter
+  kind: presence
+  rooms:
+  - kitchen
+  severity: 2
+  observable_evidence: Kettle, iron or toaster cords dangling off the counter edge
+  sam_prompts:
+  - dangling cord
+  - kettle cord
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: cord-coil
+    title: Push appliances back and coil cords
+    how: Push appliances to the back of the counter and coil the cords.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-PLASTIC-BAGS
+  title: Plastic bags within reach
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Plastic bags within reach
+  sam_prompts:
+  - plastic bag
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: bags-high
+    title: Store bags up high
+    how: Store plastic bags up high, out of reach.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources: *id001
+- id: BABY-STOVE-KNOBS
+  title: Front stove knobs within reach
+  kind: presence
+  rooms:
+  - kitchen
+  severity: 2
+  observable_evidence: Front-facing stove knobs within reach
+  sam_prompts:
+  - stove knob
+  safety_prompts:
+  - knob cover
+  cannot_see_note: null
+  fixes:
+  - id: knob-cover
+    title: Stove knob covers
+    how: Fit covers on front-facing stove knobs.
+    difficulty: easy
+    cost_estimate: ~$10-15
+    visualization_prompt: null
+  sources: *id001

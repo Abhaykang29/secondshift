@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SecondShift global style (spec section 13): base font 18px, calm/warm,
+   tap targets >= 48px, WCAG AA contrast. Large-text toggle bumps to 22px. */
+html { font-size: 18px; }
+html.large-text { font-size: 22px; }
+button, a { min-height: 48px; }

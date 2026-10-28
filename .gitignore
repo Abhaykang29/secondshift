@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+data/
+node_modules/
+frontend/dist/
+eval/datasets/**/*.mp4
+eval/datasets/**/*.mov
+fixtures/synthetic/*.mp4
+fixtures/recordings/*.json
+!fixtures/recordings/.gitkeep
+.env
+*.log
+*.egg-info/

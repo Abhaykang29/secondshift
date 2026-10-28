@@ -1,0 +1,6 @@
+{
+  "_note": "Hindi strings - needs native review (spec section 13). English fallback shown in UI until reviewed.",
+  "footer_disclaimer": "SecondShift एक screening tool है, medical device या emergency alarm नहीं। यह कुछ चीज़ें miss कर सकता है।",
+  "check_a_home": "घर check करें",
+  "watch_one_spot": "एक जगह watch करें"
+}

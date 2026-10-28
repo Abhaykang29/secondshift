@@ -1,0 +1,3 @@
+config_name: wonder_sam
+propose_model: wonder
+verify_mode: sam_plus_judge

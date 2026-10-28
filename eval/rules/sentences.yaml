@@ -1,0 +1,217 @@
+- text: Make sure there's no rug on the stairs.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_present
+  notes: Appendix B
+- text: Check that the hallway night light is still there.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_absent
+  notes: Appendix B
+- text: Make sure nothing is left on the stairs.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_present
+  notes: Appendix B
+- text: Check that the grab bar next to the toilet is still installed.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_absent
+  notes: Appendix B
+- text: Make sure the bathroom has a non-slip mat in the tub.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_absent
+  notes: Appendix B
+- text: Check that no cords cross the hallway.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_present
+  notes: Appendix B
+- text: Make sure the cleaning bottles aren't on the low shelf anymore.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_present
+  notes: Appendix B
+- text: Check that the bookcase is still strapped to the wall.
+  mode_hint: checkup
+  expected_status: needs_clarification
+  expected_primitives: []
+  notes: Appendix B
+- text: Make sure there are no toys in the crib.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_present
+  notes: Appendix B
+- text: Check the baby gate at the top of the stairs is still there.
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives:
+  - object_absent
+  notes: Appendix B
+- text: Tell me if the baby gate at the top of the stairs is left open for more than 30 seconds.
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives:
+  - state_for_duration
+  notes: Appendix B
+- text: Alert me if the stove is on and nobody's in the kitchen for 10 minutes.
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives:
+  - object_state
+  - zone_empty_for_duration
+  notes: Appendix B
+- text: Let me know if Mom's evening pill box isn't opened between 7 and 9 PM.
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives:
+  - event_by_deadline
+  notes: Appendix B
+- text: Tell me if the front door is left open for more than 5 minutes.
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives:
+  - state_for_duration
+  notes: Appendix B
+- text: Alert me if the oven door is open for more than 15 minutes.
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives:
+  - state_for_duration
+  notes: Appendix B
+- text: Tell me if the fridge door is left open.
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if the cabinet under the sink is open.
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives:
+  - object_state
+  notes: Appendix B
+- text: Let me know if the camera can't see the stove.
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives:
+  - camera_health
+  notes: Appendix B
+- text: Tell me if the gate is open.
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+  notes: Appendix B
+- text: Alert me when the pills aren't taken.
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if the door opens at night.
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+  notes: Appendix B
+- text: Watch the stove.
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+  notes: Appendix B
+- text: Warn me before Mom falls.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if Dad is in pain.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if someone is planning to steal the bike.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Let me know if there's a gas leak.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if the smoke alarm works.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me who comes into the kitchen.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Follow Mom around the house and tell me where she is.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if the baby is crying.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Watch the bathroom and tell me if Dad slips.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if Mom is sad today.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Let me know if the water in the bath is too hot.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if Dad took the right pills.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if the baby is breathing.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Make sure the house is safe.
+  mode_hint: checkup
+  expected_status: needs_clarification
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if anyone strange is at the door.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if Mom forgets things.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Alert me if Dad leaves the house at night.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B
+- text: Tell me if the stove is about to catch fire.
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+  notes: Appendix B

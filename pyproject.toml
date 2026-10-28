@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secondshift"
+version = "0.1.0"
+description = "SecondShift - home safety check-up and watch, built for the Meta Global AI Developer Hackathon"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+  "pydantic>=2.6",
+  "httpx>=0.27",
+  "PyYAML>=6.0",
+  "Jinja2>=3.1",
+  "numpy>=1.26",
+  "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.4", "mypy>=1.10", "opencv-python-headless>=4.9", "types-PyYAML>=6.0"]
+eval = ["matplotlib>=3.8"]
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "backend"
+packages = ["secondshift"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["backend"]

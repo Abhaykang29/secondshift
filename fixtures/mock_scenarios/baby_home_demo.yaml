@@ -1,0 +1,23 @@
+scenario: baby_home_demo
+pack_ids: [babyproofing]
+proposals:
+  - item_id: BABY-CRIB-SOFT-ITEMS
+    room: nursery
+    t: [20.0]
+    sam_prompts: ["stuffed toy in crib"]
+    confidence: 0.88
+    why_risky: "Soft items in a crib are a safe-sleep hazard; a bare crib is safer."
+    mask_polygon: [[0.35, 0.40], [0.65, 0.40], [0.65, 0.75], [0.35, 0.75]]
+  - item_id: BABY-STAIRS-NO-GATE
+    room: stairs
+    t: [45.0]
+    sam_prompts: ["staircase"]
+    safety_prompts: ["baby gate"]
+    confidence: 0.82
+    why_risky: "There is no gate at the top of the stairs."
+    anchor_polygon: [[0.20, 0.20], [0.80, 0.20], [0.80, 0.90], [0.20, 0.90]]
+    safety_found: false
+routine:
+  support_contacts: []
+  path_obstacles: []
+# NOTE: Phase 2 expands this to the full 6-8 hazard scenario (spec 11.2).

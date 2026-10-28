@@ -1,0 +1,3 @@
+config_name: spark_sam
+propose_model: spark
+verify_mode: sam_plus_judge

@@ -1,0 +1,429 @@
+pack_id: falls_older_adults
+title: Parent's home (falls)
+audience: Older adults living at home
+high_risk_zones:
+- stairs
+- bathroom
+- hallway
+- bedroom_to_bathroom_path
+- entry
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: FALL-FLOOR-RUG
+  title: Loose rug or mat on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Loose throw rug or small mat on a walking area
+  sam_prompts:
+  - throw rug
+  - area rug
+  - door mat
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: rug-remove
+    title: Remove the rug
+    how: Take the rug off the walking path entirely.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  - id: rug-tape
+    title: Double-sided rug tape
+    how: Tape all edges of the rug flat to the floor.
+    difficulty: easy
+    cost_estimate: ~$10
+    visualization_prompt: null
+  - id: rug-pad
+    title: Non-slip rug pad
+    how: Place a non-slip pad under the whole rug.
+    difficulty: easy
+    cost_estimate: ~$15-30
+    visualization_prompt: Remove the throw rug from the floor, leaving the bare floor visible.
+  sources: &id001
+  - CDC STEADI Check for Safety home checklist (paraphrased)
+- id: FALL-FLOOR-CORD
+  title: Cord across a walking path
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Electrical cord or cable crossing a walking path
+  sam_prompts:
+  - electrical cord
+  - extension cord
+  - cable on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: cord-reroute
+    title: Re-route cord along the wall
+    how: Move the cord so it runs along the wall, not across the path.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  - id: cord-cover
+    title: Cord cover strip
+    how: Cover the cord with a low cord cover strip.
+    difficulty: easy
+    cost_estimate: ~$10-20
+    visualization_prompt: Remove the electrical cord crossing the floor; show it running along the wall.
+  sources: *id001
+- id: FALL-FLOOR-CLUTTER
+  title: Clutter on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Objects on the floor in walking paths (shoes, boxes, bags, laundry)
+  sam_prompts:
+  - shoes on floor
+  - box on floor
+  - bag on floor
+  - laundry basket
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: clutter-clear
+    title: Clear a 3-foot path
+    how: Move everything off the walking path so it is at least 3 feet wide.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  - id: clutter-bench
+    title: Add a bench/shelf by the door
+    how: Put a bench or shelf by the door for shoes and bags.
+    difficulty: easy
+    cost_estimate: ~$30-60
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-STAIRS-OBJECTS
+  title: Objects left on the stairs
+  kind: presence
+  rooms:
+  - stairs
+  severity: 3
+  observable_evidence: Anything left on stair treads
+  sam_prompts:
+  - object on stairs
+  - shoes on stairs
+  - box on stairs
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: stairs-clear
+    title: Keep stairs completely clear
+    how: Remove everything from the stair treads.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  - id: stairs-basket
+    title: Basket at the bottom of the stairs
+    how: Use one basket for items that need to go up.
+    difficulty: easy
+    cost_estimate: ~$15
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-STAIRS-RAIL-MISSING
+  title: Missing handrail on stairs
+  kind: absence
+  rooms:
+  - stairs
+  severity: 3
+  observable_evidence: Staircase visible with no handrail on one or both sides
+  sam_prompts:
+  - staircase
+  - stairs
+  safety_prompts:
+  - handrail
+  - stair railing
+  cannot_see_note: null
+  fixes:
+  - id: rail-install
+    title: Install a handrail (ideally both sides)
+    how: Have a professional install a sturdy handrail fixed into studs.
+    difficulty: pro
+    cost_estimate: ~$100-400 installed
+    visualization_prompt: Add a sturdy wooden handrail along the wall side of the staircase.
+  sources: *id001
+- id: FALL-STAIRS-DARK
+  title: Stairs are poorly lit
+  kind: presence
+  rooms:
+  - stairs
+  severity: 2
+  observable_evidence: Stairs poorly lit in the footage and no light switch visible at top or bottom
+  sam_prompts:
+  - staircase
+  safety_prompts:
+  - light switch
+  - stair light
+  cannot_see_note: We cannot judge bulb brightness beyond what the footage shows.
+  fixes:
+  - id: stairs-bulbs
+    title: Brighter bulbs
+    how: Fit brighter bulbs over the stairs.
+    difficulty: easy
+    cost_estimate: ~$10
+    visualization_prompt: null
+  - id: stairs-motion
+    title: Motion-sensor stair lights
+    how: Stick motion-sensor lights along the stairs.
+    difficulty: easy
+    cost_estimate: ~$20-40
+    visualization_prompt: null
+  - id: stairs-switch
+    title: Switches at both ends
+    how: Have an electrician add switches at the top and bottom.
+    difficulty: pro
+    cost_estimate: Ask an electrician for a quote (estimate)
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-BATH-GRAB-MISSING
+  title: No grab bar in bath / by toilet
+  kind: absence
+  rooms:
+  - bathroom
+  severity: 3
+  observable_evidence: Toilet, tub or shower visible with no grab bar on the nearby wall
+  sam_prompts:
+  - toilet
+  - bathtub
+  - shower
+  safety_prompts:
+  - grab bar
+  cannot_see_note: null
+  fixes:
+  - id: grab-install
+    title: Install a grab bar into studs
+    how: Have a professional install a grab bar fixed into wall studs.
+    difficulty: pro
+    cost_estimate: ~$25-60 + install
+    visualization_prompt: Add a metal grab bar on the wall beside the toilet.
+  - id: grab-frame
+    title: Toilet safety frame (no drilling)
+    how: Fit a freestanding toilet safety frame.
+    difficulty: easy
+    cost_estimate: ~$40-80
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-BATH-NONSLIP-MISSING
+  title: No non-slip mat in tub or shower
+  kind: absence
+  rooms:
+  - bathroom
+  severity: 3
+  observable_evidence: Tub/shower floor visible with no non-slip mat or strips
+  sam_prompts:
+  - bathtub
+  - shower floor
+  safety_prompts:
+  - non-slip mat
+  - bath mat
+  - anti-slip strips
+  cannot_see_note: null
+  fixes:
+  - id: nonslip-mat
+    title: Non-slip mat or strips in tub
+    how: Place a non-slip mat or adhesive strips on the tub floor.
+    difficulty: easy
+    cost_estimate: ~$10-25
+    visualization_prompt: Add a non-slip bath mat inside the bathtub.
+  sources: *id001
+- id: FALL-BATH-TOILET-LOW
+  title: Toilet seat may be too low
+  kind: measurement
+  rooms:
+  - bathroom
+  severity: 2
+  observable_evidence: Toilet visible; seat height entered by family
+  sam_prompts:
+  - toilet
+  safety_prompts: []
+  cannot_see_note: We record the height; only a professional can judge the right height for this person.
+  fixes:
+  - id: toilet-raised
+    title: Raised toilet seat
+    how: Fit a raised toilet seat; ask a professional which height fits.
+    difficulty: easy
+    cost_estimate: ~$25-60
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-BED-LIGHT-REACH
+  title: No light within reach of the bed
+  kind: absence
+  rooms:
+  - bedroom
+  severity: 2
+  observable_evidence: Bed visible with no lamp or switch within reach of the bed
+  sam_prompts:
+  - bed
+  safety_prompts:
+  - bedside lamp
+  - lamp
+  - light switch near bed
+  cannot_see_note: null
+  fixes:
+  - id: bed-lamp
+    title: Bedside lamp or touch lamp
+    how: Put a lamp that is easy to reach and switch on from the bed.
+    difficulty: easy
+    cost_estimate: ~$15-30
+    visualization_prompt: Add a bedside lamp on the nightstand next to the bed.
+  sources: *id001
+- id: FALL-PATH-NIGHT-LIGHT
+  title: No night light on the bedroom-to-bathroom path
+  kind: absence
+  rooms:
+  - hallway
+  severity: 3
+  observable_evidence: Hallway/path from bedroom to bathroom with no night light visible
+  sam_prompts:
+  - hallway
+  safety_prompts:
+  - night light
+  - plug-in light
+  cannot_see_note: null
+  fixes:
+  - id: nightlight-pack
+    title: Plug-in night lights along the path
+    how: Plug night lights along the whole bedroom-to-bathroom path.
+    difficulty: easy
+    cost_estimate: ~$10-20 for a pack
+    visualization_prompt: Add a glowing plug-in night light in the hallway.
+  sources: *id001
+- id: FALL-KITCHEN-HIGH-STORAGE
+  title: Everyday items stored too high
+  kind: presence
+  rooms:
+  - kitchen
+  severity: 2
+  observable_evidence: Everyday items on high shelves, or a step stool/chair used to reach
+  sam_prompts:
+  - step stool
+  - items on high shelf
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: kitchen-move
+    title: Move everyday items to waist-to-shoulder height
+    how: Move items used every day down to easy-reach shelves.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  - id: kitchen-stool
+    title: Sturdy step stool with handle
+    how: Replace a chair with a sturdy step stool that has a handle.
+    difficulty: easy
+    cost_estimate: ~$30-60
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-ENTRY-STEP-RAIL
+  title: No rail at an entry step
+  kind: absence
+  rooms:
+  - entry
+  severity: 2
+  observable_evidence: A step at an entrance with no rail
+  sam_prompts:
+  - entry step
+  - door step
+  safety_prompts:
+  - handrail
+  cannot_see_note: null
+  fixes:
+  - id: entry-rail
+    title: Add a rail at the step
+    how: Have a professional add a rail beside the entry step.
+    difficulty: pro
+    cost_estimate: Ask a professional for a quote (estimate)
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-PET-PATH
+  title: Pet bowls or toys on a walking path
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Pet bowls or toys on a walking path
+  sam_prompts:
+  - pet bowl
+  - pet toy
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: pet-move
+    title: Move bowls out of walkways
+    how: Move pet bowls and toys out of walking paths.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-FURNITURE-SUPPORT
+  title: Using furniture for support while walking
+  kind: interaction
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: 'Routine clip: the person repeatedly touches furniture/walls for support along
+    their path'
+  sam_prompts:
+  - dresser
+  - table
+  - chair
+  - wall
+  - door frame
+  safety_prompts: []
+  cannot_see_note: Only visible in the routine clip, from how the person moves through the space.
+  fixes:
+  - id: support-rail
+    title: Grab bar or rail along this path
+    how: Have a professional add a rail along this walking path.
+    difficulty: pro
+    cost_estimate: Ask a professional for a quote (estimate)
+    visualization_prompt: null
+  - id: support-rearrange
+    title: Rearrange so sturdy support is available
+    how: Move sturdy furniture so support is available along the path.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+  - id: support-aid
+    title: Ask about a walking aid
+    how: Talk to a professional about whether a walking aid would help.
+    difficulty: pro
+    cost_estimate: Talk to a professional
+    visualization_prompt: null
+  sources: *id001
+- id: FALL-LOW-SEAT
+  title: Difficulty standing from a low seat
+  kind: interaction
+  rooms:
+  - living
+  - bedroom
+  severity: 2
+  observable_evidence: 'Routine clip: visible difficulty standing up from a low chair/sofa/bed'
+  sam_prompts:
+  - sofa
+  - chair
+  - bed
+  safety_prompts: []
+  cannot_see_note: Only visible in the routine clip.
+  fixes:
+  - id: seat-cushion
+    title: Firm cushion or furniture risers
+    how: Add a firm cushion or risers to raise the seat height.
+    difficulty: easy
+    cost_estimate: ~$20-40
+    visualization_prompt: null
+  - id: seat-armchair
+    title: Chair with armrests
+    how: Use a chair with armrests that can be pushed on to stand.
+    difficulty: medium
+    cost_estimate: Varies (estimate)
+    visualization_prompt: null
+  sources: *id001
