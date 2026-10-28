@@ -47,5 +47,11 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 - Screenshots at phone width (390px) in docs/screenshots/: home, report (full page), fixes - captured with Playwright headless shell via scripts/screenshot_report.py. Report screenshot visually verified.
 - Found + fixed during Phase 3: scan router registration had been silently dropped by an unused-import cleanup in Phase 2 - the Phase 3 API tests caught it; routes now covered by HTTP tests.
 
+## Phase 4 - Re-check + rules (Oct 28) - DONE
+- Observability precheck (8 flag families) + deterministic mock compiler + validator. Appendix B locked in tests: precheck >=95% (actual 100% of refused/compiled expectations), compiler statuses 40/40, primitives 40/40, every refusal offers alternatives.
+- Check-up rule evaluation (SAM + state judge; watch-only primitives report "Needs Watch mode").
+- Re-check diff: Resolved/Still/New/CannotTell with documented score (100 - min(100, 2 x open risk)). API test: rug + grab bar resolved, cord still present, bed-light NEW, score rises, saved night-light rule evaluates MET on the fixed home.
+- Frontend: real RulesPage (example chips, compiled/refusal/clarification cards, JSON toggle, tappable alternatives) and RecheckPage (diff list, score before to after, rule outcomes).
+
 ### Next
 Human review of schemas, packs and skeleton. On approval: Phase 1 (capture) and Phase 2 (scan pipeline on mocks), workers per spec section 16.

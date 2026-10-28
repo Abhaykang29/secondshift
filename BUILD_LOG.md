@@ -15,3 +15,4 @@ Built with Muse Code (Muse Spark 1.3). This log is shown in the demo.
 | 2026-10-28 | 1 | Capture: probe/extract/quality/keyframes, real synthetic video, checkup+capture API, file-backed store | Muse Code (main session) | - |
 | 2026-10-28 | 2 | Scan pipeline on mocks: propose/verify/routine/rank, scenario-driven mocks, job runner, scan API, snapshot test | Muse Code (main session) | - |
 | 2026-10-28 | 3 | Fixes/visualizations/report backend + report & fixes UI, sharing, phone-width screenshots in docs/screenshots/ | Muse Code (main session) | - |
+| 2026-10-28 | 4 | Re-check diff + scores, rule precheck/compiler/validator/evaluator (Appendix B 40/40 in tests), rules + recheck UI | Muse Code (main session) | - |

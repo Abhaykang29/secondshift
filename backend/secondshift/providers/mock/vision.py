@@ -57,6 +57,11 @@ class MockVisionReasoner:
 
     def judge(self, req: JudgeRequest) -> JudgeResponse:
         """Deterministic judge: no SAM mask for a presence claim -> rejected."""
+        if "state_check" in req.context and "sam_found: true" in req.context:
+            return JudgeResponse(
+                verification="confirmed",
+                reason="Mock judge: the visible state matches the claim.",
+            )
         if "sam_found: false" in req.context:
             return JudgeResponse(
                 verification="rejected",
