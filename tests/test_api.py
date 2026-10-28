@@ -23,8 +23,8 @@ def test_packs_endpoint_lists_real_packs() -> None:
 
 
 def test_stubbed_resource_is_an_honest_501() -> None:
-    """Still-stubbed resources return 501, never fake data (reports = Phase 3)."""
-    res = client.get("/api/reports")
+    """Still-stubbed resources return 501, never fake data (settings = later phase)."""
+    res = client.get("/api/settings")
     assert res.status_code == 501
 
 

@@ -60,14 +60,36 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         ]
     elif scenario is None and request.app.state.settings.provider.value == "mock":
         scenario = "baby_home_demo" if checkup.pack_ids == ["babyproofing"] else "parent_home_demo"
+    if scenario is not None:
+        for provider in (
+            request.app.state.providers.vision,
+            request.app.state.providers.segmenter,
+            request.app.state.providers.transcriber,
+        ):
+            if hasattr(provider, "scenario_name"):
+                setattr(provider, "scenario_name", scenario)
+    narration_facts = []
+    try:
+        from secondshift.capture.narration import extract_facts
+
+        segments = request.app.state.providers.transcriber.transcribe("demo", checkup.language)
+        narration_facts = extract_facts(segments)
+    except Exception:
+        narration_facts = []
     scan_input = ScanInput(
         checkup=checkup,
         packs=packs,
         keyframes=keyframes,
         scenario_name=scenario,
+        narration_facts=narration_facts,
         verify_mode=request.app.state.settings.verify_mode,
     )
-    job, report = run_scan_job(store, request.app.state.providers, scan_input)
+    job, report = run_scan_job(
+        store,
+        request.app.state.providers,
+        scan_input,
+        data_dir=request.app.state.settings.data_dir,
+    )
     return {"job_id": job.id, "job_status": job.status, "report": report.model_dump(mode="json")}
 
 

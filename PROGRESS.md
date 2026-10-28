@@ -39,5 +39,13 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 - Job runner persists steps; re-runs skip completed steps. Scan API: POST /checkups/{id}/scan, GET report + job status.
 - Acceptance snapshot (locked in tests): parent scenario = 9 confirmed + 1 rejected (the planted pet-bowl false positive SAM kills), rug #1 (risk 5.7, on routine path), 2 routine insights, deterministic across runs. Baby scenario = 7/7 confirmed.
 
+## Phase 3 - Fixes, visualizations, report UI, sharing (Oct 28) - DONE
+- Fix planner chooses ONLY from pack libraries (test asserts every chosen id exists in a pack); steps <= 5.
+- Visualizations: top 3 viz-prompt hazards get before/after PNGs, watermark burned in ("Visualization - not a photo"), served via /api/reports/{id}/image/{name}.
+- Reports: JSON + printable Jinja HTML + WhatsApp share text/wa.me link; fix tracker PATCH persists into the report.
+- Frontend: real CheckupNew (consent enforced), Processing (job polling), ReportPage (fix-first-5, SAM overlay cards with SVG masks, absence "missing here" treatment, routine insights, fix plan, before/after slider, needs-human + couldn't-check, share/print), Fixes tracker with progress bar.
+- Screenshots at phone width (390px) in docs/screenshots/: home, report (full page), fixes - captured with Playwright headless shell via scripts/screenshot_report.py. Report screenshot visually verified.
+- Found + fixed during Phase 3: scan router registration had been silently dropped by an unused-import cleanup in Phase 2 - the Phase 3 API tests caught it; routes now covered by HTTP tests.
+
 ### Next
 Human review of schemas, packs and skeleton. On approval: Phase 1 (capture) and Phase 2 (scan pipeline on mocks), workers per spec section 16.

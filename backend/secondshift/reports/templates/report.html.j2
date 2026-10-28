@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="{{ report_language }}">
+<head><meta charset="utf-8"><title>SecondShift report - {{ checkup_id }}</title>
+<style>
+  body { font-family: sans-serif; font-size: 18px; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+  .hazard { border: 1px solid #ccc; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  .sev-3 { border-left: 8px solid #d33; } .sev-2 { border-left: 8px solid #e90; } .sev-1 { border-left: 8px solid #ec0; }
+  @media print { .hazard { break-inside: avoid; } }
+</style></head>
+<body>
+<h1>Home check-up report</h1>
+<p>{{ summary }}</p>
+<h2>Fix these first</h2>
+<ol>{% for title in fix_first_titles %}<li>{{ title }}</li>{% endfor %}</ol>
+{% for hazard in hazards %}
+<section class="hazard sev-{{ hazard.severity }}">
+  <h3>{{ hazard.title }} ({{ hazard.room }})</h3>
+  <p>{{ hazard.description }}</p>
+  <p><em>Why it matters:</em> {{ hazard.why_it_matters }}</p>
+  <p>Verification: {{ hazard.verification }} - {{ hazard.verification_reason }}</p>
+</section>
+{% endfor %}
+{% if cannot_assess %}<h2>Couldn't check</h2>
+<ul>{% for item in cannot_assess %}<li>{{ item.area }}: {{ item.detail }}</li>{% endfor %}</ul>{% endif %}
+<footer><p>{{ disclaimer }}</p></footer>
+</body></html>

@@ -165,13 +165,34 @@ def run_scan_job(
     store: Repository,
     providers: Providers,
     scan_input: ScanInput,
+    data_dir: str = "data",
 ) -> tuple[Job, Report]:
     """Run a scan as a persisted, resumable job and store its report."""
-    job = Job(id=uuid.uuid4().hex, kind="scan", steps=["scan", "assemble"])
+    job = Job(
+        id=uuid.uuid4().hex,
+        kind="scan",
+        steps=["scan", "fixes", "visualize", "assemble"],
+    )
     holder: dict[str, Any] = {}
 
     def _scan() -> None:
         holder["output"] = run_scan(providers, scan_input)
+
+    def _fixes() -> None:
+        from secondshift.pipeline import fixes as fixes_mod
+
+        holder["fix_cards"] = fixes_mod.build_fix_cards(holder["output"].hazards, scan_input.packs)
+
+    def _visualize() -> None:
+        from pathlib import Path as _Path
+
+        from secondshift.pipeline import visualize as viz_mod
+
+        viz_dir = _Path(data_dir) / scan_input.checkup.id / "viz"
+        visualizations, _befores = viz_mod.render_visualizations(
+            holder["output"].hazards, holder.get("fix_cards", []), str(viz_dir)
+        )
+        holder["visualizations"] = visualizations
 
     def _assemble() -> None:
         output: ScanOutput = holder["output"]
@@ -182,10 +203,22 @@ def run_scan_job(
             ),
             "cost_usd": providers.cost.spent_usd,
         }
-        holder["report"] = assemble_report(scan_input.checkup, output, stats)
+        report = assemble_report(scan_input.checkup, output, stats)
+        report.fixes = holder.get("fix_cards", [])
+        report.visualizations = holder.get("visualizations", [])
+        holder["report"] = report
         store.put("report", scan_input.checkup.id, holder["report"].model_dump(mode="json"))
 
-    run_job(store, job, {"scan": _scan, "assemble": _assemble})
+    run_job(
+        store,
+        job,
+        {
+            "scan": _scan,
+            "fixes": _fixes,
+            "visualize": _visualize,
+            "assemble": _assemble,
+        },
+    )
     if job.status != "done":
         raise RuntimeError(job.error or "scan failed")
     return job, holder["report"]
