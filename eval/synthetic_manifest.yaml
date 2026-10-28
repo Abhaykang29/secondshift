@@ -1,0 +1,93 @@
+captures:
+- capture_id: parent_home_demo
+  video_path: fixtures/synthetic/parent_home_demo.mp4
+  pack_ids:
+  - falls_older_adults
+  scenario: parent_home_demo
+  hazards:
+  - item_id: FALL-FLOOR-CLUTTER
+    room: entry
+    time_ranges:
+    - - 5.0
+      - 6.0
+  - item_id: FALL-FLOOR-RUG
+    room: hallway
+    time_ranges:
+    - - 12.5
+      - 14.0
+  - item_id: FALL-FLOOR-CORD
+    room: living
+    time_ranges:
+    - - 22.0
+      - 23.0
+  - item_id: FALL-PATH-NIGHT-LIGHT
+    room: hallway
+    time_ranges:
+    - - 35.0
+      - 36.0
+  - item_id: FALL-STAIRS-OBJECTS
+    room: stairs
+    time_ranges:
+    - - 55.0
+      - 56.0
+  - item_id: FALL-KITCHEN-HIGH-STORAGE
+    room: kitchen
+    time_ranges:
+    - - 65.0
+      - 66.0
+  - item_id: FALL-BATH-GRAB-MISSING
+    room: bathroom
+    time_ranges:
+    - - 88.0
+      - 89.0
+  - item_id: FALL-BATH-NONSLIP-MISSING
+    room: bathroom
+    time_ranges:
+    - - 92.0
+      - 93.0
+  - item_id: FALL-FURNITURE-SUPPORT
+    room: hallway
+    time_ranges:
+    - - 10.0
+      - 11.0
+- capture_id: baby_home_demo
+  video_path: fixtures/synthetic/baby_home_demo.mp4
+  pack_ids:
+  - babyproofing
+  scenario: baby_home_demo
+  hazards:
+  - item_id: BABY-SMALL-OBJECTS
+    room: nursery
+    time_ranges:
+    - - 10.0
+      - 11.0
+  - item_id: BABY-CRIB-SOFT-ITEMS
+    room: nursery
+    time_ranges:
+    - - 20.0
+      - 21.0
+  - item_id: BABY-BLIND-CORD
+    room: living
+    time_ranges:
+    - - 28.0
+      - 29.0
+  - item_id: BABY-OUTLET-UNCOVERED
+    room: living
+    time_ranges:
+    - - 33.0
+      - 34.0
+  - item_id: BABY-TV-UNSECURED
+    room: living
+    time_ranges:
+    - - 38.0
+      - 39.0
+  - item_id: BABY-CHEMICALS-ACCESSIBLE
+    room: kitchen
+    time_ranges:
+    - - 48.0
+      - 49.0
+  - item_id: BABY-STAIRS-NO-GATE
+    room: stairs
+    time_ranges:
+    - - 45.0
+      - 46.0

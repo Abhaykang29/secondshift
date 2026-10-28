@@ -53,5 +53,11 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 - Re-check diff: Resolved/Still/New/CannotTell with documented score (100 - min(100, 2 x open risk)). API test: rug + grab bar resolved, cord still present, bed-light NEW, score rises, saved night-light rule evaluates MET on the fixed home.
 - Frontend: real RulesPage (example chips, compiled/refusal/clarification cards, JSON toggle, tappable alternatives) and RecheckPage (diff list, score before to after, rule outcomes).
 
+## Phase 5 - Eval harness (Oct 28) - DONE (acceptance gate for Phase 6 passed)
+- Metrics (item+room matching per Appendix D; mask_iou unit-tested for the labelling flow), synthetic manifest from the two scenarios, 4 ablation configs, matplotlib charts, summary.md + results.json per run.
+- The ablation tells the designed story on mocks: spark_only precision 0.9412 (the planted pet-bowl false positive) -> spark_sam / wonder_sam precision 1.0, recall 1.0. Compiler metrics in the same report: status + primitive accuracy 1.0 on Appendix B.
+- Every report carries the honest caveat: mock numbers validate the harness, NOT product accuracy; human-labelled captures remain TODO(TEAM) (see open TODO list).
+- /eval page renders the latest run (GET /api/eval/latest); labelling UI page exists; the human labelling itself is TODO(TEAM).
+
 ### Next
 Human review of schemas, packs and skeleton. On approval: Phase 1 (capture) and Phase 2 (scan pipeline on mocks), workers per spec section 16.
