@@ -6,6 +6,7 @@ fails on ANY difference (field names, field types, optionality, enum
 values), and spot-checks individual fields so a failure message names the
 field, not just the file.
 """
+
 import importlib.util
 from pathlib import Path
 from types import ModuleType

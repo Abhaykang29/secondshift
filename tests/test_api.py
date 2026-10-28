@@ -23,9 +23,16 @@ def test_packs_endpoint_lists_real_packs() -> None:
 
 
 def test_stubbed_resource_is_an_honest_501() -> None:
-    """Phase 0 stubs return 501, never fake data."""
-    res = client.get("/api/checkups")
+    """Still-stubbed resources return 501, never fake data (reports = Phase 3)."""
+    res = client.get("/api/reports")
     assert res.status_code == 501
+
+
+def test_checkups_list_is_implemented() -> None:
+    """GET /api/checkups lists checkups (implemented in Phase 1)."""
+    res = client.get("/api/checkups")
+    assert res.status_code == 200
+    assert "checkups" in res.json()
 
 
 def test_costs_endpoint_starts_at_zero() -> None:

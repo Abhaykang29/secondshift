@@ -5,6 +5,7 @@ Why: the frontend contract must never drift from the backend contract
 Run: `make types`. The drift test (tests/test_schema_drift.py) regenerates
 the content in memory and fails if the committed file differs in any field.
 """
+
 import enum as enum_mod
 import inspect
 import json
@@ -43,7 +44,11 @@ def _collect_models() -> list[type[BaseModel]]:
 def _collect_enums() -> list[type[enum_mod.Enum]]:
     found: list[type[enum_mod.Enum]] = []
     for _, obj in vars(enums_mod).items():
-        if inspect.isclass(obj) and issubclass(obj, enum_mod.Enum) and obj.__module__ == enums_mod.__name__:
+        if (
+            inspect.isclass(obj)
+            and issubclass(obj, enum_mod.Enum)
+            and obj.__module__ == enums_mod.__name__
+        ):
             found.append(obj)
     return found
 

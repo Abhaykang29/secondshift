@@ -13,3 +13,9 @@ Tailwind is wired with a plain `tailwind.config.js` + PostCSS rather than a comp
 
 ## D4 - Contributor-tier model IDs banned outside eval/rules
 Enforced as a standing rule from spec section 6: no `*-contributor` ID appears anywhere in app code or config. The only permitted future use is `eval/rules/` synthetic text behind `ALLOW_CONTRIBUTOR_FOR_SYNTHETIC_TEXT=1` (default off, present in config).
+
+## D5 - Keyframe change threshold mapping
+Spec section 9.2 defines scene-change as 1 - histogram correlation with SCENE_CHANGE_MIN=0.25. Our descriptor is a 32x32 grayscale MAD; the API maps the config value as change_min = SCENE_CHANGE_MIN / 16 (empirically equivalent on synthetic + flat scenes: 59 keyframes at defaults). The pure function takes change_min directly and is unit-tested; the mapping lives in one place (api/captures.py) and must be re-tuned on real footage in Phase 7.
+
+## D6 - Storage: JSON file repository behind the Repository interface
+Spec section 7.2 names sqlite3 stdlib with a thin repository layer. Phase 1 ships a JSON-file-backed repository with the identical interface (simpler to inspect during the hackathon; data volumes are tiny). SQLite can replace it behind the interface without caller changes.

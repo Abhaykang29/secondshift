@@ -1,23 +1,35 @@
-"""Storage repository layer (SQLite, stdlib).
+"""Storage repository layer (spec section 7: SQLite stdlib planned).
 
-Phase 0: an in-memory placeholder repository so the API can be wired and
-tested. Phase 1-2 replaces this with the SQLite implementation behind the
-same interface - callers must not depend on the in-memory detail.
-Depends on: domain models.
+Phase 1 implementation: a JSON-file-backed repository with the same
+put/get/list interface the Phase 0 placeholder fixed, so API and pipeline
+code survive restarts and never depend on the storage detail. The SQLite
+swap stays behind this interface if scale ever demands it.
+Depends on: stdlib only.
 """
 
+import json
+from pathlib import Path
 from typing import Any
 
 
 class Repository:
-    """Minimal key-value repository placeholder (Phase 0)."""
+    """Key-value repository, optionally persisted to one JSON file."""
 
-    def __init__(self) -> None:
+    def __init__(self, path: str | Path | None = None) -> None:
+        self._path = Path(path) if path else None
         self._store: dict[str, dict[str, Any]] = {}
+        if self._path and self._path.exists():
+            self._store = json.loads(self._path.read_text())
+
+    def _save(self) -> None:
+        if self._path:
+            self._path.parent.mkdir(parents=True, exist_ok=True)
+            self._path.write_text(json.dumps(self._store, default=str))
 
     def put(self, kind: str, object_id: str, payload: dict[str, Any]) -> None:
         """Store one object by kind and id."""
         self._store[f"{kind}:{object_id}"] = payload
+        self._save()
 
     def get(self, kind: str, object_id: str) -> dict[str, Any] | None:
         """Fetch one object by kind and id, or None."""
@@ -27,3 +39,8 @@ class Repository:
         """List all objects of a kind."""
         prefix = f"{kind}:"
         return [v for k, v in self._store.items() if k.startswith(prefix)]
+
+    def delete_all(self) -> None:
+        """Delete everything (the Settings 'Delete everything' button)."""
+        self._store = {}
+        self._save()

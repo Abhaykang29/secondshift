@@ -29,6 +29,11 @@ def create_app() -> FastAPI:
     app = FastAPI(title="SecondShift", version="0.1.0")
     app.state.settings = Settings.load()
     app.state.providers = build_providers(app.state.settings)
+    from pathlib import Path
+
+    from secondshift.storage.repository import Repository
+
+    app.state.store = Repository(Path(app.state.settings.data_dir) / "store.json")
     for module in (
         health,
         packs,

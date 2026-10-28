@@ -6,6 +6,7 @@ vision mock proposes its hazards, the SAM mock knows which objects are
 proposals), and the transcriber mock speaks its narration.
 Depends on: PyYAML, stdlib.
 """
+
 import os
 from functools import lru_cache
 from pathlib import Path
