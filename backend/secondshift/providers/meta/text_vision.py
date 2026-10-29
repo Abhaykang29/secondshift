@@ -100,6 +100,57 @@ def extract_json(text: str) -> dict[str, Any]:
     return parsed
 
 
+def _coerce_cannot_assess(raw: Any) -> dict[str, Any]:
+    """CannotAssess coercion to the real schema {area, reason, detail}.
+
+    Live behavior: the model sometimes returns bare item_id strings in
+    cannot_assess. Map them honestly: area = the item named, reason =
+    not_filmed (it could not be assessed from the footage), detail says
+    the listing came from the model without elaboration.
+    """
+    if isinstance(raw, str):
+        return {
+            "area": raw,
+            "reason": "not_filmed",
+            "detail": "The model listed this as not assessable from the footage.",
+        }
+    out = dict(raw)
+    out.setdefault("area", str(out.get("item_id", "unknown area")))
+    if out.get("reason") not in (
+        "not_filmed",
+        "too_dark",
+        "too_blurry",
+        "occluded",
+        "needs_measurement",
+        "not_visible_by_design",
+    ):
+        out["reason"] = "not_filmed"
+    out.setdefault("detail", "The model listed this as not assessable from the footage.")
+    return out
+
+
+def _coerce_proposal(raw: dict[str, Any]) -> dict[str, Any]:
+    """Fill any fields the model omitted with honest neutral defaults.
+
+    Live behavior (2026-10-28): Spark sometimes returns a proposal with
+    only item_id + description. Dropping it would lose a real finding;
+    inventing detail would be worse. Defaults: sam_prompts falls back to
+    the description (SAM prompts on visible objects), confidence to a
+    neutral 0.5, why_risky to the description text.
+    """
+    out = dict(raw)
+    description = str(out.get("description", ""))
+    out.setdefault("room", "unknown")
+    out.setdefault("evidence_timestamps", [])
+    if not out.get("sam_prompts"):
+        out["sam_prompts"] = [description] if description else [str(out.get("item_id", "object"))]
+    if out.get("confidence") is None:
+        out["confidence"] = 0.5
+    if not out.get("why_risky"):
+        out["why_risky"] = description
+    return out
+
+
 class MetaVisionReasoner:
     """Real Muse Spark/Wonder client (Phase 7 plug-in)."""
 
@@ -135,7 +186,16 @@ class MetaVisionReasoner:
             f"Narration facts: {req.narration_facts}\nMeasurements: {req.measurements}\n"
             f"Already found: {req.previous_findings_summary}\n"
             'Respond with JSON: {"proposals": [...], "rooms_seen": [...], '
-            '"cannot_assess": []} where each proposal matches the HazardProposal schema.'
+            '"cannot_assess": []}. EVERY proposal object MUST have exactly these '
+            "fields: item_id (string, from the pack list), room (string), "
+            "description (string, what you see), evidence_timestamps (list of "
+            "numbers, seconds into the walkthrough), sam_prompts (list of short "
+            "visual noun phrases naming the object to segment, e.g. [\"loose rug\"]), "
+            "confidence (number 0..1), why_risky (string, one sentence). "
+            "Example proposal: {\"item_id\": \"FALL-FLOOR-RUG\", \"room\": \"hallway\", "
+            "\"description\": \"Loose rug on the hallway floor\", "
+            "\"evidence_timestamps\": [12.0], \"sam_prompts\": [\"rug\"], "
+            "\"confidence\": 0.8, \"why_risky\": \"A loose rug can slide underfoot.\"}"
         )
         images = [ImageRef(path=k.image_path, keyframe_id=k.id) for k in req.keyframes]
         data = self._post_chat(build_chat_payload(prompt, images, "fast"))
@@ -143,9 +203,15 @@ class MetaVisionReasoner:
         from secondshift.domain.hazards import CannotAssess, HazardProposal
 
         return ProposeResponse(
-            proposals=[HazardProposal.model_validate(p) for p in parsed.get("proposals", [])],
+            proposals=[
+                HazardProposal.model_validate(_coerce_proposal(p))
+                for p in parsed.get("proposals", [])
+            ],
             rooms_seen=[str(r) for r in parsed.get("rooms_seen", [])],
-            cannot_assess=[CannotAssess.model_validate(c) for c in parsed.get("cannot_assess", [])],
+            cannot_assess=[
+                CannotAssess.model_validate(_coerce_cannot_assess(c))
+                for c in parsed.get("cannot_assess", [])
+            ],
         )
 
     def judge(self, req: JudgeRequest) -> JudgeResponse:

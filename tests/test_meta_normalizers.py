@@ -122,3 +122,29 @@ def test_sam_responses_empty_text_means_no_mask() -> None:
     from secondshift.providers.meta.segmentation import parse_sam_responses_text
 
     assert parse_sam_responses_text("", "kf-1", "elephant") == []
+
+
+def test_proposal_coercion_fills_missing_fields() -> None:
+    """Live Spark sometimes returns item_id + description only (2026-10-28).
+
+    The adapter fills neutral defaults instead of dropping the finding.
+    """
+    from secondshift.domain.hazards import HazardProposal
+    from secondshift.providers.meta.text_vision import _coerce_proposal
+
+    proposal = HazardProposal.model_validate(
+        _coerce_proposal({"item_id": "FALL-FLOOR-RUG", "description": "Loose rug"})
+    )
+    assert proposal.confidence == 0.5
+    assert proposal.sam_prompts == ["Loose rug"]
+    assert proposal.why_risky == "Loose rug"
+
+
+def test_cannot_assess_coercion_maps_bare_item_ids() -> None:
+    """Bare item_id strings in cannot_assess map to the real schema."""
+    from secondshift.domain.hazards import CannotAssess
+    from secondshift.providers.meta.text_vision import _coerce_cannot_assess
+
+    entry = CannotAssess.model_validate(_coerce_cannot_assess("FALL-BATH-TOILET-LOW"))
+    assert entry.area == "FALL-BATH-TOILET-LOW"
+    assert entry.reason == "not_filmed"
