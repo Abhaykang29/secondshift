@@ -8,7 +8,9 @@ Depends on: watch.*, rules.compiler, privacy.room_guard, storage.
 """
 
 import uuid
+from collections.abc import AsyncIterator
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
@@ -117,3 +119,110 @@ def simulate(body: SimulateRun, request: Request) -> dict[str, Any]:
 def list_events(request: Request) -> dict[str, Any]:
     """List stored watch events in insertion order."""
     return {"events": request.app.state.store.list("watch_event")}
+
+
+# --- Pass 2 Phase G: live watch sessions -------------------------------
+class LiveStart(BaseModel):
+    """Start a live watch: rule text + the phone source streaming frames."""
+
+    rule_text: str
+    source_id: str
+    room_claim: str
+    resident_consent: bool = False
+
+
+@router.post("/live/start")
+async def start_live_watch(
+    body: LiveStart, request: Request
+) -> dict[str, object]:
+    """Compile the rule, classify the room, start consuming hub frames.
+
+    NOT VERIFIED LIVE yet (needs a real phone + gate). The loop itself
+    is unit-tested on synthetic frames with stub providers.
+    """
+    import asyncio
+
+    from secondshift.rules.compiler import compile_rule
+    from secondshift.watch.live import LiveWatch, classify_watch_room
+
+    providers = request.app.state.providers
+    hub = request.app.state.camera_hub
+    spec = compile_rule(body.rule_text, "watch", providers.vision)
+    if spec.status.value != "compiled":
+        return {
+            "started": False,
+            "status": spec.status.value,
+            "message": spec.refusal_reason or "The rule needs more detail.",
+            "alternatives": spec.alternatives,
+            "clarifying_question": spec.clarifying_question,
+        }
+    item = await asyncio.to_thread(hub.get, 2.0)
+    if item is None:
+        return {"started": False, "status": "no_frames",
+                "message": "No camera frames yet - open /camera on the phone first."}
+    _at, frame = item
+    import cv2 as _cv2
+
+    snap = Path(request.app.state.settings.data_dir) / "watch-room.jpg"
+    snap.parent.mkdir(parents=True, exist_ok=True)
+    _cv2.imwrite(str(snap), frame)
+    room, allowed, reason = classify_watch_room(str(snap), body.room_claim, providers)
+    if not allowed:
+        return {"started": False, "status": "refused", "message": reason}
+    if room == "bedroom" and not body.resident_consent:
+        return {"started": False, "status": "consent_needed",
+                "message": "Bedroom watches need the resident's explicit consent."}
+    store = request.app.state.store
+    sessions: dict[str, object] = request.app.state.live_watches
+
+    def _record(event: object) -> None:
+        store.append("watch_events", event.model_dump(mode="json"))  # type: ignore[attr-defined]
+
+    watch = LiveWatch(
+        spec, body.source_id, providers,
+        str(Path(request.app.state.settings.data_dir) / "watch-live"),
+        on_event=_record,
+    )
+    session_id = spec.id
+
+    async def _run() -> None:
+        while sessions.get(session_id) is watch:
+            got = await asyncio.to_thread(hub.get, 2.0)
+            if got is not None:
+                watch.process_frame(got[1])
+
+    sessions[session_id] = watch
+    asyncio.create_task(_run())
+    return {"started": True, "session_id": session_id, "room": room, "message": reason}
+
+
+@router.post("/live/{session_id}/stop")
+async def stop_live_watch(session_id: str, request: Request) -> dict[str, object]:
+    """Stop a live watch session."""
+    sessions: dict[str, object] = request.app.state.live_watches
+    existed = sessions.pop(session_id, None) is not None
+    return {"stopped": existed}
+
+
+@router.get("/live/{session_id}/events")
+async def live_watch_events(session_id: str, request: Request) -> object:
+    """SSE stream of the session's events from the store."""
+    from fastapi.responses import StreamingResponse
+
+    store = request.app.state.store
+
+    async def _stream() -> AsyncIterator[str]:
+        import asyncio as _aio
+        import json as _json
+
+        seen = 0
+        while True:
+            events = [
+                e for e in store.list("watch_events") if e.get("rule_id") == session_id
+            ]
+            for event in events[seen:]:
+                yield f"data: {_json.dumps(event)}\n\n"
+            seen = len(events)
+            await _aio.sleep(1.0)
+
+    return StreamingResponse(_stream(), media_type="text/event-stream")

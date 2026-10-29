@@ -1,0 +1,201 @@
+version: 1
+status: approved
+pack_id: mosquito_breeding
+title: Mosquito breeding sites
+audience: Homes in dengue and mosquito-risk regions
+high_risk_zones:
+- outdoors
+- balcony
+- kitchen
+- bathroom
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: MOSQ-BUCKET-WATER
+  title: Bucket or container that may hold water
+  kind: presence
+  rooms:
+  - outdoors
+  - balcony
+  - bathroom
+  severity: 3
+  observable_evidence: Bucket, tub or open container sitting where rain or tap water can collect in it
+  sam_prompts:
+  - bucket
+  - plastic container
+  - open tub
+  safety_prompts: []
+  cannot_see_note: A camera often cannot tell whether a container holds water - this returns needs-human unless water is clearly visible.
+  needs_human_unless: standing water in the container
+  fixes:
+  - id: mosq-bucket-store
+    title: Empty it and store it upside down
+    how: Tip out any water, scrub the inside, and store the container upside down or under cover.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the bucket stored upside down on the ground with no water in or near it.
+  sources:
+  - 'TODO(SOURCE): WHO dengue fact sheet and CDC mosquito control guidance - team to link the exact pages'
+- id: MOSQ-PLANT-SAUCER
+  title: Plant saucer or tray that may hold water
+  kind: presence
+  rooms:
+  - balcony
+  - living
+  - outdoors
+  severity: 2
+  observable_evidence: Plant pot saucer or tray under a pot where water collects after watering
+  sam_prompts:
+  - plant saucer
+  - flower pot tray
+  - potted plant
+  safety_prompts: []
+  cannot_see_note: A camera often cannot tell whether a saucer holds water - this returns needs-human unless water is clearly visible.
+  needs_human_unless: standing water in the saucer
+  fixes:
+  - id: mosq-saucer-empty
+    title: Empty saucers after watering
+    how: Tip out the saucer water after watering, or fill the saucer with sand.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the plant saucer emptied and dry under the pot.
+  sources:
+  - 'TODO(SOURCE): WHO dengue fact sheet - team to link the exact page'
+- id: MOSQ-WATER-STORAGE-OPEN
+  title: Uncovered water storage
+  kind: presence
+  rooms:
+  - outdoors
+  - bathroom
+  - kitchen
+  severity: 3
+  observable_evidence: Water storage drum, tank or jar with no cover or a loose cover
+  sam_prompts:
+  - water drum
+  - water storage tank
+  - open water container
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: mosq-storage-cover
+    title: Cover it tightly
+    how: Fit a tight lid or fine mesh cover so mosquitoes cannot reach the water surface.
+    difficulty: easy
+    cost_estimate: ~$5-15 (estimate)
+    visualization_prompt: Add a tight lid covering the water storage drum completely.
+  sources:
+  - 'TODO(SOURCE): WHO dengue fact sheet on water storage - team to link the exact page'
+- id: MOSQ-GUTTER-CLOGGED
+  title: Gutter that may be clogged and holding water
+  kind: presence
+  rooms:
+  - outdoors
+  severity: 2
+  observable_evidence: Roof gutter with leaves or sagging sections where water can pool
+  sam_prompts:
+  - roof gutter
+  - clogged gutter
+  safety_prompts: []
+  cannot_see_note: Gutters are high and hard to film - a person should check with a ladder or from a window.
+  needs_human_unless: pooled water or heavy leaf clogging in the gutter
+  fixes:
+  - id: mosq-gutter-clear
+    title: Clear the gutter
+    how: Remove leaves and sludge so water drains, and check the downpipe is not blocked.
+    difficulty: medium
+    cost_estimate: free
+    visualization_prompt: null
+    # not visual from the ground: the fix happens inside the gutter run
+  sources:
+  - 'TODO(SOURCE): CDC mosquito habitat guidance - team to link the exact page'
+- id: MOSQ-TIRES-OUTDOORS
+  title: Discarded tire outdoors
+  kind: presence
+  rooms:
+  - outdoors
+  severity: 3
+  observable_evidence: Old tire or tire pile stored outdoors where rain collects inside the rim
+  sam_prompts:
+  - old tire
+  - tire pile
+  safety_prompts: []
+  cannot_see_note: A camera often cannot see rain water pooled inside a tire - this returns needs-human unless water is clearly visible.
+  needs_human_unless: rain water pooled in the tire
+  fixes:
+  - id: mosq-tire-remove
+    title: Remove or store the tire under cover
+    how: Dispose of the tire, or store it indoors or fully covered and dry.
+    difficulty: medium
+    cost_estimate: free
+    visualization_prompt: Show the yard with the old tires removed.
+  sources:
+  - 'TODO(SOURCE): WHO dengue fact sheet / CDC tire disposal guidance - team to link the exact pages'
+- id: MOSQ-BOTTLES-CANS
+  title: Discarded bottles or cans outdoors
+  kind: presence
+  rooms:
+  - outdoors
+  severity: 2
+  observable_evidence: Empty bottles, cans or tins lying outdoors where they can hold rain water
+  sam_prompts:
+  - empty bottles on ground
+  - cans on ground
+  - discarded bottles
+  safety_prompts: []
+  cannot_see_note: Small items are easy to miss on video - a person should do a yard sweep.
+  needs_human_unless: rain water held in the bottles or cans
+  fixes:
+  - id: mosq-bottles-bin
+    title: Bin them or store them dry
+    how: Collect bottles and cans into a covered bin, or store empties indoors and dry.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the ground clear of bottles and cans, with a covered bin beside the wall.
+  sources:
+  - 'TODO(SOURCE): CDC mosquito habitat guidance - team to link the exact page'
+- id: MOSQ-TARP-POOLING
+  title: Tarpaulin or cover with pooled water
+  kind: presence
+  rooms:
+  - outdoors
+  severity: 2
+  observable_evidence: Tarpaulin, plastic sheet or cover sagging with folds where rain water pools
+  sam_prompts:
+  - tarpaulin
+  - plastic sheet cover
+  safety_prompts: []
+  cannot_see_note: A camera often cannot tell whether the folds hold water - this returns needs-human unless water is clearly visible.
+  needs_human_unless: pooled water on the tarpaulin
+  fixes:
+  - id: mosq-tarp-tighten
+    title: Tighten or re-hang the cover
+    how: Pull the cover taut at an angle so rain runs off instead of pooling.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the tarpaulin pulled taut at a slope with no sagging folds.
+  sources:
+  - 'TODO(SOURCE): CDC mosquito habitat guidance - team to link the exact page'
+- id: MOSQ-BIRDBATH-STANDING
+  title: Birdbath or fountain with standing water
+  kind: presence
+  rooms:
+  - outdoors
+  severity: 1
+  observable_evidence: Birdbath, fountain basin or ornamental bowl holding still water
+  sam_prompts:
+  - birdbath
+  - fountain basin
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: mosq-birdbath-refresh
+    title: Refresh the water every few days
+    how: Tip out and refill birdbath water every few days, or add a small agitator or dunks as local guidance allows.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: null
+    # not visual: the fix is a routine, not a change you can see in one frame
+  sources:
+  - 'TODO(SOURCE): CDC mosquito habitat guidance - team to link the exact page'

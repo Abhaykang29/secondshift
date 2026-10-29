@@ -12,14 +12,14 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
 | ledger | B | PASS 2026-10-28 — recorded call costs $0 on repeat (cache_hit), SQLite total persists across reopen |
 | replay_offline | B/K | PARTIAL — transport replay raises CacheMiss on unrecorded steps (unit-tested); full recorded flow lands in Phase K |
 | scan_falls | E | NOT RUN — no real footage yet (a synthetic-footage live run on 2026-10-28 does NOT satisfy this; Rule 5) |
-| blur | E | NOT RUN |
-| visualize | F | NOT RUN |
-| recheck | E | NOT RUN |
+| blur | E | CODE BUILT, NOT VERIFIED - privacy/blur.py (SAM person blur + blur-all-but fallback) unit-tested on synthetic frames; live check needs falls_routine.mp4 |
+| visualize | F | CODE BUILT, NOT VERIFIED - crop-edit-composite Muse Image path + mock stamp unit-tested with stub editors; live check needs a real scan |
+| recheck | E | CODE BUILT, NOT VERIFIED - contested-item judge wired (prompts/recheck_judge.md); live check needs falls_recheck.mp4 |
 | rules_unseen | D | REPORTED — v1 (blind): App B status 37/40, prim 6/16; unseen status 23/30, prim 4/16. After ONE documented prompt iteration (v2: hazard-side primitive semantics): App B status 38/40, prim 15/16; unseen status 26/30, prim 15/16. The unseen set is blind only for v1 |
-| watch_gate_live | G | NOT RUN |
-| watch_cover | G | NOT RUN |
+| watch_gate_live | G | CODE BUILT, NOT VERIFIED - LiveWatch loop (hub frames -> health -> change -> gate -> SAM + Spark state judge -> state machine -> store + SSE) unit-tested on synthetic frames (1 alert, cannot_see, recovery); live check needs a real phone + gate |
+| watch_cover | G | CODE BUILT, NOT VERIFIED - covered-frame path unit-tested (CANNOT_SEE event); live timing check pending |
 | voice | H | NOT RUN — blocked on docs/meta_get_code/audio.txt |
-| packs_all | I | NOT RUN |
+| packs_all | I | NOT RUN - 7 packs now (mosquito_breeding added 2026-10-29, pet_safety excluded from the demo by team decision); live runs need the walkthrough files |
 | eval_real | J | NOT RUN |
 
 ## Entries

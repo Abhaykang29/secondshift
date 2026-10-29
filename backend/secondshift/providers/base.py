@@ -96,6 +96,37 @@ class VisionReasoner(Protocol):
         ...
 
 
+
+    def plan_fix(
+        self, hazard_title: str, description: str,
+        fixes: list[dict[str, str]], language: str,
+    ) -> dict[str, object] | None:
+        """Pick a fix from the library (pass 2 E.6). None = no opinion."""
+        ...
+
+    def summarize_report(self, report_json: str, language: str) -> str | None:
+        """Write the report summary (pass 2 E.7). None = deterministic."""
+        ...
+
+    def judge_recheck(
+        self, hazard_title: str, before: ImageRef | None, after: ImageRef | None
+    ) -> dict[str, object] | None:
+        """Judge a contested re-check item (pass 2 E.8). None = no opinion."""
+        ...
+
+    def routine_insights(self, computed_numbers: str) -> list[dict[str, object]] | None:
+        """Write routine insight summaries from geometry (pass 2 E.5)."""
+        ...
+
+    def classify_room(self, image: ImageRef) -> dict[str, object] | None:
+        """Classify a room for the Watch guard (pass 2 G.3)."""
+        ...
+
+    def judge_state(self, target: str, question: str, image: ImageRef) -> str | None:
+        """Judge an object's visible state in one frame (pass 2 G.2)."""
+        ...
+
+
 class Segmenter(Protocol):
     """Text-prompted segmentation (SAM). The verifier, not decoration."""
 

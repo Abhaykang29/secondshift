@@ -17,6 +17,7 @@ const PACK_ICONS: Record<string, string> = {
   earthquake_ready: "🌎",
   pet_safety: "🐾",
   home_from_hospital: "🏥",
+  mosquito_breeding: "🦟",
 };
 
 export default function Home() {

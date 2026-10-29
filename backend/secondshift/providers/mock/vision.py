@@ -72,6 +72,26 @@ class MockVisionReasoner:
             )
         return JudgeResponse(verification="needs_human", reason="Mock judge: human review.")
 
+    # Pass 2 E/G: the mock has no opinions - pipelines use their
+    # deterministic paths, and the UI banner says results are mock.
+    def plan_fix(self, hazard_title, description, fixes, language):  # type: ignore[no-untyped-def]
+        return None
+
+    def summarize_report(self, report_json, language):  # type: ignore[no-untyped-def]
+        return None
+
+    def judge_recheck(self, hazard_title, before, after):  # type: ignore[no-untyped-def]
+        return None
+
+    def routine_insights(self, computed_numbers):  # type: ignore[no-untyped-def]
+        return None
+
+    def classify_room(self, image):  # type: ignore[no-untyped-def]
+        return None
+
+    def judge_state(self, target, question, image):  # type: ignore[no-untyped-def]
+        return None
+
     def compile_rule(self, text: str, mode_hint: str, precheck_flags: list[str]) -> RuleSpec:
         """Mock Layer 2: deterministic patterns (tests/dev only)."""
         spec = _deterministic_compile(text, mode_hint)

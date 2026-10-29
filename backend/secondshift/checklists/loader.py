@@ -44,6 +44,7 @@ class PackItem(BaseModel):
     sources: list[str] = Field(default_factory=list)
     measurement_threshold: str | None = None
     dedupe_key: str | None = None
+    needs_human_unless: str | None = None
 
     @field_validator("severity")
     @classmethod
@@ -65,6 +66,7 @@ class Pack(BaseModel):
 
     version: int = 1
     status: Literal["approved", "draft"] = "approved"
+    demo: bool = True
     pack_id: str
     title: str
     audience: str

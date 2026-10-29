@@ -31,8 +31,17 @@ def diff_scans(
     capture_id: str,
     previous: list[Hazard],
     new_output: ScanOutput,
+    vision: object | None = None,
 ) -> Recheck:
-    """Diff a previous hazard list against a fresh scan output."""
+    """Diff a previous hazard list against a fresh scan output.
+
+    Pass 2 E.8: still_present items are contested by definition - the
+    family says they fixed them. With a live provider, Spark judges
+    them via prompts/recheck_judge.md (hazard text today; before/after
+    crops join when real footage flows, Phase E verification). A
+    "resolved" or "cannot_tell" verdict overrides, with the reason
+    recorded; anything else keeps the deterministic status.
+    """
     new_by_item = {h.item_id: h for h in new_output.hazards}
     items: list[RecheckItem] = []
     previous_items = set()
@@ -43,13 +52,20 @@ def diff_scans(
         new = new_by_item.get(old.item_id)
         before_kf = old.evidence.keyframe_ids[0] if old.evidence.keyframe_ids else None
         if new is not None and new.verification is Verification.CONFIRMED:
+            status = RecheckStatus.STILL_PRESENT
+            reason = "Found again in the new walkthrough."
+            if vision is not None:
+                verdict = vision.judge_recheck(old.title, None, None)  # type: ignore[attr-defined]
+                if verdict and str(verdict.get("status")) in ("resolved", "cannot_tell"):
+                    status = RecheckStatus(str(verdict["status"]))
+                    reason = f"Judge: {verdict.get('reason', 'contested item re-judged.')}"
             items.append(
                 RecheckItem(
                     hazard_id=old.id,
                     item_id=old.item_id,
                     room=old.room,
-                    status=RecheckStatus.STILL_PRESENT,
-                    reason="Found again in the new walkthrough.",
+                    status=status,
+                    reason=reason,
                     before_keyframe_id=before_kf,
                     after_keyframe_id=new.evidence.keyframe_ids[0]
                     if new.evidence.keyframe_ids

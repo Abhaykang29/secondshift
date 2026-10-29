@@ -1,10 +1,15 @@
-"""Mock ImageEditor.
+"""Mock ImageEditor (pass 2 Phase F.5).
 
-Why: visualizations must exist in the UI before Muse Image is wired.
-The mock returns fixed placeholder PNG bytes; Phase 3 draws the labelled
-overlay inside the mask region (spec section 11.2).
-Depends on: providers.base.
+The mock NEVER fakes an edit: it returns the input image stamped
+"MOCK - no edit", so a mock-mode report can never be mistaken for a
+real Muse Image result. Falls back to a 1x1 placeholder when the
+input cannot be read (demo stubs).
+Depends on: providers.base, PIL.
 """
+
+import io
+
+from PIL import Image, ImageDraw
 
 from secondshift.providers.base import ImageRef
 
@@ -17,8 +22,16 @@ _PLACEHOLDER_PNG = bytes.fromhex(
 
 
 class MockImageEditor:
-    """Stand-in for Muse Image edits."""
+    """Returns the input stamped MOCK - no edit."""
 
     def edit(self, image: ImageRef, mask_png: bytes, prompt: str) -> bytes:
-        """Return placeholder PNG bytes (Phase 3: labelled overlay)."""
-        return _PLACEHOLDER_PNG
+        """Stamp the input image; no edit is performed."""
+        try:
+            img = Image.open(image.path).convert("RGB")
+        except Exception:
+            return _PLACEHOLDER_PNG
+        draw = ImageDraw.Draw(img)
+        draw.text((8, 8), "MOCK - no edit", fill=(255, 220, 120))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return buf.getvalue()

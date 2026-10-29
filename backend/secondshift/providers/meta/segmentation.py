@@ -89,22 +89,54 @@ def parse_sam_responses_text(text: str, keyframe_id: str, prompt: str) -> list[M
     One Mask per <|box;...|> segment, with normalized (0..1) polygon and
     bbox derived from the pixel box and the image size it declares.
     """
+    from secondshift.providers.meta.mask_decode import extract_mask_strings, try_decode_mask
+
+    mask_strings = extract_mask_strings(text)
     masks: list[Mask] = []
-    for match in BOX_RE.finditer(text):
+    for idx, match in enumerate(BOX_RE.finditer(text)):
         x1, y1, x2, y2, w, h = (int(g) for g in match.groups())
         if w <= 0 or h <= 0:
             continue
         nx1, ny1, nx2, ny2 = x1 / w, y1 / h, x2 / w, y2 / h
+        polygon = [(nx1, ny1), (nx2, ny1), (nx2, ny2), (nx1, ny2)]
+        # Pass 2 Phase E.3: if this segment's mask string ever decodes
+        # (see mask_decode.py / Decision D10 - currently it does not),
+        # the overlay polygon comes from the real mask contour.
+        if idx < len(mask_strings):
+            decoded, _method = try_decode_mask(
+                mask_strings[idx], max(1, x2 - x1), max(1, y2 - y1)
+            )
+            if decoded is not None:
+                polygon = _mask_contour_polygon(decoded, nx1, ny1, nx2, ny2)
         masks.append(
             Mask(
                 keyframe_id=keyframe_id,
-                polygon=[(nx1, ny1), (nx2, ny1), (nx2, ny2), (nx1, ny2)],
+                polygon=polygon,
                 bbox=(nx1, ny1, nx2, ny2),
                 score=SAM_BOX_SCORE,
                 prompt=prompt,
             )
         )
     return masks
+
+
+def _mask_contour_polygon(
+    mask: object, nx1: float, ny1: float, nx2: float, ny2: float
+) -> list[tuple[float, float]]:
+    """Largest contour of a decoded box-resolution mask, normalized."""
+    import cv2
+
+    arr = (mask.astype("uint8")) * 255  # type: ignore[attr-defined]
+    contours, _ = cv2.findContours(arr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return [(nx1, ny1), (nx2, ny1), (nx2, ny2), (nx1, ny2)]
+    contour = max(contours, key=cv2.contourArea)
+    approx = cv2.approxPolyDP(contour, 2.0, True).reshape(-1, 2)
+    bh, bw = arr.shape
+    return [
+        (nx1 + (px / bw) * (nx2 - nx1), ny1 + (py / bh) * (ny2 - ny1))
+        for px, py in approx
+    ]
 
 
 def normalize_sam_responses(payload: dict[str, Any], keyframe_id: str, prompt: str) -> list[Mask]:

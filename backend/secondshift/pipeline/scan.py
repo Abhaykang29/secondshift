@@ -96,7 +96,11 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
         contacts = list(scenario.get("routine", {}).get("support_contacts", []))
         path_obstacle_items = list(scenario.get("routine", {}).get("path_obstacles", []))
     if contacts:
-        insights.extend(routine_mod.summarize_contacts(scan_input.checkup.id, contacts))
+        insights.extend(
+            routine_mod.summarize_contacts(
+                scan_input.checkup.id, contacts, vision=providers.vision
+            )
+        )
         support_ids = [h.id for h in hazards if h.item_id == "FALL-FURNITURE-SUPPORT"]
         for insight in insights:
             insight.related_hazard_ids = support_ids
@@ -137,8 +141,18 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
     )
 
 
-def assemble_report(checkup: Checkup, output: ScanOutput, stats: dict[str, float]) -> Report:
-    """Assemble the Report model from a scan output (fixes land in Phase 3)."""
+def assemble_report(
+    checkup: Checkup,
+    output: ScanOutput,
+    stats: dict[str, float],
+    vision: object | None = None,
+) -> Report:
+    """Assemble the Report from a scan output.
+
+    Pass 2 E.7: with a live vision provider, Spark writes the summary
+    via prompts/report_summary.md from the report's own facts; the
+    deterministic summary remains the fallback (and the mock path).
+    """
     confirmed = [h for h in output.hazards if h.verification is Verification.CONFIRMED]
     label = checkup.resident_label or "This home"
     summary = (
@@ -146,6 +160,27 @@ def assemble_report(checkup: Checkup, output: ScanOutput, stats: dict[str, float
         f"{len(output.cannot_assess)} things we couldn't check. "
         "Start with the highest-ranked items below."
     )
+    if vision is not None:
+        import json as _json
+
+        facts = _json.dumps(
+            {
+                "home_label": label,
+                "confirmed": [
+                    {"title": h.title, "room": h.room, "risk": h.risk_score}
+                    for h in confirmed
+                ],
+                "needs_human": [
+                    h.title
+                    for h in output.hazards
+                    if h.verification is Verification.NEEDS_HUMAN
+                ],
+                "cannot_assess_count": len(output.cannot_assess),
+            }
+        )
+        written = vision.summarize_report(facts, "en")  # type: ignore[attr-defined]
+        if written:
+            summary = written
     return Report(
         checkup_id=checkup.id,
         generated_at=datetime.now(UTC),
@@ -182,7 +217,9 @@ def run_scan_job(
     def _fixes() -> None:
         from secondshift.pipeline import fixes as fixes_mod
 
-        holder["fix_cards"] = fixes_mod.build_fix_cards(holder["output"].hazards, scan_input.packs)
+        holder["fix_cards"] = fixes_mod.build_fix_cards(
+            holder["output"].hazards, scan_input.packs, vision=providers.vision
+        )
 
     def _visualize() -> None:
         from pathlib import Path as _Path
@@ -191,7 +228,12 @@ def run_scan_job(
 
         viz_dir = _Path(data_dir) / scan_input.checkup.id / "viz"
         visualizations, _befores = viz_mod.render_visualizations(
-            holder["output"].hazards, holder.get("fix_cards", []), str(viz_dir)
+            holder["output"].hazards,
+            holder.get("fix_cards", []),
+            str(viz_dir),
+            keyframes={kf.id: kf.image_path for kf in scan_input.keyframes if kf.image_path},
+            image_editor=providers.image_editor,
+            segmenter=providers.segmenter,
         )
         holder["visualizations"] = visualizations
 
@@ -204,7 +246,7 @@ def run_scan_job(
             ),
             "cost_usd": providers.cost.spent_usd,
         }
-        report = assemble_report(scan_input.checkup, output, stats)
+        report = assemble_report(scan_input.checkup, output, stats, vision=providers.vision)
         report.fixes = holder.get("fix_cards", [])
         report.visualizations = holder.get("visualizations", [])
         holder["report"] = report

@@ -40,6 +40,7 @@ def create_app() -> FastAPI:
     from secondshift.watch.sources import CameraHub
 
     app.state.camera_hub = CameraHub()
+    app.state.live_watches = {}
 
     @app.middleware("http")
     async def provider_mode_header(request, call_next):  # type: ignore[no-untyped-def]

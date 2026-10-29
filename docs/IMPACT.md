@@ -29,3 +29,8 @@ TODO(STAT): no sourced impact facts yet. Team to source from ASPCA Animal Poison
 
 ## Home from hospital
 TODO(STAT): no sourced impact facts yet. Team to source from discharge-planning / OT literature before any claim ships.
+
+## Mosquito breeding sites
+| Fact | Source |
+|---|---|
+| WHO received reports of 14.4 million dengue cases and 11,201 deaths in 2024, the highest global burden on record. | WHO dengue reporting for 2024 (figure provided by the team; TODO(SOURCE): link the exact WHO page before release) |

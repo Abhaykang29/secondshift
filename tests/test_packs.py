@@ -13,6 +13,7 @@ def test_all_packs_load_and_validate() -> None:
         "fire_safety",
         "earthquake_ready",
         "pet_safety",
+        "mosquito_breeding",
         "home_from_hospital",
     }
 

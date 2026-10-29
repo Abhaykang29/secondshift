@@ -59,20 +59,28 @@ COMPILER_VERSION_SPARK = "rule_compiler@v2:spark:muse-spark-1.3"
 
 
 def build_chat_payload(
-    prompt: str, images: list[ImageRef], model_role: Literal["fast", "deep"]
+    prompt: str,
+    images: list[ImageRef],
+    model_role: Literal["fast", "deep"],
+    reasoning_effort: str | None = None,
 ) -> dict[str, Any]:
     """Build the chat request body (verified shape, 2026-10-28).
 
     JSON output is requested in the prompt text; the API returned clean
-    JSON in probes. response_format is not sent.
+    JSON in probes. response_format is not sent. reasoning_effort is
+    sent only when set (compile + judge use "low" - measured in the
+    pass-2 reasoning test, see docs/LIVE_VERIFICATION.md).
     """
     content: list[dict[str, Any]] = [{"type": "text", "text": prompt}]
     content.extend(image_part(image) for image in images)
-    return {
+    payload: dict[str, Any] = {
         "model": MODEL_BY_ROLE[model_role],
         "messages": [{"role": "user", "content": content}],
         # TODO(API): some deployments want {"response_format": {"type": "json_object"}}
     }
+    if reasoning_effort:
+        payload["reasoning_effort"] = reasoning_effort
+    return payload
 
 
 def normalize_chat_content(payload: dict[str, Any]) -> str:
@@ -239,7 +247,7 @@ class MetaVisionReasoner:
         from secondshift.providers.prompts import load_prompt
 
         prompt = load_prompt("verify_judge", claim=req.claim, sam_summary=req.context)
-        data = self._post_chat(build_chat_payload(prompt, req.images, "fast"))
+        data = self._post_chat(build_chat_payload(prompt, req.images, "fast", reasoning_effort="low"))
         parsed = extract_json(normalize_chat_content(data))
         return JudgeResponse(
             verification=str(parsed.get("verification", "needs_human")),
@@ -263,9 +271,107 @@ class MetaVisionReasoner:
             precheck_flags=", ".join(precheck_flags) or "none",
             json_schema=RuleSpec.model_json_schema(),
         )
-        data = self._post_chat(build_chat_payload(prompt, [], "fast"))
+        data = self._post_chat(build_chat_payload(prompt, [], "fast", reasoning_effort="low"))
         parsed = extract_json(normalize_chat_content(data))
         parsed.setdefault("id", uuid.uuid4().hex)
         parsed.setdefault("original_text", text)
         parsed["compiler_version"] = COMPILER_VERSION_SPARK
         return RuleSpec.model_validate(parsed)
+
+    # --- Pass 2 Phase E/G prompt-backed methods. Each returns None on
+    # any parse problem so pipelines fall back to deterministic paths.
+    def plan_fix(
+        self, hazard_title: str, description: str,
+        fixes: list[dict[str, str]], language: str,
+    ) -> dict[str, Any] | None:
+        """Spark picks a fix FROM THE LIBRARY (prompts/fix_plan.md)."""
+        import json as _json
+
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt(
+            "fix_plan",
+            hazard=f"{hazard_title}: {description}",
+            home_context="",
+            fix_library=_json.dumps(fixes),
+            language=language,
+        )
+        try:
+            data = self._post_chat(build_chat_payload(prompt, [], "fast"))
+            parsed = extract_json(normalize_chat_content(data))
+        except Exception:
+            return None
+        return parsed if isinstance(parsed, dict) else None
+
+    def summarize_report(self, report_json: str, language: str) -> str | None:
+        """Spark writes the 2-3 sentence summary (prompts/report_summary.md)."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("report_summary", report_json=report_json, language=language)
+        try:
+            data = self._post_chat(build_chat_payload(prompt, [], "fast"))
+            parsed = extract_json(normalize_chat_content(data))
+            summary = str(parsed.get("summary", "")).strip()
+        except Exception:
+            return None
+        return summary or None
+
+    def judge_recheck(
+        self, hazard_title: str, before: ImageRef | None, after: ImageRef | None
+    ) -> dict[str, Any] | None:
+        """Judge a contested re-check item (prompts/recheck_judge.md)."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("recheck_judge", hazard=hazard_title)
+        images = [img for img in (before, after) if img is not None]
+        try:
+            data = self._post_chat(build_chat_payload(prompt, images, "fast"))
+            parsed = extract_json(normalize_chat_content(data))
+        except Exception:
+            return None
+        return parsed if isinstance(parsed, dict) else None
+
+    def routine_insights(self, computed_numbers: str) -> list[dict[str, Any]] | None:
+        """Wonder writes routine summaries from geometry (prompts/routine_insights.md)."""
+
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt(
+            "routine_insights",
+            computed_numbers=computed_numbers,
+            json_schema={"type": "array", "items": {"type": "object"}},
+        )
+        try:
+            data = self._post_chat(build_chat_payload(prompt, [], "deep"))
+            parsed = extract_json(normalize_chat_content(data))
+        except Exception:
+            return None
+        items = parsed.get("insights", parsed) if isinstance(parsed, dict) else parsed
+        return items if isinstance(items, list) else None
+
+    def classify_room(self, image: ImageRef) -> dict[str, Any] | None:
+        """Classify the room for the Watch guard (prompts/room_type.md)."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("room_type")
+        try:
+            data = self._post_chat(build_chat_payload(prompt, [image], "fast"))
+            parsed = extract_json(normalize_chat_content(data))
+        except Exception:
+            return None
+        return parsed if isinstance(parsed, dict) else None
+
+    def judge_state(self, target: str, question: str, image: ImageRef) -> str | None:
+        """Judge one object's visible state (prompts/watch_state.md)."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("watch_state", target=target, question=question)
+        try:
+            data = self._post_chat(
+                build_chat_payload(prompt, [image], "fast", reasoning_effort="low")
+            )
+            parsed = extract_json(normalize_chat_content(data))
+            state = str(parsed.get("state", "")).strip()
+        except Exception:
+            return None
+        return state or None

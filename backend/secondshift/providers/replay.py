@@ -64,9 +64,69 @@ class RecordingVision:
         """Delegates - structured calls are not part of the demo recording."""
         return self.inner.complete_json(prompt, images, schema, model_role)
 
+    # Pass 2 E/G protocol methods delegate to the inner provider.
+    def plan_fix(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.plan_fix(*args, **kwargs)
+
+    def summarize_report(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.summarize_report(*args, **kwargs)
+
+    def judge_recheck(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.judge_recheck(*args, **kwargs)
+
+    def routine_insights(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.routine_insights(*args, **kwargs)
+
+    def classify_room(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.classify_room(*args, **kwargs)
+
+    def judge_state(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.judge_state(*args, **kwargs)
+
+    def compile_rule(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.compile_rule(*args, **kwargs)
+
 
 class ReplayVision:
     """Answers propose calls from the cache only. Miss = CacheMiss."""
+
+    # Pass 2 E/G: replay has no opinions - deterministic paths reproduce
+    # the recorded demo exactly.
+    def plan_fix(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def summarize_report(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def judge_recheck(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def routine_insights(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def classify_room(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def judge_state(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def compile_rule(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Rules are not compiled in replay."""
+        return None
+
 
     def __init__(self, cache: RecordReplayCache, scenario: str) -> None:
         self.cache = cache

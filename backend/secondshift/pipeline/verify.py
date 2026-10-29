@@ -94,7 +94,41 @@ def verify_proposals(
                 )
             good = [m for m in masks if _plausible(m, min_mask_score)]
             evidence.masks = good
-            if good:
+            if good and item.needs_human_unless:
+                # The object is there, but the hazard depends on a detail
+                # a mask can't prove (e.g. standing water in a bucket).
+                # Only the judge, asked about that exact detail, may
+                # confirm; otherwise a human must look (mosquito pack).
+                detail = item.needs_human_unless
+                if verify_mode == "sam_plus_judge":
+                    verdict = judge.judge(
+                        JudgeRequest(
+                            claim=f"{proposal.item_id}: is {detail} clearly visible?",
+                            images=[
+                                ImageRef(path=f.image_path, keyframe_id=f.id) for f in frames
+                            ],
+                            context=(
+                                f"sam_found: true; detail_check: {detail}. Confirm ONLY "
+                                "if the detail itself is clearly visible in the frame."
+                            ),
+                        )
+                    )
+                    if verdict.verification == "confirmed":
+                        verification = Verification.CONFIRMED
+                        reason = f"SAM found the object and the judge could clearly see: {detail}."
+                    else:
+                        verification = Verification.NEEDS_HUMAN
+                        reason = (
+                            f"SAM found it, but {detail} isn't clearly visible - "
+                            "a person should check."
+                        )
+                else:
+                    verification = Verification.NEEDS_HUMAN
+                    reason = (
+                        f"SAM found it, but {detail} can't be confirmed from a mask - "
+                        "a person should check."
+                    )
+            elif good:
                 verification = Verification.CONFIRMED
                 reason = f"Confirmed by SAM (mask score {max(m.score for m in good):.2f})."
             elif verify_mode == "sam":

@@ -64,10 +64,27 @@ def on_path(box: Box, path: list[tuple[float, float]], buffer: float = 0.06) -> 
 def summarize_contacts(
     checkup_id: str,
     contacts: list[dict[str, object]],
+    vision: object | None = None,
 ) -> list[RoutineInsight]:
-    """Turn computed support contacts into plain-language insights."""
+    """Turn computed support contacts into plain-language insights.
+
+    Pass 2 E.5: with a live provider, Wonder rewrites the summaries
+    from the computed numbers via prompts/routine_insights.md; the
+    deterministic text stays as fallback (and for mocks).
+    """
     insights: list[RoutineInsight] = []
-    for entry in contacts:
+    wonder_texts: list[str] = []
+    if vision is not None and contacts:
+        numbers = "; ".join(
+            f"{entry.get('object')}: {entry.get('count')} support contacts"
+            for entry in contacts
+        )
+        written = vision.routine_insights(numbers)  # type: ignore[attr-defined]
+        if written:
+            wonder_texts = [
+                str(w.get("summary", "")) for w in written if isinstance(w, dict)
+            ]
+    for idx, entry in enumerate(contacts):
         obj = str(entry["object"])
         raw_count = entry["count"]
         count = int(raw_count) if isinstance(raw_count, (int, float, str)) else 0
@@ -77,8 +94,12 @@ def summarize_contacts(
                 checkup_id=checkup_id,
                 kind="support_contact",
                 summary=(
-                    f"Touched the {obj} {count} times between the bed and the door - "
-                    "a sign that a support (rail or sturdy furniture) is needed along this path."
+                    wonder_texts[idx]
+                    if idx < len(wonder_texts) and wonder_texts[idx]
+                    else (
+                        f"Touched the {obj} {count} times between the bed and the door - "
+                        "a sign that a support (rail or sturdy furniture) is needed along this path."
+                    )
                 ),
                 count=count,
                 evidence=Evidence(keyframe_ids=[], timestamps=[]),
