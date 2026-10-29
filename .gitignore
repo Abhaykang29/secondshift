@@ -15,3 +15,6 @@ fixtures/recordings/*.json
 .env
 *.log
 *.egg-info/
+
+# transport-level Meta cache: runtime state from real runs (real homes) - never commit
+fixtures/recordings/meta-cache/
