@@ -12,6 +12,7 @@ interface EvalView {
   compiler: { sentences: number; status_accuracy: number; primitive_accuracy_on_compiled: number };
   dataset: string;
   run_dir?: string;
+  labels_source?: string;
 }
 
 /**
@@ -31,12 +32,36 @@ export default function EvalPage() {
   if (error) return <main className="mx-auto max-w-2xl p-6"><p role="alert">{error}</p></main>;
   if (!data) return <main className="mx-auto max-w-2xl p-6"><p>Loading eval...</p></main>;
 
+  // Pass 2 Phase A: mock-label runs are hidden by default. Add
+  // ?show_mock=1 to the URL to inspect them (they validate the harness,
+  // not the product).
+  const showMock = new URLSearchParams(window.location.search).get("show_mock") === "1";
+  if (data.labels_source === "mock" && !showMock) {
+    return (
+      <main className="mx-auto max-w-2xl p-6">
+        <h1 className="text-2xl font-semibold">Evaluation</h1>
+        <p className="mt-3" role="status">
+          The latest eval run uses <strong>mock labels</strong>, so it is hidden by
+          default — mock numbers validate the harness, not the product. Real
+          numbers appear here once the team labels real footage (pass 2 Phase J).
+        </p>
+        <p className="mt-2 text-sm opacity-80">
+          To inspect the mock run anyway, open this page with ?show_mock=1.
+        </p>
+      </main>
+    );
+  }
+
   return (
     <main className="relative mx-auto max-w-2xl overflow-hidden p-6">
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-        <span className="-rotate-45 text-6xl font-bold tracking-widest text-red-600/15">MOCK DATA</span>
-      </div>
-      <p className="inline-block rounded bg-red-700 px-3 py-1 font-semibold text-white">MOCK DATA</p>
+      {data.labels_source === "mock" && (
+        <>
+          <div aria-hidden className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+            <span className="-rotate-45 text-6xl font-bold tracking-widest text-red-600/15">MOCK DATA</span>
+          </div>
+          <p className="inline-block rounded bg-red-700 px-3 py-1 font-semibold text-white">MOCK DATA</p>
+        </>
+      )}
       <h1 className="mt-2 text-2xl font-semibold">Evaluation</h1>
       <p className="mt-2 text-sm opacity-80">
         Run {data.run_dir} - {data.dataset}. These numbers validate the harness on mock

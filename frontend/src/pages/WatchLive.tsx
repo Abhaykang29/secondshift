@@ -18,7 +18,7 @@ export default function WatchLive() {
   );
 
   async function run() {
-    const res = await fetch("/api/watch/demo-run", {
+    const res = await fetch("/api/watch/simulate", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ rule_text: rule, mode_hint: "watch" }),
     });
@@ -27,10 +27,10 @@ export default function WatchLive() {
 
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Watch - live</h1>
+      <h1 className="text-2xl font-semibold">Watch — simulation</h1>
       <div className="relative mt-4 aspect-video w-full rounded bg-neutral-700">
         <span className="absolute left-2 top-2 text-sm text-white">
-          Demo source: scripted timeline (gate opens 10s-70s). Live frames: TODO(TEAM) phone setup.
+          Simulation — not a camera. Scripted timeline (gate opens 10s–70s). For a real camera, open /camera on a phone (live loop: pass 2 Phase G).
         </span>
         <span className="absolute bottom-2 right-2 rounded bg-black/60 px-2 py-1 text-sm text-white">
           State: {result?.events[result.events.length - 1]?.state_to ?? "idle"}

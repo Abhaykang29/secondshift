@@ -40,6 +40,19 @@ def create_app() -> FastAPI:
     from secondshift.watch.sources import CameraHub
 
     app.state.camera_hub = CameraHub()
+
+    @app.middleware("http")
+    async def provider_mode_header(request, call_next):  # type: ignore[no-untyped-def]
+        """Stamp every response with the provider mode (pass 2 Phase A).
+
+        The frontend's persistent mock banner reads /api/settings, which
+        returns the same value as the provider_mode field; the header
+        makes the mode visible on ANY response for debugging/judges.
+        """
+        response = await call_next(request)
+        mode = "mock" if app.state.settings.provider.value == "mock" else "live"
+        response.headers["X-Provider-Mode"] = mode
+        return response
     for module in (
         health,
         packs,

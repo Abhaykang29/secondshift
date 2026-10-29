@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import AskPage from "./pages/AskPage";
@@ -16,6 +17,24 @@ import WatchLive from "./pages/WatchLive";
 import WatchSetup from "./pages/WatchSetup";
 
 /** Route table - every route in spec section 13 exists from Phase 0. */
+
+function MockBanner() {
+  const [mode, setMode] = useState<string>("");
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d: { provider_mode?: string }) => setMode(d.provider_mode ?? ""))
+      .catch(() => setMode(""));
+  }, []);
+  if (mode !== "mock") return null;
+  return (
+    <div role="alert" className="bg-red-700 px-4 py-2 text-center font-semibold text-white">
+      <MockBanner />
+      MOCK MODE — not real results
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>

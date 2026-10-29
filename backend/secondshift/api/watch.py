@@ -67,16 +67,20 @@ def list_sources(request: Request) -> dict[str, Any]:
     return {"sources": sources}
 
 
-class DemoRun(BaseModel):
-    """Body for the synthetic watch demo run."""
+class SimulateRun(BaseModel):
+    """Body for the watch SIMULATION (scripted timeline - not a camera)."""
 
     rule_text: str
     mode_hint: str = "watch"
 
 
-@router.post("/demo-run")
-def demo_run(body: DemoRun, request: Request) -> dict[str, Any]:
-    """Compile a rule and run the engine over a scripted gate-open timeline."""
+@router.post("/simulate")
+def simulate(body: SimulateRun, request: Request) -> dict[str, Any]:
+    """Simulation - not a camera: compile a rule, run a scripted timeline.
+
+    Test/dev helper only (pass 2 Phase A). The real live loop is Phase G;
+    this endpoint must never be presented as a camera feed.
+    """
     spec = compile_rule(body.rule_text, body.mode_hint)
     if spec.status.value != "compiled":
         return {

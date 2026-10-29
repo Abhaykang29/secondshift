@@ -77,6 +77,11 @@ Auth via providers/meta/transport.py (env key, else vault surrogate; urllib - ht
 - Demo mode proven end to end on mocks THROUGH the record/replay path: record phase stores mock provider responses; replay phase runs the whole demo script (parent scan 9 confirmed, rug #1, refusal with alternatives, re-check 32.1 -> 78.2, watch exactly 1 alert, baby scan 7 confirmed) with replay-only providers. An empty-cache replay raises CacheMiss - the demo can never silently go live. scripts/run_demo.py; fixtures/recordings/demo-cache is pre-recorded in the repo.
 - Settings API + page are real (provider/budget/languages + working Delete everything). Ask API + page are real (report-scoped answers, honest out-of-scope reply). Accessibility: focus-visible outlines, reduced-motion support, aria labels/roles on the money screens, 48px targets, 18px base / 22px large text from Phase 0.
 
+## Pass 2 (Final Build Prompt, 2026-10-28 night) - IN PROGRESS
+- Phase A truth pass DONE: see BUILD_LOG. Claims removed/corrected in README: make-demo replay scope, Muse Image visualizations (local overlays today), Voice Transcribe (not connected), SAM "exact outline" wording.
+- Environment truth vs the pass-2 prompt section 0.4: NO .env on this machine (key lives in the vault connector custom.meta-ai; transport prefers env, falls back to surrogate - works live). gh is NOT logged in; pushes use the user's PAT via transient header (user advised to rotate it). NO footage in data/inbox yet - Phases E-K are gated on the team's files (Rule 5). No docs/meta_get_code/ snippets - Phase H gated on audio.txt.
+- Phase B next: provider plumbing.
+
 ## OPEN TODO(TEAM) - needs a human, in demo order
 1. META_API_KEY - unblocks Phase 7 via docs/API_INTEGRATION.md (<3h runbook).
 2. Real footage: walkthrough + routine clip + re-check clip of a real parent's home and a real baby's home, filmed per docs/CAPTURE_GUIDE.md, WITH the resident's consent. Person A.

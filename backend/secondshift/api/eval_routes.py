@@ -26,6 +26,8 @@ def latest(request: Request) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail="No eval run yet - run make eval.")
     payload: dict[str, Any] = json.loads((runs[-1] / "results.json").read_text())
     payload["run_dir"] = runs[-1].name
+    dataset = str(payload.get("dataset", ""))
+    payload["labels_source"] = "mock" if "mock" in dataset.lower() else "real"
     return payload
 
 

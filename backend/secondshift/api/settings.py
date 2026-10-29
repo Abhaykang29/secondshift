@@ -29,6 +29,7 @@ def get_settings(request: Request) -> dict[str, Any]:
     """Current provider, cache mode, budget and supported languages."""
     settings = request.app.state.settings
     return {
+        "provider_mode": "mock" if settings.provider.value == "mock" else "live",
         "provider": settings.provider.value,
         "cache_mode": settings.cache_mode.value,
         "budget_usd": settings.budget_usd,
