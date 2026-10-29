@@ -134,7 +134,10 @@ def check_rules_unseen() -> tuple[str, str]:
     import yaml
     from secondshift.providers import ledger
     from secondshift.providers.meta import transport
-    from secondshift.providers.meta.text_vision import MetaVisionReasoner
+    from secondshift.providers.meta.text_vision import (
+        COMPILER_VERSION_SPARK,
+        MetaVisionReasoner,
+    )
     from secondshift.rules.compiler import compile_rule
 
     root = Path(__file__).parent.parent
@@ -170,7 +173,7 @@ def check_rules_unseen() -> tuple[str, str]:
     detail = (
         f"Appendix B status {b_ok}/{b_n}, primitives {b_p}/{b_pt}; "
         f"unseen status {u_ok}/{u_n}, primitives {u_p}/{u_pt}; "
-        f"pass2 ledger total ${spent:.2f}; compiler rule_compiler@v1:spark:muse-spark-1.3"
+        f"pass2 ledger total ${spent:.2f}; compiler {COMPILER_VERSION_SPARK}"
     )
     return "REPORTED", detail
 

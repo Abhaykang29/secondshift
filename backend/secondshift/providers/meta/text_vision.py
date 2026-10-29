@@ -55,7 +55,7 @@ zone_empty_for_duration: needs area_hint + duration_min - watch only
 event_by_deadline: needs target + target_state + deadline_local (+ schedule) - watch only
 camera_health: no target - watch only"""
 
-COMPILER_VERSION_SPARK = "rule_compiler@v1:spark:muse-spark-1.3"
+COMPILER_VERSION_SPARK = "rule_compiler@v2:spark:muse-spark-1.3"
 
 
 def build_chat_payload(

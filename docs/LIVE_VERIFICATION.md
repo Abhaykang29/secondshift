@@ -15,7 +15,7 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
 | blur | E | NOT RUN |
 | visualize | F | NOT RUN |
 | recheck | E | NOT RUN |
-| rules_unseen | D | NOT RUN |
+| rules_unseen | D | REPORTED — v1 (blind): App B status 37/40, prim 6/16; unseen status 23/30, prim 4/16. After ONE documented prompt iteration (v2: hazard-side primitive semantics): App B status 38/40, prim 15/16; unseen status 26/30, prim 15/16. The unseen set is blind only for v1 |
 | watch_gate_live | G | NOT RUN |
 | watch_cover | G | NOT RUN |
 | voice | H | NOT RUN — blocked on docs/meta_get_code/audio.txt |
@@ -40,3 +40,13 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
 - detail: first call $0.0022; repeat cache_hit=1 actual=$0.0000; total after DB reopen $0.0022
 - cost: see ledger (Phase B)
 - duration: 3.8s
+
+### rules_unseen — REPORTED (2026-10-29T03:58:41Z)
+- detail: Appendix B status 37/40, primitives 6/16; unseen status 23/30, primitives 4/16; pass2 ledger total $0.50; compiler rule_compiler@v1:spark:muse-spark-1.3
+- cost: see ledger (Phase B)
+- duration: 399.0s
+
+### rules_unseen — REPORTED (2026-10-29T04:06:05Z)
+- detail: Appendix B status 38/40, primitives 15/16; unseen status 26/30, primitives 15/16; pass2 ledger total $1.03; compiler rule_compiler@v1:spark:muse-spark-1.3
+- cost: see ledger (Phase B)
+- duration: 393.1s
