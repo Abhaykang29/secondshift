@@ -77,9 +77,7 @@ def normalize_sam_response(
     return masks
 
 
-BOX_RE = re.compile(
-    r"<\|box;x1=(\d+);y1=(\d+);x2=(\d+);y2=(\d+);w=(\d+);h=(\d+)\|>"
-)
+BOX_RE = re.compile(r"<\|box;x1=(\d+);y1=(\d+);x2=(\d+);y2=(\d+);w=(\d+);h=(\d+)\|>")
 
 # SAM responses carry no confidence; boxes were pixel-exact on probes.
 SAM_BOX_SCORE = 0.9
@@ -149,9 +147,7 @@ class MetaSegmenter:
                 ],
             }
             payload = post_json("/responses", body, explicit_key=self.api_key)
-            masks.extend(
-                normalize_sam_responses(payload, image.keyframe_id or "", prompt)
-            )
+            masks.extend(normalize_sam_responses(payload, image.keyframe_id or "", prompt))
         return masks
 
     def segment_video(self, frames: list[ImageRef], prompts: list[str]) -> dict[str, list[Mask]]:

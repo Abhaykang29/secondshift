@@ -41,7 +41,7 @@ def _surrogate() -> str | None:
         return None
     try:
         sys.path.insert(0, cred_bin)
-        from dynamic_credentials import dynamic_credential_entry
+        from dynamic_credentials import dynamic_credential_entry  # type: ignore[import-not-found]
 
         entry = dynamic_credential_entry(CONNECTOR_NAME)
         _surrogate_cache = str(entry["surrogate"]).strip()
@@ -63,8 +63,9 @@ def auth_headers(explicit_key: str | None = None) -> dict[str, str]:
     return {"Authorization": f"Bearer {key}"}
 
 
-def post_json(path: str, body: dict[str, Any], explicit_key: str | None = None,
-              timeout: float = 120.0) -> dict[str, Any]:
+def post_json(
+    path: str, body: dict[str, Any], explicit_key: str | None = None, timeout: float = 120.0
+) -> dict[str, Any]:
     """POST JSON to the Meta API and return the parsed response body.
 
     Uses urllib on purpose: it honors the environment's egress-proxy
@@ -94,6 +95,4 @@ def post_json(path: str, body: dict[str, Any], explicit_key: str | None = None,
             return data
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode(errors="replace")[:400]
-        raise ProviderUnavailable(
-            f"Meta API {path} returned HTTP {exc.code}: {detail}"
-        ) from exc
+        raise ProviderUnavailable(f"Meta API {path} returned HTTP {exc.code}: {detail}") from exc

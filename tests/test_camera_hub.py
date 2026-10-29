@@ -1,4 +1,5 @@
 """Camera hub tests (Phase 6.5): JPEG frames in, frames out; junk rejected."""
+
 import cv2
 import numpy as np
 from secondshift.watch.sources import CameraHub, PhoneSource

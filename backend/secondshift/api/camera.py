@@ -6,6 +6,7 @@ PhoneSource consumes them. No frames are stored to disk here - the hub
 is memory-only, matching the privacy model (frames, not recordings).
 Depends on: fastapi WebSocket, watch.sources.CameraHub.
 """
+
 import time
 from typing import Any
 
