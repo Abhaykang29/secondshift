@@ -190,12 +190,12 @@ class MetaVisionReasoner:
             "fields: item_id (string, from the pack list), room (string), "
             "description (string, what you see), evidence_timestamps (list of "
             "numbers, seconds into the walkthrough), sam_prompts (list of short "
-            "visual noun phrases naming the object to segment, e.g. [\"loose rug\"]), "
+            'visual noun phrases naming the object to segment, e.g. ["loose rug"]), '
             "confidence (number 0..1), why_risky (string, one sentence). "
-            "Example proposal: {\"item_id\": \"FALL-FLOOR-RUG\", \"room\": \"hallway\", "
-            "\"description\": \"Loose rug on the hallway floor\", "
-            "\"evidence_timestamps\": [12.0], \"sam_prompts\": [\"rug\"], "
-            "\"confidence\": 0.8, \"why_risky\": \"A loose rug can slide underfoot.\"}"
+            'Example proposal: {"item_id": "FALL-FLOOR-RUG", "room": "hallway", '
+            '"description": "Loose rug on the hallway floor", '
+            '"evidence_timestamps": [12.0], "sam_prompts": ["rug"], '
+            '"confidence": 0.8, "why_risky": "A loose rug can slide underfoot."}'
         )
         images = [ImageRef(path=k.image_path, keyframe_id=k.id) for k in req.keyframes]
         data = self._post_chat(build_chat_payload(prompt, images, "fast"))

@@ -6,6 +6,7 @@ completion, and prints the report summary (hazards, SAM confirmations,
 cost ledger total, wall time). Auth resolves via providers.meta.transport
 (env key or vault surrogate) - the key is never printed.
 """
+
 import json
 import sys
 import time
@@ -14,7 +15,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
 from fastapi.testclient import TestClient  # noqa: E402
-
 from secondshift.main import create_app  # noqa: E402
 
 
@@ -45,9 +45,7 @@ def main() -> int:
         return 1
     capture_id = uploaded.json().get("id")
     scan_started = time.time()
-    scan = client.post(
-        f"/api/checkups/{checkup_id}/scan", json={"capture_id": capture_id}
-    )
+    scan = client.post(f"/api/checkups/{checkup_id}/scan", json={"capture_id": capture_id})
     print(f"scan: {scan.status_code} after {time.time() - scan_started:.0f}s")
     if scan.status_code != 200:
         print(scan.text[:600])
