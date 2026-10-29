@@ -29,7 +29,6 @@ function MockBanner() {
   if (mode !== "mock") return null;
   return (
     <div role="alert" className="bg-red-700 px-4 py-2 text-center font-semibold text-white">
-      <MockBanner />
       MOCK MODE — not real results
     </div>
   );
@@ -38,6 +37,7 @@ function MockBanner() {
 export default function App() {
   return (
     <BrowserRouter>
+      <MockBanner />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/checkup/new" element={<CheckupNew />} />
