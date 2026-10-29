@@ -7,11 +7,14 @@ for is rejected; anything else uncertain goes to a human, never a guess.
 Depends on: providers.base, providers.mock.scenario.
 """
 
+import re
 from typing import Literal, TypeVar
 
 from pydantic import BaseModel
 
+from secondshift.domain.enums import CompileStatus, Primitive
 from secondshift.domain.hazards import HazardProposal
+from secondshift.domain.rules import Condition, RuleSpec, Schedule
 from secondshift.providers.base import (
     ImageRef,
     JudgeRequest,
@@ -69,6 +72,12 @@ class MockVisionReasoner:
             )
         return JudgeResponse(verification="needs_human", reason="Mock judge: human review.")
 
+    def compile_rule(self, text: str, mode_hint: str, precheck_flags: list[str]) -> RuleSpec:
+        """Mock Layer 2: deterministic patterns (tests/dev only)."""
+        spec = _deterministic_compile(text, mode_hint)
+        spec.compiler_version = "0.4.0-mock"
+        return spec
+
     def complete_json(
         self,
         prompt: str,
@@ -78,3 +87,184 @@ class MockVisionReasoner:
     ) -> SchemaT:
         """Not used by mock-path code (mock callers use deterministic code)."""
         raise NotImplementedError("Mock complete_json is not used on mock paths.")
+
+
+# --- Deterministic mock Layer 2 (moved from rules/compiler.py, pass 2 D).
+# These per-sentence patterns exist ONLY in the mock provider, for unit
+# tests and dev mode. The live compiler is Spark (rules/compiler.py).
+def _deterministic_compile(text: str, mode_hint: str) -> RuleSpec:
+    """The old pattern compiler, kept for mocks; stamps 0.4.0-mock."""
+    lowered = text.lower().strip()
+    c = Condition
+    p = Primitive
+    # --- Watch compiled patterns ---
+    if "baby gate" in lowered and "open" in lowered and "30 seconds" in lowered:
+        return _compiled(
+            text,
+            mode_hint,
+            [
+                c(
+                    primitive=p.STATE_FOR_DURATION,
+                    target="baby gate",
+                    target_state="open",
+                    duration_min=0.5,
+                )
+            ],
+            "Alert if the baby gate is open for more than 30 seconds",
+        )
+    if "stove is on" in lowered and "kitchen" in lowered and "10 minutes" in lowered:
+        return _compiled(
+            text,
+            mode_hint,
+            [
+                c(
+                    primitive=p.OBJECT_STATE,
+                    target="stove burner",
+                    target_state="on (flame or glowing coil)",
+                ),
+                c(primitive=p.ZONE_EMPTY_FOR_DURATION, duration_min=10.0, area_hint="kitchen"),
+            ],
+            "Alert if the stove is on and nobody is in the kitchen for 10 minutes",
+        )
+    if "pill box" in lowered and "opened" in lowered:
+        return _compiled(
+            text,
+            mode_hint,
+            [
+                c(
+                    primitive=p.EVENT_BY_DEADLINE,
+                    target="pill box lid",
+                    target_state="lid open",
+                    deadline_local="21:00",
+                )
+            ],
+            "Alert if the evening pill box isn't opened between 7 and 9 PM",
+            schedule=Schedule(start_local="19:00", end_local="21:00"),
+        )
+    if "front door" in lowered and "open" in lowered and "5 minutes" in lowered:
+        return _compiled(
+            text,
+            mode_hint,
+            [
+                c(
+                    primitive=p.STATE_FOR_DURATION,
+                    target="front door",
+                    target_state="open",
+                    duration_min=5.0,
+                )
+            ],
+            "Alert if the front door is open for more than 5 minutes",
+        )
+    if "oven door" in lowered and "15 minutes" in lowered:
+        return _compiled(
+            text,
+            mode_hint,
+            [
+                c(
+                    primitive=p.STATE_FOR_DURATION,
+                    target="oven door",
+                    target_state="open",
+                    duration_min=15.0,
+                )
+            ],
+            "Alert if the oven door is open for more than 15 minutes",
+        )
+    if "cabinet under the sink" in lowered:
+        return _compiled(
+            text,
+            mode_hint,
+            [c(primitive=p.OBJECT_STATE, target="cabinet door", target_state="open")],
+            "Alert if the cabinet under the sink is open",
+        )
+    if (
+        "camera can't see" in lowered
+        or "camera cannot see" in lowered
+        or "camera can\u2019t see" in lowered
+    ):
+        return _compiled(
+            text,
+            mode_hint,
+            [c(primitive=p.CAMERA_HEALTH, area_hint="kitchen")],
+            "Alert if the camera can't see the stove",
+        )
+    # --- Check-up compiled patterns ---
+    checkup_patterns: list[tuple[str, Condition, str]] = [
+        (
+            r"no rug on the stairs",
+            c(primitive=p.OBJECT_PRESENT, target="rug", area_hint="stairs"),
+            "Check that there is no rug on the stairs",
+        ),
+        (
+            r"night light is still there",
+            c(primitive=p.OBJECT_ABSENT, target="night light", anchor="hallway"),
+            "Check that the hallway night light is still there",
+        ),
+        (
+            r"nothing is left on the stairs",
+            c(primitive=p.OBJECT_PRESENT, target="object on stairs", area_hint="stairs"),
+            "Check that nothing is left on the stairs",
+        ),
+        (
+            r"grab bar next to the toilet",
+            c(primitive=p.OBJECT_ABSENT, target="grab bar", anchor="toilet"),
+            "Check that the grab bar next to the toilet is still installed",
+        ),
+        (
+            r"non-slip mat in the tub",
+            c(primitive=p.OBJECT_ABSENT, target="non-slip mat", anchor="bathtub"),
+            "Check that there is a non-slip mat in the tub",
+        ),
+        (
+            r"no cords cross the hallway",
+            c(primitive=p.OBJECT_PRESENT, target="cord", area_hint="hallway"),
+            "Check that no cords cross the hallway",
+        ),
+        (
+            r"cleaning bottles aren't on the low shelf|cleaning bottles are not on the low shelf",
+            c(primitive=p.OBJECT_PRESENT, target="cleaning spray bottle", area_hint="kitchen"),
+            "Check that the cleaning bottles are not on the low shelf",
+        ),
+        (
+            r"no toys in the crib",
+            c(primitive=p.OBJECT_PRESENT, target="stuffed toy in crib", area_hint="nursery"),
+            "Check that there are no toys in the crib",
+        ),
+        (
+            r"baby gate at the top of the stairs is still there",
+            c(primitive=p.OBJECT_ABSENT, target="baby gate", anchor="staircase"),
+            "Check that the baby gate at the top of the stairs is still there",
+        ),
+    ]
+    for pattern, condition, summary in checkup_patterns:
+        if re.search(pattern, lowered):
+            return _compiled(text, mode_hint, [condition], summary)
+    # --- Generic watch fallback: "left open for more than N minutes/seconds" ---
+    m = re.search(
+        r"if the (.+?) is (?:left )?open for more than (\d+)\s*(minutes|seconds)", lowered
+    )
+    if m:
+        target = m.group(1).strip()
+        minutes = float(m.group(2)) / (60.0 if m.group(3) == "seconds" else 1.0)
+        return _compiled(
+            text,
+            mode_hint,
+            [
+                c(
+                    primitive=p.STATE_FOR_DURATION,
+                    target=target,
+                    target_state="open",
+                    duration_min=minutes,
+                )
+            ],
+            f"Alert if the {target} is open for more than {m.group(2)} {m.group(3)}",
+        )
+    return _spec(
+        text,
+        mode_hint,
+        CompileStatus.NEEDS_CLARIFICATION,
+        human_summary=f"Almost checkable: {text}",
+        clarifying_question="What exactly should I check - which object, in which room, and in what state?",
+    )
+
+
+from secondshift.rules.compiler import _compiled, _spec  # noqa: E402

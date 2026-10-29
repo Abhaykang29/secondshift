@@ -159,9 +159,12 @@ def run_demo(cache_dir: Path) -> dict[str, object]:
     summary["recheck_score"] = [recheck.score_before, recheck.score_after]
 
     # Beat 6: watch - the gate rule, one alert.
+    from secondshift.providers.mock.vision import MockVisionReasoner
+
     spec = compile_rule(
         "Tell me if the baby gate at the top of the stairs is left open for more than 30 seconds.",
         "watch",
+        MockVisionReasoner(),
     )
     assert spec.status.value == "compiled"
     engine = WatchEngine(StateMachine("demo", spec.id), ModelGate(CostGuard(), min_interval_s=0.0))

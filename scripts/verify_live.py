@@ -125,6 +125,59 @@ def check_ledger() -> tuple[str, str]:
 IMPLEMENTED = {"smoke": check_smoke, "ledger": check_ledger}
 
 
+def check_rules_unseen() -> tuple[str, str]:
+    """Live Spark compiler vs Appendix B (40) and the unseen set (30).
+
+    Labels were written before this run. Calls go through the Phase B
+    transport cache (repo data/verify-cache), so re-runs are free.
+    """
+    import yaml
+    from secondshift.providers import ledger
+    from secondshift.providers.meta import transport
+    from secondshift.providers.meta.text_vision import MetaVisionReasoner
+    from secondshift.rules.compiler import compile_rule
+
+    root = Path(__file__).parent.parent
+    conn = ledger.connect(root / "data" / "costs.db")
+    transport.configure(
+        ledger_conn=conn,
+        cache_mode="record",
+        cache_dir=str(root / "data" / "verify-cache"),
+        budget_usd=140.0,
+        budget_override=False,
+        phase_tag="pass2",
+    )
+    vision = MetaVisionReasoner(None)
+
+    def score(path: Path) -> tuple[int, int, int, int]:
+        data = yaml.safe_load(path.read_text())
+        entries = data["sentences"] if isinstance(data, dict) else data
+        status_ok = prim_ok = prim_total = 0
+        for entry in entries:
+            spec = compile_rule(entry["text"], entry["mode_hint"], vision)
+            if spec.status.value == entry["expected_status"]:
+                status_ok += 1
+            if entry["expected_status"] == "compiled":
+                prim_total += 1
+                got = sorted(c.primitive.value for c in spec.conditions)
+                if got == sorted(entry.get("expected_primitives", [])):
+                    prim_ok += 1
+        return status_ok, len(entries), prim_ok, prim_total
+
+    b_ok, b_n, b_p, b_pt = score(root / "eval" / "rules" / "sentences.yaml")
+    u_ok, u_n, u_p, u_pt = score(root / "eval" / "rules" / "unseen_sentences.yaml")
+    spent = ledger.totals_by(conn, "phase_tag").get("pass2", 0.0)
+    detail = (
+        f"Appendix B status {b_ok}/{b_n}, primitives {b_p}/{b_pt}; "
+        f"unseen status {u_ok}/{u_n}, primitives {u_p}/{u_pt}; "
+        f"pass2 ledger total ${spent:.2f}; compiler rule_compiler@v1:spark:muse-spark-1.3"
+    )
+    return "REPORTED", detail
+
+
+IMPLEMENTED["rules_unseen"] = check_rules_unseen
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", choices=sorted(CHECKS))

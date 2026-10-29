@@ -1,7 +1,7 @@
 """API tests: health is live, packs are real, stubs are honest 501s."""
 
 from fastapi.testclient import TestClient
-from secondshift.main import app
+from secondshift.main import app, create_app
 
 client = TestClient(app)
 
@@ -38,8 +38,14 @@ def test_checkups_list_is_implemented() -> None:
     assert "checkups" in res.json()
 
 
-def test_costs_endpoint_starts_at_zero() -> None:
-    """GET /api/costs starts empty."""
-    res = client.get("/api/costs")
+def test_costs_endpoint_starts_at_zero(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """GET /api/costs starts empty on a fresh data dir.
+
+    Isolated since pass 2 Phase B: the ledger persists, so a repo data
+    dir that has served live calls legitimately reports spend.
+    """
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    fresh = TestClient(create_app())
+    res = fresh.get("/api/costs")
     assert res.status_code == 200
     assert res.json()["spent_usd"] == 0.0

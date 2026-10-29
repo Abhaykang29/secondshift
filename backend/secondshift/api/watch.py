@@ -81,7 +81,7 @@ def simulate(body: SimulateRun, request: Request) -> dict[str, Any]:
     Test/dev helper only (pass 2 Phase A). The real live loop is Phase G;
     this endpoint must never be presented as a camera feed.
     """
-    spec = compile_rule(body.rule_text, body.mode_hint)
+    spec = compile_rule(body.rule_text, body.mode_hint, request.app.state.providers.vision)
     if spec.status.value != "compiled":
         return {
             "spec": spec.model_dump(mode="json"),

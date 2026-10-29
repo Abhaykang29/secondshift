@@ -17,6 +17,7 @@ from secondshift.domain.hazards import (
     HazardProposal,
     Mask,
 )
+from secondshift.domain.rules import RuleSpec
 
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
 
@@ -78,6 +79,10 @@ class VisionReasoner(Protocol):
 
     def judge(self, req: JudgeRequest) -> JudgeResponse:
         """Judge one claim against its evidence crops."""
+        ...
+
+    def compile_rule(self, text: str, mode_hint: str, precheck_flags: list[str]) -> RuleSpec:
+        """Compile a plain-English rule (Layer 2 of rules/compiler.py)."""
         ...
 
     def complete_json(

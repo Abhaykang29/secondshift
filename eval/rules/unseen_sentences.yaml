@@ -1,0 +1,125 @@
+# Pass 2 Phase D: 30 UNSEEN sentences, labeled BEFORE any live run.
+# Written fresh for this eval (not copied from the build prompt or
+# Appendix B). Expected status + primitives are the labels; the live
+# Spark compiler is scored against them in docs/LIVE_VERIFICATION.md.
+sentences:
+- text: "Tell me if the cat's lily plant is back on the low shelf"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_present]
+- text: "Check that the bookcase is still anchored to the wall"
+  mode_hint: checkup
+  expected_status: needs_clarification
+  expected_primitives: []
+- text: "Tell me if the walker is left blocking the hallway for more than 10 minutes"
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives: [state_for_duration]
+- text: "Let me know if the space heater is on and nobody's in the room for 15 minutes"
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives: [object_state, zone_empty_for_duration]
+- text: "Tell me if the dog gate to the kitchen is open"
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+- text: "Check that there is a night light in the hallway"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_absent]
+- text: "Tell me if the front steps are icy"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Alert me if the baby is crying"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Check that the smoke alarm is still on the bedroom ceiling"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_absent]
+- text: "Tell me if Dad takes his walk today"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Let me know if the kettle is left on for more than 20 minutes"
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives: [state_for_duration]
+- text: "Check that no cleaning spray is under the sink where the toddler can reach"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_present]
+- text: "Tell me if the bathroom door is closed at night"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Warn me if a fall is about to happen"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Check that the toilet has a grab bar"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_absent]
+- text: "Tell me if the fridge door is open for more than 5 minutes"
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives: [state_for_duration]
+- text: "Let me know if anyone unfamiliar comes to the door"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Check the stove knobs are covered"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_state]
+- text: "Tell me if the cat gets on the kitchen counter"
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+- text: "Check that the crib has no pillows in it"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_present]
+- text: "Alert me if the washing machine is leaking"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Tell me if the gate at the bottom of the stairs is open for more than a minute"
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives: [state_for_duration]
+- text: "Check that heavy pans are not on the top shelf"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_present]
+- text: "Tell me when the nurse arrives"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []
+- text: "Let me know if the bedroom window is open at night"
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+- text: "Check that the water heater has straps"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_absent]
+- text: "Tell me if the dog is chewing a cord"
+  mode_hint: watch
+  expected_status: needs_clarification
+  expected_primitives: []
+- text: "Check there are no grapes on the coffee table"
+  mode_hint: checkup
+  expected_status: compiled
+  expected_primitives: [object_present]
+- text: "Alert me if the oven is on and the kitchen is empty for 30 minutes"
+  mode_hint: watch
+  expected_status: compiled
+  expected_primitives: [object_state, zone_empty_for_duration]
+- text: "Tell me if Mom sounds unwell on the phone"
+  mode_hint: watch
+  expected_status: refused
+  expected_primitives: []

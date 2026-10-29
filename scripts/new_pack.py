@@ -5,6 +5,7 @@ Writes a valid DRAFT pack YAML with one example item; the loader
 accepts it immediately (drafts are exempt from the sources rule, and
 the scaffold carries a TODO(SOURCE) anyway).
 """
+
 import sys
 from pathlib import Path
 
@@ -57,9 +58,7 @@ def main() -> int:
         print(f"{target} already exists")
         return 2
     prefix = name.split("_")[0].upper()[:5]
-    target.write_text(
-        TEMPLATE.format(name=name, prefix=prefix, slug=name.replace("_", "-"))
-    )
+    target.write_text(TEMPLATE.format(name=name, prefix=prefix, slug=name.replace("_", "-")))
     print(f"Wrote draft pack {target}")
     return 0
 

@@ -115,12 +115,19 @@ def run_config(config_name: str, captures: list[EvalCapture]) -> dict[str, objec
     }
 
 
+def _mock_vision():  # type: ignore[no-untyped-def]
+    """The offline eval compiles through the MOCK Layer 2 (labeled)."""
+    from secondshift.providers.mock.vision import MockVisionReasoner
+
+    return MockVisionReasoner()
+
+
 def compiler_metrics() -> dict[str, object]:
     """Rule-compiler accuracy on the Appendix B sentences."""
     sentences = yaml.safe_load((ROOT / "eval" / "rules" / "sentences.yaml").read_text())
     status_ok = prim_ok = total_compiled = 0
     for entry in sentences:
-        spec = compile_rule(entry["text"], entry["mode_hint"])
+        spec = compile_rule(entry["text"], entry["mode_hint"], _mock_vision())
         if spec.status.value == entry["expected_status"]:
             status_ok += 1
         if entry["expected_status"] == "compiled":

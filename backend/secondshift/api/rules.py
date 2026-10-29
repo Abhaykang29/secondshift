@@ -26,7 +26,7 @@ class CompileRequest(BaseModel):
 @router.post("/compile")
 def compile_endpoint(body: CompileRequest, request: Request) -> dict[str, Any]:
     """Compile a sentence, store the spec, and return it."""
-    spec = compile_rule(body.text, body.mode_hint)
+    spec = compile_rule(body.text, body.mode_hint, request.app.state.providers.vision)
     payload = spec.model_dump(mode="json")
     payload["checkup_id"] = body.checkup_id
     request.app.state.store.put("rule", spec.id, payload)

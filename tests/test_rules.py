@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from secondshift.domain.enums import CompileStatus, Mode, Primitive
 from secondshift.domain.rules import Condition, RuleSpec
 from secondshift.main import create_app
+from secondshift.providers.mock.vision import MockVisionReasoner
 from secondshift.rules.compiler import compile_rule
 from secondshift.rules.observability import REFUSAL_FLAGS, precheck
 from secondshift.rules.validate import validate_spec
@@ -36,7 +37,7 @@ def test_compiler_statuses_on_appendix_b() -> None:
     """Every Appendix B sentence compiles to its expected status."""
     wrong = []
     for entry in SENTENCES:
-        spec = compile_rule(entry["text"], entry["mode_hint"])
+        spec = compile_rule(entry["text"], entry["mode_hint"], MockVisionReasoner())
         if spec.status.value != entry["expected_status"]:
             wrong.append((entry["text"], entry["expected_status"], spec.status.value))
     assert not wrong, f"Wrong statuses: {wrong}"
@@ -48,7 +49,7 @@ def test_compiler_primitives_on_appendix_b() -> None:
     for entry in SENTENCES:
         if entry["expected_status"] != "compiled":
             continue
-        spec = compile_rule(entry["text"], entry["mode_hint"])
+        spec = compile_rule(entry["text"], entry["mode_hint"], MockVisionReasoner())
         got = sorted(c.primitive.value for c in spec.conditions)
         if got != sorted(entry["expected_primitives"]):
             wrong.append((entry["text"], entry["expected_primitives"], got))
@@ -59,7 +60,7 @@ def test_refusals_always_offer_alternatives() -> None:
     """A refusal without observable alternatives is a compiler bug."""
     for entry in SENTENCES:
         if entry["expected_status"] == "refused":
-            spec = compile_rule(entry["text"], entry["mode_hint"])
+            spec = compile_rule(entry["text"], entry["mode_hint"], MockVisionReasoner())
             assert spec.alternatives, entry["text"]
             assert spec.refusal_reason
 

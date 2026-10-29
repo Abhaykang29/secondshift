@@ -11,11 +11,13 @@ Depends on: httpx, providers.base, providers.cost.
 
 import base64
 import json
+import uuid
 from pathlib import Path
 from typing import Any, Literal, TypeVar
 
 from pydantic import BaseModel
 
+from secondshift.domain.rules import RuleSpec
 from secondshift.providers.base import (
     ImageRef,
     JudgeRequest,
@@ -43,6 +45,17 @@ def image_part(image: ImageRef) -> dict[str, Any]:
     data = Path(image.path).read_bytes()
     encoded = base64.b64encode(data).decode()
     return {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{encoded}"}}
+
+
+PRIMITIVES_TABLE = """object_present: needs target (noun phrase), optional area_hint - check-up + watch
+object_absent: needs target + anchor (the visible thing it belongs to) - check-up + watch
+object_state: needs target + target_state (open/closed/on/off...) - check-up + watch
+state_for_duration: needs target + target_state + duration_min - watch only
+zone_empty_for_duration: needs area_hint + duration_min - watch only
+event_by_deadline: needs target + target_state + deadline_local (+ schedule) - watch only
+camera_health: no target - watch only"""
+
+COMPILER_VERSION_SPARK = "rule_compiler@v1:spark:muse-spark-1.3"
 
 
 def build_chat_payload(
@@ -232,3 +245,27 @@ class MetaVisionReasoner:
             verification=str(parsed.get("verification", "needs_human")),
             reason=str(parsed.get("reason", "")),
         )
+
+    def compile_rule(self, text: str, mode_hint: str, precheck_flags: list[str]) -> RuleSpec:
+        """Layer 2 of the rule compiler: Spark + prompts/rule_compiler.md.
+
+        Pass 2 Phase D. The deterministic precheck (Layer 1) has already
+        run; this call only compiles or honestly refuses/clarifies.
+        compiler_version records the prompt version and the model ID.
+        """
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt(
+            "rule_compiler",
+            primitives_table=PRIMITIVES_TABLE,
+            text=text,
+            mode_hint=mode_hint,
+            precheck_flags=", ".join(precheck_flags) or "none",
+            json_schema=RuleSpec.model_json_schema(),
+        )
+        data = self._post_chat(build_chat_payload(prompt, [], "fast"))
+        parsed = extract_json(normalize_chat_content(data))
+        parsed.setdefault("id", uuid.uuid4().hex)
+        parsed.setdefault("original_text", text)
+        parsed["compiler_version"] = COMPILER_VERSION_SPARK
+        return RuleSpec.model_validate(parsed)
