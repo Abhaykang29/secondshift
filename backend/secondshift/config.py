@@ -85,7 +85,7 @@ class Settings:
     verify_frames: int = 3
     min_mask_score: float = 0.5
     verify_mode: str = "sam_plus_judge"  # none | sam | sam_plus_judge
-    image_tokens_estimate: int = 1500
+    image_tokens_estimate: int = 1200  # measured 2026-10-28
     routine_send_unblurred: bool = False
     # Watch (spec section 9.14)
     watch_fps: float = 1.0
@@ -140,7 +140,7 @@ class Settings:
             verify_frames=_i("VERIFY_FRAMES", 3),
             min_mask_score=_f("MIN_MASK_SCORE", 0.5),
             verify_mode=os.environ.get("VERIFY_MODE", "sam_plus_judge"),
-            image_tokens_estimate=_i("IMAGE_TOKENS_ESTIMATE", 1500),
+            image_tokens_estimate=_i("IMAGE_TOKENS_ESTIMATE", 1200),
             routine_send_unblurred=os.environ.get("ROUTINE_SEND_UNBLURRED", "0") == "1",
             watch_fps=_f("WATCH_FPS", 1.0),
             max_calls_per_hour=_i("MAX_CALLS_PER_HOUR", 60),

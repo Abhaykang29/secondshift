@@ -94,3 +94,31 @@ def test_transcript_normalizer_segment_families() -> None:
     assert segments[0].capture_id == "cap-1"
     single = normalize_transcript({"text": "all of it", "duration": 9.0})
     assert single[0].t_end == 9.0
+
+
+def test_sam_responses_fixture_parses_exact_box() -> None:
+    """The REAL captured SAM /v1/responses shape parses to the exact box.
+
+    Probe image (2026-10-28): a red rectangle drawn at pixels
+    (500,200)-(800,600) in a 1280x720 frame; the live API returned
+    exactly those coordinates.
+    """
+    import json
+    from pathlib import Path
+
+    from secondshift.providers.meta.segmentation import normalize_sam_responses
+
+    payload = json.loads(
+        (Path(__file__).parent / "fixtures" / "sam_responses_sample.json").read_text()
+    )
+    masks = normalize_sam_responses(payload, "kf-1", "red rectangle")
+    assert len(masks) == 1
+    assert masks[0].bbox == (500 / 1280, 200 / 720, 800 / 1280, 600 / 720)
+    assert masks[0].prompt == "red rectangle"
+
+
+def test_sam_responses_empty_text_means_no_mask() -> None:
+    """No box segments in the output text = the object was not found."""
+    from secondshift.providers.meta.segmentation import parse_sam_responses_text
+
+    assert parse_sam_responses_text("", "kf-1", "elephant") == []

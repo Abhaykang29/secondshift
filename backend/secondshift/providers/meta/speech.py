@@ -53,9 +53,17 @@ class MetaTranscriber:
         self.api_key = api_key
 
     def transcribe(self, audio_path: str, language_hint: str | None) -> list[NarrationSegment]:
-        """TODO(API): upload format + endpoint for Muse Voice Transcribe."""
-        if not self.api_key:
-            raise ProviderUnavailable("META_API_KEY is not set - Transcribe adapter is off.")
+        """Transcribe via Muse Voice - endpoint NOT yet located (2026-10-28).
+
+        Probes against the live API: POST /v1/audio/transcriptions
+        (multipart and JSON) -> 404; the model is not served on
+        /v1/chat/completions or /v1/responses (model_not_found). The
+        model exists (GET /v1/models lists it). Until the route is
+        found, this raises ProviderUnavailable and callers proceed
+        without narration - the scan never depends on a transcript.
+        normalize_transcript stays ready for the real payload.
+        """
         raise ProviderUnavailable(
-            "TODO(API): Transcribe call lands here; normalize_transcript is ready and tested."
+            "Muse Voice Transcribe endpoint not yet located "
+            "(probed 2026-10-28: audio/transcriptions 404, chat/responses model_not_found)."
         )

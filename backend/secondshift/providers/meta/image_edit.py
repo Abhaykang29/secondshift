@@ -1,16 +1,19 @@
-"""Meta Muse Image adapter + normalizer - Phase 7 plug-in.
+"""Meta Muse Image adapter + normalizer - Phase 7.
 
-Best-known shape (spec section 12.1): an images/edits-style call
-returning data[0].b64_json (or a URL). Both are normalized to PNG bytes
-by normalize_image_response. TODO(API) on endpoint + multipart fields.
-Depends on: providers.base, providers.cost.
+VERIFIED live 2026-10-28:
+- POST /v1/images/edits with a JSON body {"model": "muse-image-1.0",
+  "prompt": ..., "images": [{"image_url": <data URI>}]} returns
+  data[0].b64_json (WebP bytes). (A singular "image" field is rejected;
+  the API's own error message documents the "images" shape.)
+- POST /v1/images/generations {"model", "prompt"} works the same way.
+normalize_image_response accepts b64_json or a URL, as before.
+Depends on: providers.base, providers.cost, providers.meta.transport.
 """
 
 import base64
 from typing import Any
 
 from secondshift.providers.base import ImageRef
-from secondshift.providers.cost import ProviderUnavailable
 
 
 def normalize_image_response(payload: dict[str, Any]) -> bytes:
@@ -35,9 +38,19 @@ class MetaImageEditor:
         self.api_key = api_key
 
     def edit(self, image: ImageRef, mask_png: bytes, prompt: str) -> bytes:
-        """TODO(API): multipart field names for image + mask + prompt."""
-        if not self.api_key:
-            raise ProviderUnavailable("META_API_KEY is not set - Muse Image adapter is off.")
-        raise ProviderUnavailable(
-            "TODO(API): Muse Image edit call lands here; normalize_image_response is ready."
-        )
+        """Edit one image with Muse Image (verified JSON shape).
+
+        mask_png is accepted for interface compatibility; the verified
+        JSON edits shape has no mask field, so the edit is prompt-guided
+        over the whole frame (the caller watermarks the result anyway).
+        """
+        from secondshift.providers.meta.text_vision import image_part
+        from secondshift.providers.meta.transport import post_json
+
+        part = image_part(image)
+        body = {
+            "model": "muse-image-1.0",
+            "prompt": prompt,
+            "images": [{"image_url": part["image_url"]["url"]}],
+        }
+        return normalize_image_response(post_json("/images/edits", body, explicit_key=self.api_key))

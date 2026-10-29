@@ -23,29 +23,22 @@ from secondshift.providers.base import (
     ProposeRequest,
     ProposeResponse,
 )
-from secondshift.providers.cost import ProviderUnavailable
 
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
 
-# TODO(API): confirm the real base URL + chat path against dev.meta.ai docs.
-BASE_URL = "https://api.meta.ai/v1"  # TODO(API)
-CHAT_PATH = "/chat/completions"  # TODO(API)
+# VERIFIED live 2026-10-28: POST /v1/chat/completions accepts OpenAI-style
+# messages with image_url data-URI parts; usage block reports token counts.
+# Measured image cost: ~1,200 prompt tokens for a 1280x720 keyframe.
+BASE_URL = "https://api.meta.ai/v1"
+CHAT_PATH = "/chat/completions"
 MODEL_BY_ROLE = {"fast": "muse-spark-1.3", "deep": "muse-wonder-1.0"}
-
-
-def _require(api_key: str | None) -> str:
-    if not api_key:
-        raise ProviderUnavailable(
-            "META_API_KEY is not set - the Meta adapters stay off until Phase 7 keys arrive."
-        )
-    return api_key
 
 
 def image_part(image: ImageRef) -> dict[str, Any]:
     """Encode one image as a chat content part (data URI).
 
-    TODO(API): confirm the expected field name (image_url vs image) and
-    whether base64 data URIs are accepted vs uploaded file ids.
+    VERIFIED live 2026-10-28: image_url parts with base64 data URIs are
+    accepted by /v1/chat/completions.
     """
     data = Path(image.path).read_bytes()
     encoded = base64.b64encode(data).decode()
@@ -55,7 +48,11 @@ def image_part(image: ImageRef) -> dict[str, Any]:
 def build_chat_payload(
     prompt: str, images: list[ImageRef], model_role: Literal["fast", "deep"]
 ) -> dict[str, Any]:
-    """Build the chat request body. TODO(API): response_format for JSON mode."""
+    """Build the chat request body (verified shape, 2026-10-28).
+
+    JSON output is requested in the prompt text; the API returned clean
+    JSON in probes. response_format is not sent.
+    """
     content: list[dict[str, Any]] = [{"type": "text", "text": prompt}]
     content.extend(image_part(image) for image in images)
     return {
@@ -110,18 +107,9 @@ class MetaVisionReasoner:
         self.api_key = api_key
 
     def _post_chat(self, payload: dict[str, Any]) -> dict[str, Any]:
-        import httpx
+        from secondshift.providers.meta.transport import post_json
 
-        key = _require(self.api_key)
-        response = httpx.post(
-            f"{BASE_URL}{CHAT_PATH}",
-            json=payload,
-            headers={"Authorization": f"Bearer {key}"},  # TODO(API): auth header
-            timeout=120.0,
-        )
-        response.raise_for_status()
-        data: dict[str, Any] = response.json()
-        return data
+        return post_json(CHAT_PATH, payload, explicit_key=self.api_key)
 
     def complete_json(
         self,

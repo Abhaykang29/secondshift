@@ -1,0 +1,5 @@
+{"object": "response", "status": "completed", "model": "sam-3.1",
+ "output": [{"type": "message", "role": "assistant", "content": [
+   {"type": "output_text",
+    "text": "<0f>0<|box;x1=500;y1=200;x2=800;y2=600;w=1280;h=720|><|mask;x=0;y=0;data=401,301,TRUNCATED-FOR-FIXTURE|>"}]}],
+ "usage": {"input_tokens": 0, "output_tokens": 0, "images_processed": 1}}
