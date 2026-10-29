@@ -80,7 +80,8 @@ Auth via providers/meta/transport.py (env key, else vault surrogate; urllib - ht
 ## Pass 2 (Final Build Prompt, 2026-10-28 night) - IN PROGRESS
 - Phase A truth pass DONE: see BUILD_LOG. Claims removed/corrected in README: make-demo replay scope, Muse Image visualizations (local overlays today), Voice Transcribe (not connected), SAM "exact outline" wording.
 - Environment truth vs the pass-2 prompt section 0.4: NO .env on this machine (key lives in the vault connector custom.meta-ai; transport prefers env, falls back to surrogate - works live). gh is NOT logged in; pushes use the user's PAT via transient header (user advised to rotate it). NO footage in data/inbox yet - Phases E-K are gated on the team's files (Rule 5). No docs/meta_get_code/ snippets - Phase H gated on audio.txt.
-- Phase B next: provider plumbing.
+- Phase B DONE: transport-level wiring for every Meta call (SQLite ledger data/costs.db, record/replay cache keyed per spec 11.3, budget check on the ledger sum, retries 429/5xx x3 + per-model throttle, actual cost from usage). GET /api/costs reads the ledger (totals by model + phase_tag). Judge is Spark now; propose + judge prompts load from prompts/*.md via load_prompt(); remaining prompt files enumerated as phase-wired in the guard test. Ledger verify check PASSES live. make demo (PROVIDER=meta CACHE_MODE=replay) now genuinely replays or CacheMisses loudly.
+- Phase C next: six packs.
 
 ## OPEN TODO(TEAM) - needs a human, in demo order
 1. META_API_KEY - unblocks Phase 7 via docs/API_INTEGRATION.md (<3h runbook).

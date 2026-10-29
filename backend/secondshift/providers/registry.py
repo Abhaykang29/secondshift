@@ -6,6 +6,7 @@ Depends on: config.Settings, provider implementations.
 """
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from secondshift.config import Settings
 from secondshift.domain.enums import ProviderName
@@ -47,6 +48,24 @@ def build_providers(settings: Settings) -> Providers:
     """
     vision_name = settings.vision_override or settings.provider
     segmenter_name = settings.segmenter_override or settings.provider
+
+    # Pass 2 Phase B: wire every live Meta call through the SQLite
+    # ledger + record/replay cache + budget guard (transport-level).
+    import os as _os
+
+    from secondshift.providers import ledger as _ledger_mod
+    from secondshift.providers.meta import transport as _transport
+
+    _ledger_conn = _ledger_mod.connect(Path(settings.data_dir) / "costs.db")
+    _transport.configure(
+        ledger_conn=_ledger_conn,
+        cache_mode=settings.cache_mode.value,
+        cache_dir=settings.cache_dir,
+        budget_usd=settings.budget_usd,
+        budget_override=settings.budget_override,
+        phase_tag=_os.environ.get("SECONDSHIFT_PHASE_TAG", "app"),
+        image_tokens_estimate=settings.image_tokens_estimate,
+    )
 
     vision: VisionReasoner
     if vision_name is ProviderName.META:

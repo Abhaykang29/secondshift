@@ -87,7 +87,42 @@ def check_smoke() -> tuple[str, str]:
     return verdict, "; ".join(f"{k}: {v}" for k, v in results.items())
 
 
-IMPLEMENTED = {"smoke": check_smoke}
+def check_ledger() -> tuple[str, str]:
+    """One tiny live chat call, recorded; the repeat costs $0 (cache hit),
+    and the ledger total survives reopening the SQLite file."""
+    import tempfile
+
+    from secondshift.providers import ledger
+    from secondshift.providers.meta import transport
+
+    tmp = Path(tempfile.mkdtemp())
+    conn = ledger.connect(tmp / "costs.db")
+    transport.configure(
+        ledger_conn=conn,
+        cache_mode="record",
+        cache_dir=str(tmp / "cache"),
+        budget_usd=140.0,
+        budget_override=False,
+        phase_tag="pass2-verify",
+    )
+    body = {"model": "muse-spark-1.3", "messages": [{"role": "user", "content": "Say ready."}]}
+    transport.post_json("/chat/completions", body)
+    total_after_first = ledger.total(conn)
+    transport.post_json("/chat/completions", body)  # identical -> cache hit
+    rows = ledger.recent(conn, 5)
+    reopened = ledger.connect(tmp / "costs.db")
+    persisted = ledger.total(reopened)
+    transport._config.clear()  # noqa: SLF001
+    hit_ok = rows[0]["cache_hit"] == 1 and rows[0]["actual_cost"] == 0.0
+    ok = hit_ok and persisted == total_after_first and total_after_first > 0
+    detail = (
+        f"first call ${total_after_first:.4f}; repeat cache_hit={rows[0]['cache_hit']} "
+        f"actual=${rows[0]['actual_cost']:.4f}; total after DB reopen ${persisted:.4f}"
+    )
+    return ("PASS" if ok else "FAIL"), detail
+
+
+IMPLEMENTED = {"smoke": check_smoke, "ledger": check_ledger}
 
 
 def main() -> int:

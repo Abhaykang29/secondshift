@@ -9,8 +9,8 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
 | Check | Phase | Status |
 |---|---|---|
 | smoke | B | PARTIAL — Spark/Wonder/SAM/Image reachable live 2026-10-28; Voice Transcribe NOT reachable (endpoint unlocated) |
-| ledger | B | NOT RUN |
-| replay_offline | B/K | NOT RUN (current `make demo` replays MOCK recordings only) |
+| ledger | B | PASS 2026-10-28 — recorded call costs $0 on repeat (cache_hit), SQLite total persists across reopen |
+| replay_offline | B/K | PARTIAL — transport replay raises CacheMiss on unrecorded steps (unit-tested); full recorded flow lands in Phase K |
 | scan_falls | E | NOT RUN — no real footage yet (a synthetic-footage live run on 2026-10-28 does NOT satisfy this; Rule 5) |
 | blur | E | NOT RUN |
 | visualize | F | NOT RUN |
@@ -35,3 +35,8 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
 - detail: muse-spark-1.3: OK (usage={'completion_tokens': 217, 'prompt_tokens': 11, 'total_tokens': 228, 'completion_tokens_details': {'reasoning_tokens': 207}, 'prompt_tokens_details': {'cached_tokens': 0}}); muse-wonder-1.0: OK (usage={'completion_tokens': 135, 'prompt_tokens': 11, 'total_tokens': 146, 'completion_tokens_details': {'reasoning_tokens': 125}, 'prompt_tokens_details': {'cached_tokens': 0}}); sam-3.1: OK; muse-image-1.0: OK (verified 2026-10-28: generations + edits shapes); muse-voice-transcribe-1.0: FAIL endpoint unlocated (see Phase H; needs playground Audio snippet)
 - cost: see ledger (Phase B)
 - duration: 8.0s
+
+### ledger — PASS (2026-10-29T03:42:07Z)
+- detail: first call $0.0022; repeat cache_hit=1 actual=$0.0000; total after DB reopen $0.0022
+- cost: see ledger (Phase B)
+- duration: 3.8s

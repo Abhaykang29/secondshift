@@ -53,6 +53,7 @@ def create_app() -> FastAPI:
         mode = "mock" if app.state.settings.provider.value == "mock" else "live"
         response.headers["X-Provider-Mode"] = mode
         return response
+
     for module in (
         health,
         packs,

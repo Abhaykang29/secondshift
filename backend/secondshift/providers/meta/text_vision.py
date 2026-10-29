@@ -180,22 +180,27 @@ class MetaVisionReasoner:
 
     def propose_hazards(self, req: ProposeRequest) -> ProposeResponse:
         """Propose via the propose prompt; parse the JSON into dataclasses."""
-        prompt = (
-            "You are the hazard proposer for a home-safety check-up. Use ONLY item_ids "
-            f"from this pack list:\n{req.pack_items_yaml}\n"
-            f"Narration facts: {req.narration_facts}\nMeasurements: {req.measurements}\n"
-            f"Already found: {req.previous_findings_summary}\n"
-            'Respond with JSON: {"proposals": [...], "rooms_seen": [...], '
-            '"cannot_assess": []}. EVERY proposal object MUST have exactly these '
-            "fields: item_id (string, from the pack list), room (string), "
-            "description (string, what you see), evidence_timestamps (list of "
-            "numbers, seconds into the walkthrough), sam_prompts (list of short "
-            'visual noun phrases naming the object to segment, e.g. ["loose rug"]), '
-            "confidence (number 0..1), why_risky (string, one sentence). "
-            'Example proposal: {"item_id": "FALL-FLOOR-RUG", "room": "hallway", '
-            '"description": "Loose rug on the hallway floor", '
-            '"evidence_timestamps": [12.0], "sam_prompts": ["rug"], '
-            '"confidence": 0.8, "why_risky": "A loose rug can slide underfoot."}'
+        from secondshift.domain.hazards import HazardProposal as _HP
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt(
+            "propose_hazards",
+            checklist_items_yaml=req.pack_items_yaml,
+            narration_facts=req.narration_facts,
+            measurements=req.measurements,
+            previous_findings_summary=req.previous_findings_summary,
+            n_images=len(req.keyframes),
+            json_schema=__import__("json").dumps(
+                {
+                    "type": "object",
+                    "properties": {
+                        "proposals": {"type": "array", "items": _HP.model_json_schema()},
+                        "rooms_seen": {"type": "array", "items": {"type": "string"}},
+                        "cannot_assess": {"type": "array", "items": {"type": "object"}},
+                    },
+                    "required": ["proposals", "rooms_seen", "cannot_assess"],
+                }
+            ),
         )
         images = [ImageRef(path=k.image_path, keyframe_id=k.id) for k in req.keyframes]
         data = self._post_chat(build_chat_payload(prompt, images, "fast"))
@@ -215,13 +220,13 @@ class MetaVisionReasoner:
         )
 
     def judge(self, req: JudgeRequest) -> JudgeResponse:
-        """Judge one contested claim (deep model)."""
-        prompt = (
-            f"Claim: {req.claim}\nContext: {req.context}\n"
-            "Decide the verification: confirmed, needs_human, or rejected. "
-            'Respond with JSON: {"verification": ..., "reason": ...}'
-        )
-        data = self._post_chat(build_chat_payload(prompt, req.images, "deep"))
+        """Judge one contested claim with Spark (pass 2: spec says the
+        judge is the fast role; Wonder is reserved for the deep routine
+        pass). Prompt text lives in prompts/verify_judge.md."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("verify_judge", claim=req.claim, sam_summary=req.context)
+        data = self._post_chat(build_chat_payload(prompt, req.images, "fast"))
         parsed = extract_json(normalize_chat_content(data))
         return JudgeResponse(
             verification=str(parsed.get("verification", "needs_human")),
