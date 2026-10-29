@@ -50,3 +50,13 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
 - detail: Appendix B status 38/40, primitives 15/16; unseen status 26/30, primitives 15/16; pass2 ledger total $1.03; compiler rule_compiler@v1:spark:muse-spark-1.3
 - cost: see ledger (Phase B)
 - duration: 393.1s
+
+### reasoning_effort — REPORTED (2026-10-29, manual entry)
+- detail: reasoning_effort="low" on compile+judge. Appendix B rerun LIVE: status 38/40, primitives 15/16 - identical accuracy to the v2 baseline; latency mean 3.87s/call (p50 3.88s, max 6.19s) vs ~5.6s baseline (~30% faster). 22 live calls, $0.12. Decision: keep "low".
+- cost: $0.12 (phase_tag pass2-re)
+- duration: 87s
+
+### smoke_test_1 — REPORTED (2026-10-29, manual entry; NOT official footage)
+- detail: user-supplied unstaged home tour (data/inbox/test_1.mp4, 55s, 80 keyframes) scanned live, falls+fire+pets, CACHE_MODE=record. 5 confirmed (floor cord, rug, extinguisher absent, pet cords x2), 1 needs_human (toxic plant - judge spotted the succulent despite SAM miss), 4 rejected, 43 area-level cannot_assess (rooms never filmed). Person blur ran on all 80 keyframes; person-heavy frames spot-checked blurred. Afters: cord subtle/plausible; rug evidence frame poorly chosen (dining shot); extinguisher absence edit BROKEN (glitch strip - real Phase F absence-region bug). Two rejections look wrong on frame inspection (pet bowls visible at 25.5s; stove + towels visible) - awaiting user marks on docs/reviews/smoke_test_1_review.html.
+- cost: $0.94 (178 calls: 157 SAM, 18 vision, 3 image)
+- duration: 640s wall
