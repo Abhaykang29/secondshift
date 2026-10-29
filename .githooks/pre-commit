@@ -1,0 +1,22 @@
+#!/bin/sh
+# SecondShift pre-commit guard: never commit media, recordings, data or secrets.
+# Allowed exceptions: fixtures/recordings/demo-cache/** (the pre-recorded demo),
+# docs/screenshots/*.png (reviewed UI screenshots).
+fail=0
+for f in $(git diff --cached --name-only); do
+  case "$f" in
+    fixtures/recordings/demo-cache/*) continue ;;
+    docs/screenshots/*.png) continue ;;
+    .env.example) continue ;;
+    .env|.env.*) echo "BLOCKED: $f (secrets file)"; fail=1 ;;
+    data/*) echo "BLOCKED: $f (runtime data)"; fail=1 ;;
+    fixtures/recordings/*) echo "BLOCKED: $f (recording)"; fail=1 ;;
+    *.mp4|*.mov|*.mkv|*.webm|*.mp3|*.wav|*.m4a|*.avi)
+      echo "BLOCKED: $f (media file)"; fail=1 ;;
+  esac
+done
+if [ "$fail" = "1" ]; then
+  echo "Commit refused by the media/secrets guard. Unstage those files."
+  exit 1
+fi
+exit 0

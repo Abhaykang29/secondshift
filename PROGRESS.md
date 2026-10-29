@@ -83,9 +83,8 @@ Everything model-facing: mock vision returns no proposals (Phase 2 wires scenari
 4. Babyproofing impact statistics - currently TODO(STAT) everywhere; source from CPSC/AAP before any public claim.
 5. Native-speaker review of Hindi strings (hi.json); translations for pa/es/fr/zh/ar.
 6. A clinician / OT / certified home-safety professional to review pack wording, severity assignments and fix steps.
-7. Physical capability checklist answers (the spec's Appendix E questions: device loan pool, Prolific, print/distribution partners).
-8. Phone-endpoint choice for PhoneSource (Phase 6.5): which old-phone app/endpoint the watch demo uses.
-9. Privacy review pass on docs/PRIVACY.md with counsel before any real home is filmed.
+7. Phone-endpoint choice for PhoneSource (Phase 6.5): which old-phone app/endpoint the watch demo uses.
+8. Privacy review pass on docs/PRIVACY.md with counsel before any real home is filmed.
 
 ## Top risks (honest, Oct 28)
 1. Meta API shapes are unverified - adapters are best-known-shape with TODO(API) markers; the runbook budgets 45 min for surprises, but a very different SAM payload (e.g., RLE-only) could take longer.

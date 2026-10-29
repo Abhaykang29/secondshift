@@ -32,8 +32,12 @@ export default function EvalPage() {
   if (!data) return <main className="mx-auto max-w-2xl p-6"><p>Loading eval...</p></main>;
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Evaluation</h1>
+    <main className="relative mx-auto max-w-2xl overflow-hidden p-6">
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+        <span className="-rotate-45 text-6xl font-bold tracking-widest text-red-600/15">MOCK DATA</span>
+      </div>
+      <p className="inline-block rounded bg-red-700 px-3 py-1 font-semibold text-white">MOCK DATA</p>
+      <h1 className="mt-2 text-2xl font-semibold">Evaluation</h1>
       <p className="mt-2 text-sm opacity-80">
         Run {data.run_dir} - {data.dataset}. These numbers validate the harness on mock
         scenarios; real accuracy needs human-labelled captures (TODO(TEAM)).

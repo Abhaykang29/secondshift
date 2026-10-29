@@ -9,6 +9,7 @@ from fastapi import FastAPI
 
 from secondshift.api import (
     ask,
+    camera,
     captures,
     checkups,
     costs,
@@ -36,6 +37,9 @@ def create_app() -> FastAPI:
     from secondshift.storage.repository import Repository
 
     app.state.store = Repository(Path(app.state.settings.data_dir) / "store.json")
+    from secondshift.watch.sources import CameraHub
+
+    app.state.camera_hub = CameraHub()
     for module in (
         health,
         packs,
@@ -50,6 +54,7 @@ def create_app() -> FastAPI:
         settings,
         scan,
         recheck,
+        camera,
     ):
         app.include_router(module.router, prefix="/api")
     return app

@@ -20,3 +20,5 @@ Built with Muse Code (Muse Spark 1.3). This log is shown in the demo.
 | 2026-10-28 | 6 | Watch mode: sources, room guard, camera health, gate, state machine + engine, demo-run API, watch UI | Muse Code (main session) | - |
 | 2026-10-28 | 7-prep | Meta adapters + tested normalizers, real smoke_meta, API_INTEGRATION runbook (<3h to live). No live calls - waiting for META_API_KEY | Muse Code (main session) | - |
 | 2026-10-28 | 8 | Demo mode end-to-end on mocks through record/replay, settings + ask implemented, a11y pass, README/PROGRESS final | Muse Code (main session) | - |
+
+- Finish pass (2026-10-28 evening): PhoneSource real via /camera WebSocket + CameraPage + local HTTPS (scripts/dev_https.sh, make dev-https); /eval MOCK DATA watermark; pre-commit guard (.githooks) blocking media/recordings/data/.env except demo-cache + docs screenshots; TODO(TEAM) Appendix E item removed; MIT LICENSE added; BUDGET_USD default 140; CREDITS_MODE=free|paid (default free) - privacy copy in README/PRIVACY/data note states the free-credits terms verbatim, training claim removed in free mode; config now loads .env. 74 tests green.

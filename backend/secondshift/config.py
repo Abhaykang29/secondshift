@@ -42,6 +42,21 @@ MODEL_IDS: dict[str, str] = {
 }
 
 
+def _load_dotenv(path: str = ".env") -> None:
+    """Minimal .env loader: KEY=VALUE lines, never overriding real env."""
+    from pathlib import Path as _P
+
+    env_file = _P(path)
+    if not env_file.exists():
+        return
+    for line in env_file.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
 @dataclass
 class Settings:
     """All runtime settings, populated from the environment by ``load``."""
@@ -83,13 +98,19 @@ class Settings:
     # Privacy / eval flags
     allow_contributor_for_synthetic_text: bool = False
     retention_days: int = 30
+    credits_mode: str = "free"  # free | paid - drives the privacy copy (see PRIVACY.md)
     watch_thumbnail_retention_days: int = 7
     price_table: dict[str, dict[str, float]] = field(default_factory=lambda: PRICE_TABLE)
     model_ids: dict[str, str] = field(default_factory=lambda: MODEL_IDS)
 
     @classmethod
     def load(cls) -> "Settings":
-        """Build Settings from environment variables (see .env.example)."""
+        """Build Settings from environment variables (see .env.example).
+
+        A local .env file (gitignored) is loaded first when present -
+        real environment variables always win over .env values.
+        """
+        _load_dotenv()
 
         def _provider(name: str) -> ProviderName | None:
             raw = os.environ.get(name, "")
@@ -101,8 +122,9 @@ class Settings:
             vision_override=_provider("VISION"),
             cache_mode=CacheMode(os.environ.get("CACHE_MODE", "off")),
             cache_dir=os.environ.get("CACHE_DIR", "fixtures/recordings"),
-            budget_usd=_f("BUDGET_USD", 100.0),
+            budget_usd=_f("BUDGET_USD", 140.0),
             budget_override=os.environ.get("BUDGET_OVERRIDE", "0") == "1",
+            credits_mode=os.environ.get("CREDITS_MODE", "free"),
             meta_api_key=os.environ.get("META_API_KEY") or None,
             data_dir=os.environ.get("DATA_DIR", "data"),
             max_capture_minutes=_f("MAX_CAPTURE_MINUTES", 6.0),

@@ -9,6 +9,6 @@ Spec section 14, enforced in code - summary:
 5. No identity, ever: no face recognition, no re-identification, no "who" rules, no tracking across rooms.
 6. No medical claims; narration facts drop health details.
 7. Honest uncertainty: CANNOT TELL is a first-class, visible result.
-8. Meta data terms: Standard tier only for real images/video/audio. "Occasional snapshots are sent to Meta's AI models to check them. On the Standard tier, Meta says prompts and outputs are not used to train its models. We don't claim zero retention."
+8. Meta data terms: Standard tier only for real images/video/audio. "This runs on Meta's free hackathon credits; Meta says content sent on free credits may be used for product improvement. We only process footage from people who agreed to that. (CREDITS_MODE=free, default. Paid mode - CREDITS_MODE=paid - uses Meta's Standard tier terms, under which prompts and outputs are not used to train its models.) We don't claim zero retention."
 9. Security: never log keys, RTSP URLs with credentials, or media. Local-network-only camera use is recommended (cameras can be blocked from the internet at the router).
 10. This is consented, in-home safety screening of objects and spaces - never a tool to monitor people without their knowledge.

@@ -4,7 +4,7 @@
   "cannot_tell": "I couldn't check this - <reason>. That's on purpose: I'd rather say 'I don't know' than guess.",
   "refusal_lead_in": "A camera can't see that. Here's what I can check instead:",
   "visualization_watermark": "Visualization - not a photo",
-  "data_note": "Occasional snapshots are checked by Meta's AI models (Standard tier: not used for training). Raw video is deleted after processing unless you choose to keep it.",
+  "data_note": "This runs on Meta's free hackathon credits; Meta says content sent on free credits may be used for product improvement. We only process footage from people who agreed to that. Raw video is deleted after processing unless you choose to keep it.",
   "watch_banner": "Watching: <spot>. Only this area is checked. No video is saved.",
   "check_a_home": "Check a home",
   "watch_one_spot": "Watch one spot",

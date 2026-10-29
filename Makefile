@@ -16,6 +16,9 @@ dev:
 dev-backend:
 	$(PY) -m uvicorn secondshift.main:app --app-dir backend --reload --port 8000
 
+dev-https:
+	sh scripts/dev_https.sh
+
 dev-frontend:
 	cd frontend && npm run dev
 

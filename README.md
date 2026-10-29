@@ -26,7 +26,7 @@ SecondShift is a screening and awareness tool. It is not a medical device, not a
 
 ## Data note
 
-Occasional snapshots are sent to Meta's AI models to check them. On the Standard tier, Meta says prompts and outputs are not used to train its models. We don't claim zero retention. Raw video is deleted after processing unless you choose to keep it. See `docs/PRIVACY.md`.
+Occasional snapshots are sent to Meta's AI models to check them. This runs on Meta's free hackathon credits; Meta says content sent on free credits may be used for product improvement. We only process footage from people who agreed to that. (CREDITS_MODE=free, the default. On paid Standard-tier credits - CREDITS_MODE=paid - Meta's Standard terms apply instead.) We don't claim zero retention. Raw video is deleted after processing unless you choose to keep it. See `docs/PRIVACY.md`.
 
 ## Impact facts
 
