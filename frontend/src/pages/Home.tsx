@@ -10,9 +10,37 @@ import { api } from "../api/client";
 import type { PackSummary } from "../api/extra";
 import en from "../i18n/en.json";
 
+const PACK_ICONS: Record<string, string> = {
+  falls_older_adults: "🧓",
+  babyproofing: "👶",
+  fire_safety: "🔥",
+  earthquake_ready: "🌎",
+  pet_safety: "🐾",
+  home_from_hospital: "🏥",
+};
+
 export default function Home() {
   const [packs, setPacks] = useState<PackSummary[]>([]);
   const [largeText, setLargeText] = useState(false);
+  const [selected, setSelected] = useState<string[]>(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem("pack_selection") ?? "[]") as string[];
+    } catch {
+      return [];
+    }
+  });
+
+  function togglePack(packId: string) {
+    setSelected((prev) => {
+      const next = prev.includes(packId)
+        ? prev.filter((x) => x !== packId)
+        : prev.length >= 3
+          ? prev
+          : [...prev, packId];
+      sessionStorage.setItem("pack_selection", JSON.stringify(next));
+      return next;
+    });
+  }
 
   useEffect(() => {
     api
@@ -46,17 +74,34 @@ export default function Home() {
       </div>
 
       <section className="mt-6">
-        <h2 className="text-lg font-medium">Checklist packs</h2>
+        <h2 className="text-lg font-medium">What should we check for?</h2>
+        <p className="mt-1 text-base opacity-80">
+          Pick up to 3 checklists. One walkthrough is checked against all of them.
+        </p>
         {packs.length === 0 ? (
           <p className="mt-2 opacity-70">Packs load from the backend (start it with make dev).</p>
         ) : (
-          <ul className="mt-2 list-disc pl-6">
-            {packs.map((p) => (
-              <li key={p.pack_id}>
-                {p.title} — {p.item_count} checks
-              </li>
-            ))}
-          </ul>
+          <div className="mt-3 grid gap-3">
+            {packs.map((p) => {
+              const on = selected.includes(p.pack_id);
+              return (
+                <button
+                  key={p.pack_id}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => togglePack(p.pack_id)}
+                  className={`rounded border p-4 text-left ${on ? "border-blue-700 bg-blue-50" : ""}`}
+                >
+                  <span className="text-2xl" aria-hidden>{PACK_ICONS[p.pack_id] ?? "✓"}</span>{" "}
+                  <span className="text-lg font-medium">{p.title}</span>
+                  <span className="mt-1 block text-base opacity-80">{p.audience}</span>
+                  <span className="block text-sm opacity-70">
+                    {p.item_count} checks {on ? "· selected" : ""}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         )}
       </section>
 

@@ -26,6 +26,7 @@ def list_packs() -> dict[str, Any]:
                 "title": p.title,
                 "audience": p.audience,
                 "item_count": len(p.items),
+                "status": p.status,
                 "high_risk_zones": p.high_risk_zones,
             }
             for p in packs.values()

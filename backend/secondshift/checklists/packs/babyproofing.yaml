@@ -1,3 +1,5 @@
+version: 1
+status: approved
 pack_id: babyproofing
 title: Baby's home (babyproofing)
 audience: Babies and toddlers at home
@@ -34,7 +36,7 @@ items:
     how: Fit anti-tip straps from the furniture into wall studs.
     difficulty: medium
     cost_estimate: ~$10-20 per kit
-    visualization_prompt: null
+    visualization_prompt: Add furniture anchor straps from the top of the dresser to the wall.
   sources: &id001
   - 'Pack basis: common babyproofing guidance (CPSC / AAP categories, paraphrased). TODO(STAT): team to
     add sourced statistics.'
@@ -57,7 +59,7 @@ items:
     how: Wall-mount the TV or strap it to the stand/wall.
     difficulty: medium
     cost_estimate: ~$15-60
-    visualization_prompt: null
+    visualization_prompt: Show the television wall-mounted above the stand.
   sources: *id001
 - id: BABY-OUTLET-UNCOVERED
   title: Open electrical outlet at low height
@@ -77,7 +79,7 @@ items:
     how: Fit covers or sliding outlet plates on low outlets.
     difficulty: easy
     cost_estimate: ~$10
-    visualization_prompt: null
+    visualization_prompt: Add white plastic outlet covers to the outlets.
   sources: *id001
 - id: BABY-BLIND-CORD
   title: Blind or curtain cords within reach
@@ -97,7 +99,7 @@ items:
     how: Fit cord cleats up high, or replace with cordless blinds.
     difficulty: easy
     cost_estimate: ~$5-50
-    visualization_prompt: null
+    visualization_prompt: Show the blind cord wound up on a wall cleat high out of reach.
   sources: *id001
 - id: BABY-SMALL-OBJECTS
   title: Small objects within reach
@@ -120,7 +122,7 @@ items:
     how: Move small items up high and check floors every day.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the floor completely clear of small objects.
   sources: *id001
 - id: BABY-CHEMICALS-ACCESSIBLE
   title: Cleaning products or medicines within reach
@@ -142,7 +144,7 @@ items:
     how: Move products up high or fit cabinet locks.
     difficulty: easy
     cost_estimate: ~$10-20
-    visualization_prompt: null
+    visualization_prompt: Add a childproof latch to the cabinet door under the sink.
   sources: *id001
 - id: BABY-STAIRS-NO-GATE
   title: No safety gate at the stairs
@@ -184,7 +186,7 @@ items:
     how: Fit corner guards on sharp table corners.
     difficulty: easy
     cost_estimate: ~$10
-    visualization_prompt: null
+    visualization_prompt: Add soft corner guards to the sharp table corners.
   sources: *id001
 - id: BABY-CRIB-SOFT-ITEMS
   title: Soft items in the crib
@@ -228,7 +230,7 @@ items:
     how: Move climbable furniture away from windows and fit guards or stops.
     difficulty: easy
     cost_estimate: ~$15-40
-    visualization_prompt: null
+    visualization_prompt: Show the climbable furniture moved away from the window.
   sources: *id001
 - id: BABY-DANGLING-APPLIANCE-CORD
   title: Appliance cord dangling off the counter
@@ -248,7 +250,7 @@ items:
     how: Push appliances to the back of the counter and coil the cords.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the appliance cord coiled up on the counter, out of reach.
   sources: *id001
 - id: BABY-PLASTIC-BAGS
   title: Plastic bags within reach
@@ -267,7 +269,7 @@ items:
     how: Store plastic bags up high, out of reach.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the plastic bags stored on the high shelf, out of reach.
   sources: *id001
 - id: BABY-STOVE-KNOBS
   title: Front stove knobs within reach
@@ -287,5 +289,5 @@ items:
     how: Fit covers on front-facing stove knobs.
     difficulty: easy
     cost_estimate: ~$10-15
-    visualization_prompt: null
+    visualization_prompt: Add clear stove knob covers over the front stove knobs.
   sources: *id001

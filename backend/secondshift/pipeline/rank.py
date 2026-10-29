@@ -31,13 +31,30 @@ def _iou(a: tuple[float, ...], b: tuple[float, ...]) -> float:
     return inter / union if union > 0 else 0.0
 
 
-def dedupe_hazards(hazards: list[Hazard]) -> list[Hazard]:
-    """Merge duplicates: same item + room + (mask IoU > 0.3 or times < 4s apart)."""
+def dedupe_hazards(
+    hazards: list[Hazard], dedupe_keys: dict[str, str | None] | None = None
+) -> list[Hazard]:
+    """Merge duplicates: same item + room + (mask IoU > 0.3 or times < 4s apart).
+
+    Pass 2 Phase C: cross-pack merge - two DIFFERENT items from
+    different packs that share a dedupe_key (e.g. the falls rug and the
+    home-from-hospital rug) and point at the same object in the same
+    room merge into one hazard carrying both pack tags.
+    """
+    keys = dedupe_keys or {}
     kept: list[Hazard] = []
     for hazard in hazards:
+        if not hazard.pack_tags:
+            hazard.pack_tags = [hazard.pack_id]
         duplicate_of: Hazard | None = None
         for existing in kept:
-            if existing.item_id != hazard.item_id or existing.room != hazard.room:
+            same_item = existing.item_id == hazard.item_id
+            cross_pack = (
+                existing.pack_id != hazard.pack_id
+                and keys.get(existing.item_id) is not None
+                and keys.get(existing.item_id) == keys.get(hazard.item_id)
+            )
+            if not (same_item or cross_pack) or existing.room != hazard.room:
                 continue
             same_object = False
             if existing.evidence.masks and hazard.evidence.masks:
@@ -54,6 +71,9 @@ def dedupe_hazards(hazards: list[Hazard]) -> list[Hazard]:
         if duplicate_of is None:
             kept.append(hazard)
         else:
+            for tag in hazard.pack_tags:
+                if tag not in duplicate_of.pack_tags:
+                    duplicate_of.pack_tags.append(tag)
 
             def _best(h: Hazard) -> float:
                 return max((m.score for m in h.evidence.masks), default=0.0)

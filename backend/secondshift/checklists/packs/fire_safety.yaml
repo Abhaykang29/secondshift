@@ -1,3 +1,5 @@
+version: 1
+status: approved
 pack_id: fire_safety
 title: Fire safety (stretch)
 audience: Any home
@@ -31,7 +33,7 @@ items:
     how: Fit a smoke alarm and test it monthly.
     difficulty: easy
     cost_estimate: ~$15-30 (estimate)
-    visualization_prompt: null
+    visualization_prompt: Add a round white smoke alarm mounted on the ceiling.
   sources:
   - NFPA home fire safety guidance (paraphrased)
 - id: FIRE-HEATER-NEAR-COMBUSTIBLE
@@ -51,7 +53,7 @@ items:
     how: Move the heater at least 3 feet from anything that can burn.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the space heater standing alone with clear space all around it.
   sources:
   - NFPA home fire safety guidance (paraphrased)
 - id: FIRE-POWER-STRIP-CHAIN
@@ -71,7 +73,7 @@ items:
     how: Never chain power strips; plug each into a wall outlet.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show one power strip plugged directly into the wall outlet and the second strip removed.
   sources:
   - NFPA home fire safety guidance (paraphrased)
 - id: FIRE-STOVE-COMBUSTIBLES
@@ -92,7 +94,7 @@ items:
     how: Move towels and paper away from the stovetop.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the stovetop completely clear of towels, paper and packaging.
   sources:
   - NFPA - unattended cooking is the leading factor in home cooking fires
 - id: FIRE-CANDLE-NEAR-FABRIC
@@ -112,7 +114,7 @@ items:
     how: Keep candles at least 1 foot from anything that can burn.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the candle moved onto the clear table away from the curtains.
   sources:
   - NFPA home fire safety guidance (paraphrased)
 - id: FIRE-EXIT-BLOCKED
@@ -122,6 +124,7 @@ items:
   - any
   severity: 3
   observable_evidence: Clutter blocking a door or exit path
+  dedupe_key: clear_exit_path
   sam_prompts:
   - clutter blocking door
   safety_prompts: []
@@ -132,6 +135,97 @@ items:
     how: Remove everything blocking doors and exit paths.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the doorway and exit path completely clear of clutter.
   sources:
   - NFPA home fire safety guidance (paraphrased)
+- id: FIRE-CO-ALARM-ABSENT
+  title: No carbon-monoxide alarm visible
+  kind: absence
+  rooms:
+  - hallway
+  - bedroom
+  severity: 3
+  observable_evidence: Hallway or area near bedrooms visible with no CO alarm
+  sam_prompts:
+  - hallway
+  - bedroom door
+  safety_prompts:
+  - carbon monoxide alarm
+  - CO alarm
+  cannot_see_note: We cannot tell whether an alarm works - press the test button monthly.
+  fixes:
+  - id: co-install
+    title: Install a carbon-monoxide alarm
+    how: Fit a CO alarm near the bedrooms and test it monthly.
+    difficulty: easy
+    cost_estimate: ~$25-45 (estimate)
+    visualization_prompt: Add a round white carbon-monoxide alarm on the hallway wall near the bedroom door.
+  sources:
+  - 'TODO(SOURCE): NFPA / US Fire Administration CO alarm guidance - team to link the exact page'
+- id: FIRE-EXTINGUISHER-ABSENT
+  title: No fire extinguisher visible in the kitchen
+  kind: absence
+  rooms:
+  - kitchen
+  severity: 2
+  observable_evidence: Kitchen visible with no fire extinguisher visible
+  sam_prompts:
+  - kitchen counter
+  - stove
+  safety_prompts:
+  - fire extinguisher
+  cannot_see_note: null
+  fixes:
+  - id: extinguisher-mount
+    title: Mount an extinguisher near the kitchen exit
+    how: Place a home fire extinguisher where you can grab it on the way out, not over the stove.
+    difficulty: easy
+    cost_estimate: ~$25-40 (estimate)
+    visualization_prompt: Add a red fire extinguisher mounted on the wall beside the kitchen doorway.
+  sources:
+  - 'TODO(SOURCE): US Fire Administration home extinguisher guidance - team to link the exact page'
+- id: FIRE-CORD-UNDER-RUG
+  title: Electrical cord running under a rug
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Electrical cord passing under a rug or furniture where it can overheat or wear
+  sam_prompts:
+  - cord under rug
+  - rug over cord
+  safety_prompts: []
+  cannot_see_note: null
+  dedupe_key: cord_reroute
+  fixes:
+  - id: cord-under-rug-reroute
+    title: Re-route the cord in the open
+    how: Move the cord so it runs visibly along the wall instead of under the rug.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the electrical cord running along the wall in the open, no longer passing under the rug.
+  sources:
+  - 'TODO(SOURCE): US Fire Administration electrical safety guidance - team to link the exact page'
+- id: FIRE-CHARGING-ON-BED
+  title: Device charging on a bed or sofa
+  kind: presence
+  rooms:
+  - bedroom
+  - living
+  severity: 2
+  observable_evidence: Phone, laptop or battery charging on a bed, sofa or under pillows
+  sam_prompts:
+  - charger on bed
+  - laptop on bed
+  - phone charging on sofa
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: charging-hard-surface
+    title: Charge on a hard surface
+    how: Move charging devices to a hard, clear surface away from bedding and fabric.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the phone and charger on the hard bedside table instead of on the bed.
+  sources:
+  - 'TODO(SOURCE): fire-service lithium battery charging guidance - team to link the exact page'

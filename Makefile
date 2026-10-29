@@ -47,3 +47,6 @@ smoke-meta:
 
 types:
 	$(PY) scripts/generate_types.py
+
+new-pack:
+	$(PY) scripts/new_pack.py NAME=$(NAME)

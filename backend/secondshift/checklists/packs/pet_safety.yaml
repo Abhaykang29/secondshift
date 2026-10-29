@@ -1,0 +1,239 @@
+version: 1
+status: approved
+pack_id: pet_safety
+title: Pet-safe home
+audience: Homes with cats or dogs
+high_risk_zones:
+- kitchen
+- living
+- bathroom
+- balcony
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: PET-TOXIC-PLANT
+  title: Plant within a pet's reach that may be toxic
+  kind: presence
+  rooms:
+  - living
+  - bedroom
+  - kitchen
+  severity: 3
+  observable_evidence: Houseplant within reach of a pet - some common plants are toxic to cats or dogs
+  sam_prompts:
+  - lily plant
+  - houseplant on floor
+  - potted plant on low table
+  safety_prompts: []
+  cannot_see_note: We cannot identify every plant species from a photo - a person should check the plant against a toxic-plants list.
+  fixes:
+  - id: pet-plant-move
+    title: Move it out of reach or remove it
+    how: Move the plant somewhere the pet cannot reach, or rehome the plant if it is on a toxic list.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the plant moved to a high shelf the pet cannot reach.
+  sources:
+  - 'TODO(SOURCE): ASPCA Animal Poison Control toxic plant list - team to verify every plant claim before release'
+- id: PET-TOXIC-FOOD-LOW
+  title: Food that is toxic to pets left within reach
+  kind: presence
+  rooms:
+  - kitchen
+  - living
+  severity: 3
+  observable_evidence: Chocolate, grapes, gum or candy on low tables or counter edges a pet can reach
+  sam_prompts:
+  - chocolate
+  - grapes
+  - chewing gum
+  - candy bowl
+  safety_prompts: []
+  cannot_see_note: We cannot read labels from a walkthrough - a person should check what is in bowls and bags.
+  fixes:
+  - id: pet-food-up
+    title: Store it up high or in a cabinet
+    how: Move chocolate, grapes, gum and candy into closed cabinets or high shelves.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the low table clear, with the chocolate and grapes gone from reach.
+  sources:
+  - 'TODO(SOURCE): ASPCA Animal Poison Control people-foods list - team to verify every food claim before release'
+- id: PET-MEDS-ACCESSIBLE
+  title: Medication bottles on open, low surfaces
+  kind: presence
+  rooms:
+  - bathroom
+  - bedroom
+  - kitchen
+  severity: 3
+  observable_evidence: Medication or vitamin bottles on low or open surfaces a pet can reach
+  sam_prompts:
+  - medicine bottle
+  - pill organizer
+  - pill bottle
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: pet-meds-cabinet
+    title: Store in a closed cabinet
+    how: Move all medication and vitamins into a closed cabinet or high shelf.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the counter clear, with the medicine bottles gone into the closed cabinet.
+  sources:
+  - 'TODO(SOURCE): ASPCA Animal Poison Control medication guidance - team to link the exact page'
+- id: PET-CHEMICALS-ACCESSIBLE
+  title: Cleaning products on the floor or low shelves
+  kind: presence
+  rooms:
+  - kitchen
+  - bathroom
+  severity: 3
+  observable_evidence: Cleaning products stored on the floor or low open shelves a pet can reach
+  sam_prompts:
+  - cleaning spray bottle
+  - detergent bottle
+  - cleaning products
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: pet-chemicals-up
+    title: Move up high or add a cabinet latch
+    how: Move cleaning products to a high shelf or fit a latch on the cabinet.
+    difficulty: easy
+    cost_estimate: ~$5-15 (estimate)
+    visualization_prompt: Show the cleaning bottles on the high shelf instead of the floor.
+  sources:
+  - 'TODO(SOURCE): ASPCA Animal Poison Control household hazards guidance - team to link the exact page'
+- id: PET-OPEN-TRASH
+  title: Open trash can with food scraps
+  kind: presence
+  rooms:
+  - kitchen
+  severity: 2
+  observable_evidence: Open trash can a pet can get into, with food scraps visible
+  sam_prompts:
+  - open trash can
+  - garbage bin
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: pet-trash-lid
+    title: Use a lidded bin
+    how: Swap the open bin for one with a lid a pet cannot nose open.
+    difficulty: easy
+    cost_estimate: ~$20-40 (estimate)
+    visualization_prompt: Show a lidded trash can in place of the open one.
+  sources:
+  - 'TODO(SOURCE): veterinary guidance on pet trash hazards - team to link the exact page'
+- id: PET-CORDS-CHEWABLE
+  title: Loose cords at floor level a pet can chew
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Loose electrical cords or charging cables lying at floor level
+  sam_prompts:
+  - electrical cord
+  - charging cable
+  safety_prompts: []
+  cannot_see_note: null
+  dedupe_key: cord_reroute
+  fixes:
+  - id: pet-cord-cover
+    title: Cord covers or route cords up
+    how: Fit cord covers, or route the cords up and along the wall out of chewing range.
+    difficulty: easy
+    cost_estimate: ~$10-20 (estimate)
+    visualization_prompt: Show the cords inside a cord cover running along the wall, off the floor.
+  sources:
+  - 'TODO(SOURCE): ASPCA / veterinary cord-chewing guidance - team to link the exact page'
+- id: PET-STRINGS-SMALL
+  title: String and small items on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: String, hair ties, rubber bands or small toys scattered on the floor
+  sam_prompts:
+  - string
+  - hair tie
+  - rubber band
+  - small toy on floor
+  safety_prompts: []
+  cannot_see_note: Small items are easy to miss on video - a person should do a floor-level check.
+  fixes:
+  - id: pet-strings-store
+    title: Pick up and store
+    how: Pick up string, ties, bands and small toys and store them in a closed box.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the floor completely clear of string and small items.
+  sources:
+  - 'TODO(SOURCE): veterinary guidance on string and foreign-body ingestion - team to link the exact page'
+- id: PET-WINDOW-NO-SCREEN
+  title: Open window with no screen
+  kind: absence
+  rooms:
+  - living
+  - bedroom
+  severity: 3
+  observable_evidence: An open window with no screen fitted
+  sam_prompts:
+  - open window
+  safety_prompts:
+  - window screen
+  cannot_see_note: null
+  fixes:
+  - id: pet-window-screen
+    title: Add a secure screen
+    how: Fit a secure window screen or a pet-resistant screen insert.
+    difficulty: medium
+    cost_estimate: ~$20-60 (estimate)
+    visualization_prompt: Add a window screen fitted inside the open window frame.
+  sources:
+  - 'TODO(SOURCE): ASPCA high-rise syndrome guidance for cats - team to link the exact page'
+- id: PET-BALCONY-GAP
+  title: Balcony railing gaps a pet could fit through
+  kind: presence
+  rooms:
+  - balcony
+  severity: 3
+  observable_evidence: Balcony railing with wide gaps a small pet could slip through
+  sam_prompts:
+  - balcony railing
+  safety_prompts: []
+  cannot_see_note: We cannot measure gap width from video - a person should check whether the pet's head fits through.
+  fixes:
+  - id: pet-balcony-mesh
+    title: Add balcony netting or mesh
+    how: Fit pet netting or mesh panels over the railing gaps.
+    difficulty: medium
+    cost_estimate: ~$25-50 (estimate)
+    visualization_prompt: Add fine mesh netting stretched across the balcony railing.
+  sources:
+  - 'TODO(SOURCE): veterinary balcony safety guidance - team to link the exact page'
+- id: PET-TOILET-LID-OPEN
+  title: Toilet lid left up
+  kind: presence
+  rooms:
+  - bathroom
+  severity: 1
+  observable_evidence: Toilet with the lid up, where bowl cleaning tablets may be used
+  sam_prompts:
+  - open toilet
+  - toilet lid up
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: pet-toilet-lid-down
+    title: Keep the lid down
+    how: Keep the toilet lid closed, especially if bowl cleaning tablets are used.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the toilet with the lid closed.
+  sources:
+  - 'TODO(SOURCE): ASPCA household hazards guidance - team to link the exact page'

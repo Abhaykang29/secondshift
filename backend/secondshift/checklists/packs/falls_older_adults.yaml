@@ -1,3 +1,5 @@
+version: 1
+status: approved
 pack_id: falls_older_adults
 title: Parent's home (falls)
 audience: Older adults living at home
@@ -19,6 +21,7 @@ items:
   - any
   severity: 3
   observable_evidence: Loose throw rug or small mat on a walking area
+  dedupe_key: rug_on_path
   sam_prompts:
   - throw rug
   - area rug
@@ -31,7 +34,7 @@ items:
     how: Take the rug off the walking path entirely.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Remove the throw rug from the floor, leaving the bare floor visible.
   - id: rug-tape
     title: Double-sided rug tape
     how: Tape all edges of the rug flat to the floor.
@@ -53,6 +56,7 @@ items:
   - any
   severity: 3
   observable_evidence: Electrical cord or cable crossing a walking path
+  dedupe_key: cord_reroute
   sam_prompts:
   - electrical cord
   - extension cord
@@ -65,7 +69,7 @@ items:
     how: Move the cord so it runs along the wall, not across the path.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the cord running along the wall instead of across the floor.
   - id: cord-cover
     title: Cord cover strip
     how: Cover the cord with a low cord cover strip.
@@ -93,7 +97,7 @@ items:
     how: Move everything off the walking path so it is at least 3 feet wide.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the walking path completely clear of clutter.
   - id: clutter-bench
     title: Add a bench/shelf by the door
     how: Put a bench or shelf by the door for shoes and bags.
@@ -120,7 +124,7 @@ items:
     how: Remove everything from the stair treads.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the staircase completely clear of objects.
   - id: stairs-basket
     title: Basket at the bottom of the stairs
     how: Use one basket for items that need to go up.
@@ -135,6 +139,7 @@ items:
   - stairs
   severity: 3
   observable_evidence: Staircase visible with no handrail on one or both sides
+  dedupe_key: stairs_rail
   sam_prompts:
   - staircase
   - stairs
@@ -169,7 +174,7 @@ items:
     how: Fit brighter bulbs over the stairs.
     difficulty: easy
     cost_estimate: ~$10
-    visualization_prompt: null
+    visualization_prompt: Show the staircase brightly lit with working bulbs.
   - id: stairs-motion
     title: Motion-sensor stair lights
     how: Stick motion-sensor lights along the stairs.
@@ -190,6 +195,7 @@ items:
   - bathroom
   severity: 3
   observable_evidence: Toilet, tub or shower visible with no grab bar on the nearby wall
+  dedupe_key: toilet_support
   sam_prompts:
   - toilet
   - bathtub
@@ -251,7 +257,7 @@ items:
     how: Fit a raised toilet seat; ask a professional which height fits.
     difficulty: easy
     cost_estimate: ~$25-60
-    visualization_prompt: null
+    visualization_prompt: Add a raised toilet seat fitted on the toilet.
   sources: *id001
 - id: FALL-BED-LIGHT-REACH
   title: No light within reach of the bed
@@ -282,6 +288,7 @@ items:
   - hallway
   severity: 3
   observable_evidence: Hallway/path from bedroom to bathroom with no night light visible
+  dedupe_key: night_light_path
   sam_prompts:
   - hallway
   safety_prompts:
@@ -314,7 +321,7 @@ items:
     how: Move items used every day down to easy-reach shelves.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the everyday items on the low counter shelf instead of the high cabinet.
   - id: kitchen-stool
     title: Sturdy step stool with handle
     how: Replace a chair with a sturdy step stool that has a handle.
@@ -341,7 +348,7 @@ items:
     how: Have a professional add a rail beside the entry step.
     difficulty: pro
     cost_estimate: Ask a professional for a quote (estimate)
-    visualization_prompt: null
+    visualization_prompt: Add a metal handrail beside the entry step.
   sources: *id001
 - id: FALL-PET-PATH
   title: Pet bowls or toys on a walking path
@@ -361,7 +368,7 @@ items:
     how: Move pet bowls and toys out of walking paths.
     difficulty: easy
     cost_estimate: free
-    visualization_prompt: null
+    visualization_prompt: Show the pet bowls and toys moved out of the walking path.
   sources: *id001
 - id: FALL-FURNITURE-SUPPORT
   title: Using furniture for support while walking
@@ -385,7 +392,7 @@ items:
     how: Have a professional add a rail along this walking path.
     difficulty: pro
     cost_estimate: Ask a professional for a quote (estimate)
-    visualization_prompt: null
+    visualization_prompt: Add a sturdy support rail fixed to the wall beside the sofa.
   - id: support-rearrange
     title: Rearrange so sturdy support is available
     how: Move sturdy furniture so support is available along the path.
@@ -419,7 +426,7 @@ items:
     how: Add a firm cushion or risers to raise the seat height.
     difficulty: easy
     cost_estimate: ~$20-40
-    visualization_prompt: null
+    visualization_prompt: Add a firm seat cushion raising the chair seat.
   - id: seat-armchair
     title: Chair with armrests
     how: Use a chair with armrests that can be pushed on to stand.

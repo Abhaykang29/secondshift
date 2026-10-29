@@ -1,0 +1,237 @@
+version: 1
+status: approved
+pack_id: earthquake_ready
+title: Earthquake-ready home
+audience: Homes in earthquake regions
+high_risk_zones:
+- bedroom
+- living
+- kitchen
+- hallway
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: QUAKE-TALL-FURNITURE-UNANCHORED
+  title: Tall furniture with no anchor strap visible
+  kind: absence
+  rooms:
+  - living
+  - bedroom
+  severity: 3
+  observable_evidence: Tall bookcase, dresser or cabinet standing free with no anchor strap visible
+  sam_prompts:
+  - bookcase
+  - dresser
+  - tall cabinet
+  safety_prompts:
+  - furniture strap
+  - wall anchor
+  cannot_see_note: Anchor straps are often hidden behind the furniture - a person should check by hand.
+  fixes:
+  - id: quake-anchor-furniture
+    title: Anchor it to wall studs
+    how: Fit a furniture anchor strap from the top of the piece into a wall stud.
+    difficulty: medium
+    cost_estimate: ~$10-20 (estimate)
+    visualization_prompt: Add a furniture anchor strap from the top of the bookcase to the wall behind it.
+  sources:
+  - 'TODO(SOURCE): Ready.gov / Earthquake Country Alliance secure-your-space guidance - team to link the exact page'
+- id: QUAKE-TV-UNSECURED
+  title: TV on a stand, not mounted or strapped
+  kind: presence
+  rooms:
+  - living
+  - bedroom
+  severity: 3
+  observable_evidence: Television sitting on a stand or dresser with no strap or mount visible
+  sam_prompts:
+  - television
+  - TV on stand
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: quake-tv-strap
+    title: Strap or wall-mount the TV
+    how: Fit an anti-tip TV strap to the stand, or wall-mount the TV.
+    difficulty: medium
+    cost_estimate: ~$15-30 (estimate)
+    visualization_prompt: Show the television wall-mounted above the stand with no gap.
+  sources:
+  - 'TODO(SOURCE): Earthquake Country Alliance secure-your-space guidance - team to link the exact page'
+- id: QUAKE-HEAVY-HIGH
+  title: Heavy objects on high shelves
+  kind: presence
+  rooms:
+  - living
+  - kitchen
+  - bedroom
+  severity: 2
+  observable_evidence: Heavy or breakable objects stored on high shelves where they can fall
+  sam_prompts:
+  - heavy object on high shelf
+  - vase on high shelf
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: quake-heavy-low
+    title: Move heavy items to low shelves
+    how: Swap heavy items down to the lowest shelves and light items up top.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the heavy items on the lowest shelf and only light items on the top shelf.
+  sources:
+  - 'TODO(SOURCE): Ready.gov earthquake guidance - team to link the exact page'
+- id: QUAKE-FRAME-OVER-BED
+  title: Frame or shelf hanging over the bed
+  kind: presence
+  rooms:
+  - bedroom
+  severity: 3
+  observable_evidence: Picture frame, mirror or shelf mounted on the wall directly over a bed
+  sam_prompts:
+  - picture frame above bed
+  - mirror above bed
+  - shelf above bed
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: quake-frame-move
+    title: Move it away from the bed
+    how: Rehang the frame or shelf on a wall that is not over the bed, or move the bed.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the wall above the bed empty, with the picture frame hanging on the side wall instead.
+  sources:
+  - 'TODO(SOURCE): Earthquake Country Alliance secure-your-space guidance - team to link the exact page'
+- id: QUAKE-BED-UNDER-WINDOW
+  title: Bed directly under a large window
+  kind: presence
+  rooms:
+  - bedroom
+  severity: 2
+  observable_evidence: Bed positioned directly under a large window
+  sam_prompts:
+  - bed under window
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: quake-bed-move
+    title: Move the bed away from the window
+    how: Shift the bed so it is not under the window glass.
+    difficulty: medium
+    cost_estimate: free
+    visualization_prompt: Show the bed moved along the wall so it is no longer under the window.
+  sources:
+  - 'TODO(SOURCE): Ready.gov earthquake guidance - team to link the exact page'
+- id: QUAKE-WATER-HEATER-UNSTRAPPED
+  title: Water heater with no straps visible
+  kind: absence
+  rooms:
+  - garage
+  - utility
+  severity: 3
+  observable_evidence: Water heater visible with no securing straps around it
+  sam_prompts:
+  - water heater
+  safety_prompts:
+  - water heater strap
+  cannot_see_note: null
+  fixes:
+  - id: quake-heater-strap
+    title: Strap the water heater
+    how: Fit two straps around the heater, anchored to the wall studs.
+    difficulty: pro
+    cost_estimate: ~$20-40 plus fitting (estimate)
+    visualization_prompt: Add two metal straps around the water heater, fixed to the wall behind it.
+  sources:
+  - 'TODO(SOURCE): Ready.gov / local code guidance on water heater strapping - team to link the exact page'
+- id: QUAKE-CABINET-NO-LATCH
+  title: Kitchen cabinets with no latches visible
+  kind: absence
+  rooms:
+  - kitchen
+  severity: 2
+  observable_evidence: Kitchen cabinets holding glass or heavy items, no latches visible
+  sam_prompts:
+  - kitchen cabinet
+  safety_prompts:
+  - cabinet latch
+  cannot_see_note: Latches are fitted inside the doors - a person should check by opening one.
+  fixes:
+  - id: quake-cabinet-latch
+    title: Add cabinet latches
+    how: Fit childproof-style latches to cabinets holding glass or heavy items.
+    difficulty: easy
+    cost_estimate: ~$10-20 (estimate)
+    visualization_prompt: null
+    # not visual: latches are inside the doors, nothing meaningful to draw
+  sources:
+  - 'TODO(SOURCE): Earthquake Country Alliance secure-your-space guidance - team to link the exact page'
+- id: QUAKE-GLASS-NEAR-BED
+  title: Glass objects that can fall onto the bed
+  kind: presence
+  rooms:
+  - bedroom
+  severity: 2
+  observable_evidence: Glass lamp or glass objects on a shelf or table beside or above the bed
+  sam_prompts:
+  - glass lamp near bed
+  - glass object on shelf
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: quake-glass-move
+    title: Move or secure glass near the bed
+    how: Move glass items away from the bed, or fix them down with museum putty.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the glass lamp replaced by a soft-shade lamp on the bedside table.
+  sources:
+  - 'TODO(SOURCE): Ready.gov earthquake guidance - team to link the exact page'
+- id: QUAKE-PATH-BLOCKED
+  title: Bedroom exit path blocked by furniture
+  kind: presence
+  rooms:
+  - bedroom
+  - hallway
+  severity: 2
+  observable_evidence: Furniture standing in the exit path from the bedroom where it could fall or block escape
+  sam_prompts:
+  - furniture in hallway
+  - blocked doorway
+  safety_prompts: []
+  cannot_see_note: null
+  dedupe_key: clear_exit_path
+  fixes:
+  - id: quake-path-clear
+    title: Clear the exit path
+    how: Move the furniture out of the doorway and hallway path.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the hallway and doorway completely clear of furniture.
+  sources:
+  - 'TODO(SOURCE): Ready.gov earthquake guidance - team to link the exact page'
+- id: QUAKE-SHOES-FLASHLIGHT-BED
+  title: No shoes or flashlight by the bed
+  kind: absence
+  rooms:
+  - bedroom
+  severity: 1
+  observable_evidence: Bedside area visible with no flashlight or shoes kept there
+  sam_prompts:
+  - bedside table
+  safety_prompts:
+  - flashlight
+  - shoes near bed
+  cannot_see_note: We cannot see inside drawers - a person should check by hand.
+  fixes:
+  - id: quake-bedside-kit
+    title: Keep shoes and a flashlight by the bed
+    how: Place sturdy shoes and a flashlight where you can reach them from the bed.
+    difficulty: easy
+    cost_estimate: ~$10 (estimate)
+    visualization_prompt: Add a flashlight and a pair of shoes on the floor beside the bedside table.
+  sources:
+  - 'TODO(SOURCE): Ready.gov earthquake kit guidance - team to link the exact page'

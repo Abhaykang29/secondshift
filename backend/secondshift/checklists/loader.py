@@ -42,6 +42,8 @@ class PackItem(BaseModel):
     cannot_see_note: str | None = None
     fixes: list[PackFix]
     sources: list[str] = Field(default_factory=list)
+    measurement_threshold: str | None = None
+    dedupe_key: str | None = None
 
     @field_validator("severity")
     @classmethod
@@ -61,6 +63,8 @@ class PackItem(BaseModel):
 class Pack(BaseModel):
     """A checklist pack: one use case, as data."""
 
+    version: int = 1
+    status: Literal["approved", "draft"] = "approved"
     pack_id: str
     title: str
     audience: str
@@ -79,6 +83,21 @@ class Pack(BaseModel):
         return v
 
 
+def _enforce_sources(pack: "Pack", path: str | Path) -> None:
+    """An approved pack may not ship items without sources (pass 2 C.1).
+
+    Draft packs are exempt - they are visibly unreviewed in the product.
+    A TODO(SOURCE) entry counts: it names what the team must verify.
+    """
+    if pack.status != "approved":
+        return
+    missing = [item.id for item in pack.items if not item.sources]
+    if missing:
+        raise ValueError(
+            f"Approved pack {pack.pack_id} ({path}) has items without sources: {', '.join(missing)}"
+        )
+
+
 def load_pack(path: str | Path) -> Pack:
     """Load and validate one pack YAML file.
 
@@ -88,7 +107,9 @@ def load_pack(path: str | Path) -> Pack:
     raw = yaml.safe_load(Path(path).read_text())
     if not isinstance(raw, dict):
         raise ValueError(f"Pack file {path} did not parse to a mapping.")
-    return Pack.model_validate(raw)
+    pack = Pack.model_validate(raw)
+    _enforce_sources(pack, path)
+    return pack
 
 
 def load_all_packs(packs_dir: str | Path = PACKS_DIR) -> dict[str, Pack]:

@@ -7,7 +7,14 @@ from secondshift.checklists.loader import PACKS_DIR, load_all_packs, load_pack
 def test_all_packs_load_and_validate() -> None:
     """Every shipped pack parses and validates."""
     packs = load_all_packs()
-    assert set(packs) == {"falls_older_adults", "babyproofing", "fire_safety"}
+    assert set(packs) == {
+        "falls_older_adults",
+        "babyproofing",
+        "fire_safety",
+        "earthquake_ready",
+        "pet_safety",
+        "home_from_hospital",
+    }
 
 
 def test_falls_pack_is_the_full_hero_pack() -> None:

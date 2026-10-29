@@ -55,6 +55,7 @@ class Hazard(BaseModel):
     id: str
     checkup_id: str
     pack_id: str
+    pack_tags: list[str] = Field(default_factory=list)
     item_id: str
     kind: ItemKind
     room: str

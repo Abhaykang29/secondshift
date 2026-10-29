@@ -35,6 +35,8 @@ def create_checkup(body: CreateCheckup, request: Request) -> dict[str, Any]:
             detail="Consent is required: the resident must know and agree, "
             "and no one may be filmed in a bathroom or undressed.",
         )
+    if not 1 <= len(body.pack_ids) <= 3:
+        raise HTTPException(status_code=422, detail="Choose between 1 and 3 packs per check-up.")
     checkup = Checkup(
         id=uuid.uuid4().hex,
         created_at=datetime.now(UTC),

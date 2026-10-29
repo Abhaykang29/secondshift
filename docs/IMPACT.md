@@ -14,3 +14,18 @@ Sources:
 - NSC Injury Facts - Older adult falls: https://injuryfacts.nsc.org/home-and-community/safety-topics/older-adult-falls/
 - Cochrane review summary (Clemson et al., 2023): https://www.eurekalert.org/news-releases/981932
 - NFPA Home Cooking Fires (2023)
+
+## Fire safety
+| Fact | Source |
+|---|---|
+| TODO(STAT): smoke-alarm effectiveness figure — team to source from NFPA before any claim ships. | TODO(STAT) |
+| TODO(STAT): cooking-fire share and CO figures to be sourced from NFPA / USFA by the team. | TODO(STAT) |
+
+## Earthquake readiness
+TODO(STAT): no sourced impact facts yet. Team to source from Ready.gov / USGS before any claim ships.
+
+## Pet safety
+TODO(STAT): no sourced impact facts yet. Team to source from ASPCA Animal Poison Control before any claim ships (every plant and food claim must be verified).
+
+## Home from hospital
+TODO(STAT): no sourced impact facts yet. Team to source from discharge-planning / OT literature before any claim ships.

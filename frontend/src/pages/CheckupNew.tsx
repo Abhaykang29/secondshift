@@ -11,7 +11,16 @@ import en from "../i18n/en.json";
  */
 export default function CheckupNew() {
   const navigate = useNavigate();
-  const [pack, setPack] = useState("falls_older_adults");
+  const [packIds] = useState<string[]>(() => {
+    try {
+      const stored = JSON.parse(
+        sessionStorage.getItem("pack_selection") ?? "[]",
+      ) as string[];
+      return stored.length > 0 ? stored.slice(0, 3) : ["falls_older_adults"];
+    } catch {
+      return ["falls_older_adults"];
+    }
+  });
   const [label, setLabel] = useState("");
   const [informed, setInformed] = useState(false);
   const [noPrivate, setNoPrivate] = useState(false);
@@ -23,7 +32,7 @@ export default function CheckupNew() {
     setError("");
     try {
       const checkup = await api.createCheckup({
-        pack_ids: [pack],
+        pack_ids: packIds,
         resident_label: label || null,
         consent: { resident_informed: informed, no_private_moments: noPrivate },
       });
@@ -41,15 +50,11 @@ export default function CheckupNew() {
       <p className="mt-3">{en.consent_intro}</p>
 
       <fieldset className="mt-5">
-        <legend className="font-medium">Whose home?</legend>
-        <label className="mt-2 block">
-          <input type="radio" name="pack" checked={pack === "falls_older_adults"}
-            onChange={() => setPack("falls_older_adults")} /> Parent's home (falls)
-        </label>
-        <label className="mt-1 block">
-          <input type="radio" name="pack" checked={pack === "babyproofing"}
-            onChange={() => setPack("babyproofing")} /> Baby's home (babyproofing)
-        </label>
+        <legend className="font-medium">Checklists for this walkthrough</legend>
+        <p className="mt-1 opacity-80">
+          {packIds.join(", ")} — chosen on the home screen (up to 3). One
+          walkthrough is checked against all of them.
+        </p>
       </fieldset>
 
       <label className="mt-5 block">

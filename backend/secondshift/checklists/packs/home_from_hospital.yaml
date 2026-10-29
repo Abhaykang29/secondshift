@@ -1,0 +1,267 @@
+version: 1
+status: approved
+pack_id: home_from_hospital
+title: Home from hospital
+audience: Someone coming home after surgery or a hospital stay, using a walker, cane or wheelchair
+high_risk_zones:
+- entry
+- path_to_bathroom
+- bathroom
+- bedroom
+- stairs
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: HOSP-DOOR-NARROW
+  title: Doorway on the main path may be too narrow
+  kind: measurement
+  rooms:
+  - entry
+  - hallway
+  - bathroom
+  severity: 3
+  observable_evidence: Doorway on the entry to bathroom path - the family enters its clear width
+  sam_prompts:
+  - doorway
+  safety_prompts: []
+  cannot_see_note: Width is entered by the family with a tape or Measure app - video cannot measure it.
+  measurement_threshold: 'TODO(SOURCE): verify the ADA 2010 Standards 404.2.3 citation (32 inch minimum clear opening) before using any threshold'
+  fixes:
+  - id: hosp-door-widen
+    title: Offset hinges or remove the door
+    how: A handyperson can fit swing-clear hinges or remove the door to gain width - ask the care team first.
+    difficulty: pro
+    cost_estimate: varies (estimate)
+    visualization_prompt: null
+    # not visual yet: the right fix depends on the measured width, which the family enters
+  sources:
+  - 'TODO(SOURCE): ADA 2010 Standards 404.2.3 and discharge-planning guidance - team to verify before release'
+- id: HOSP-PATH-NARROW
+  title: The bed to bathroom path may be too narrow
+  kind: measurement
+  rooms:
+  - hallway
+  - bedroom
+  severity: 3
+  observable_evidence: Narrowest point of the bed to bathroom path - the family enters its width
+  sam_prompts:
+  - hallway
+  - furniture in path
+  safety_prompts: []
+  cannot_see_note: Width is entered by the family - video cannot measure it.
+  fixes:
+  - id: hosp-path-widen
+    title: Move furniture to widen the path
+    how: Move furniture so the path from bed to bathroom is clear at its narrowest point.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the hallway path widened, with the furniture moved against the far wall.
+  sources:
+  - 'TODO(SOURCE): occupational-therapy home setup guidance - team to link the exact page'
+- id: HOSP-THRESHOLD-RAISED
+  title: Raised threshold on the path
+  kind: presence
+  rooms:
+  - entry
+  - hallway
+  - bathroom
+  severity: 2
+  observable_evidence: Raised door threshold or floor level change on the main path
+  sam_prompts:
+  - door threshold
+  - floor transition
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: hosp-threshold-ramp
+    title: Add a threshold ramp
+    how: Fit a low threshold ramp over the raised edge.
+    difficulty: easy
+    cost_estimate: ~$20-50 (estimate)
+    visualization_prompt: Add a small grey threshold ramp over the raised strip in the doorway.
+  sources:
+  - 'TODO(SOURCE): occupational-therapy home setup guidance - team to link the exact page'
+- id: HOSP-RUGS-PATH
+  title: Rug or mat on the path
+  kind: presence
+  rooms:
+  - hallway
+  - bathroom
+  - bedroom
+  severity: 3
+  observable_evidence: Any rug or mat lying on the bed to bathroom path - walker wheels and cane tips catch on edges
+  sam_prompts:
+  - rug
+  - mat
+  safety_prompts: []
+  cannot_see_note: null
+  dedupe_key: rug_on_path
+  fixes:
+  - id: hosp-rug-remove
+    title: Remove rugs on the path
+    how: Take every rug and mat off the path entirely for the recovery period.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Remove the rug from the hallway, leaving the bare floor.
+  sources:
+  - 'TODO(SOURCE): hospital discharge home-setup guidance - team to link the exact page'
+- id: HOSP-BED-HEIGHT
+  title: Bed height may make transfers hard
+  kind: measurement
+  rooms:
+  - bedroom
+  severity: 2
+  observable_evidence: The bed - the family enters its height from the floor to the top of the mattress
+  sam_prompts:
+  - bed
+  safety_prompts: []
+  cannot_see_note: Height is entered by the family - ask the therapist which height is right.
+  fixes:
+  - id: hosp-bed-risers
+    title: Bed risers or a lower mattress
+    how: Adjust the bed height with risers or a different mattress - ask the therapist which height first.
+    difficulty: medium
+    cost_estimate: ~$20-40 (estimate)
+    visualization_prompt: Add bed risers under the four bed legs.
+  sources:
+  - 'TODO(SOURCE): occupational-therapy transfer guidance - team to link the exact page'
+- id: HOSP-TOILET-SUPPORT
+  title: Toilet with no support frame or grab bar
+  kind: absence
+  rooms:
+  - bathroom
+  severity: 3
+  observable_evidence: Toilet visible with no safety frame, raised seat or grab bar
+  sam_prompts:
+  - toilet
+  safety_prompts:
+  - grab bar
+  - toilet safety frame
+  - raised toilet seat
+  cannot_see_note: null
+  dedupe_key: toilet_support
+  fixes:
+  - id: hosp-toilet-frame
+    title: Fit a toilet safety frame
+    how: Fit a free-standing toilet safety frame, or a raised seat with arms.
+    difficulty: easy
+    cost_estimate: ~$40-80 (estimate)
+    visualization_prompt: Add a white toilet safety frame with armrests around the toilet.
+  sources:
+  - 'TODO(SOURCE): hospital discharge bathroom setup guidance - team to link the exact page'
+- id: HOSP-SHOWER-SEAT
+  title: Shower or tub with no seat
+  kind: absence
+  rooms:
+  - bathroom
+  severity: 3
+  observable_evidence: Shower or bathtub visible with no chair or transfer bench
+  sam_prompts:
+  - shower
+  - bathtub
+  safety_prompts:
+  - shower chair
+  - tub transfer bench
+  cannot_see_note: null
+  fixes:
+  - id: hosp-shower-chair
+    title: Add a shower chair or transfer bench
+    how: Place a shower chair, or a transfer bench across the tub edge.
+    difficulty: easy
+    cost_estimate: ~$35-70 (estimate)
+    visualization_prompt: Add a white shower chair inside the shower.
+  sources:
+  - 'TODO(SOURCE): hospital discharge bathroom setup guidance - team to link the exact page'
+- id: HOSP-CHAIR-NO-ARMS
+  title: Main chair has no armrests
+  kind: absence
+  rooms:
+  - living
+  - bedroom
+  severity: 2
+  observable_evidence: The main sitting chair has no armrests to push up from
+  sam_prompts:
+  - chair
+  - sofa
+  safety_prompts:
+  - armrests
+  cannot_see_note: null
+  fixes:
+  - id: hosp-chair-arms
+    title: Use a sturdy chair with armrests
+    how: Make the main seat a sturdy chair with firm armrests at a comfortable height.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show a sturdy chair with armrests in place of the armless chair.
+  sources:
+  - 'TODO(SOURCE): occupational-therapy seating guidance - team to link the exact page'
+- id: HOSP-ITEMS-OUT-OF-REACH
+  title: Everyday items stored out of reach
+  kind: presence
+  rooms:
+  - kitchen
+  - bathroom
+  - bedroom
+  severity: 2
+  observable_evidence: Everyday items on high shelves or very low shelves that need stretching or bending
+  sam_prompts:
+  - items on high shelf
+  - items on low shelf
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: hosp-items-waist
+    title: Move daily items to waist height
+    how: Move the things used every day to waist-height shelves and counters.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the daily items on the waist-height shelf, with the high shelf empty of them.
+  sources:
+  - 'TODO(SOURCE): occupational-therapy home setup guidance - team to link the exact page'
+- id: HOSP-STAIRS-RAIL
+  title: Stairs with no handrail
+  kind: absence
+  rooms:
+  - stairs
+  severity: 3
+  observable_evidence: Stairs on the route to the bedroom or bathroom with no handrail
+  sam_prompts:
+  - staircase
+  safety_prompts:
+  - handrail
+  cannot_see_note: null
+  dedupe_key: stairs_rail
+  fixes:
+  - id: hosp-stairs-rail-install
+    title: Install a handrail
+    how: Have a handyperson fit a rail along the full flight.
+    difficulty: pro
+    cost_estimate: varies (estimate)
+    visualization_prompt: Add a wooden handrail along the staircase wall.
+  sources:
+  - 'TODO(SOURCE): discharge home-setup guidance - team to link the exact page'
+- id: HOSP-NIGHT-PATH
+  title: No night lighting on the bed to bathroom path
+  kind: absence
+  rooms:
+  - hallway
+  - bathroom
+  severity: 3
+  observable_evidence: The bed to bathroom path with no night light visible
+  sam_prompts:
+  - hallway
+  safety_prompts:
+  - night light
+  cannot_see_note: null
+  dedupe_key: night_light_path
+  fixes:
+  - id: hosp-night-lights
+    title: Plug in night lights along the path
+    how: Add plug-in night lights from the bed to the bathroom door.
+    difficulty: easy
+    cost_estimate: ~$10-20 (estimate)
+    visualization_prompt: Add small plug-in night lights along the hallway wall at baseboard height.
+  sources:
+  - 'TODO(SOURCE): discharge home-setup guidance - team to link the exact page'

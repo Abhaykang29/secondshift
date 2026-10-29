@@ -16,24 +16,28 @@ from secondshift.providers.base import ProposeRequest, VisionReasoner
 
 
 def pack_items_yaml(packs: list[Pack]) -> str:
-    """Serialize pack items for the propose prompt (ids are the contract)."""
-    items = []
+    """Serialize pack items for the propose prompt, GROUPED by pack.
+
+    Pass 2 Phase C: a multi-pack scan sends one propose request whose
+    checklist is grouped by pack so the model keeps pack boundaries;
+    the item_id values remain the contract.
+    """
+    grouped: dict[str, list[dict[str, object]]] = {}
     for pack in packs:
-        for item in pack.items:
-            items.append(
-                {
-                    "item_id": item.id,
-                    "pack_id": pack.pack_id,
-                    "title": item.title,
-                    "kind": item.kind.value,
-                    "rooms": item.rooms,
-                    "severity": item.severity,
-                    "observable_evidence": item.observable_evidence,
-                    "sam_prompts": item.sam_prompts,
-                    "safety_prompts": item.safety_prompts,
-                }
-            )
-    return yaml.safe_dump(items, sort_keys=False)
+        grouped[pack.pack_id] = [
+            {
+                "item_id": item.id,
+                "title": item.title,
+                "kind": item.kind.value,
+                "rooms": item.rooms,
+                "severity": item.severity,
+                "observable_evidence": item.observable_evidence,
+                "sam_prompts": item.sam_prompts,
+                "safety_prompts": item.safety_prompts,
+            }
+            for item in pack.items
+        ]
+    return yaml.safe_dump(grouped, sort_keys=False)
 
 
 def propose_hazards(

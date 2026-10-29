@@ -119,7 +119,8 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
                     evidence=hazard.evidence,
                 )
             )
-    hazards = rank_mod.dedupe_hazards(hazards)
+    dedupe_keys = {item.id: item.dedupe_key for pack in scan_input.packs for item in pack.items}
+    hazards = rank_mod.dedupe_hazards(hazards, dedupe_keys)
     confidences = {p.item_id: p.confidence for p in proposals}
     hazards, fix_first = rank_mod.rank_hazards(
         hazards,

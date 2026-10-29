@@ -29,7 +29,9 @@ export default function ReportPage() {
   if (error) return <main className="mx-auto max-w-2xl p-6"><p role="alert">{error}</p></main>;
   if (!report) return <main className="mx-auto max-w-2xl p-6"><p>Loading the report...</p></main>;
 
-  const confirmed = report.hazards.filter((h) => h.verification === "confirmed");
+  const confirmed = report.hazards
+    .filter((h) => h.verification === "confirmed")
+    .sort((a, b) => a.pack_id.localeCompare(b.pack_id) || (a.rank ?? 99) - (b.rank ?? 99));
   const needsHuman = report.hazards.filter((h) => h.verification === "needs_human");
   const vizByHazard = new Map(report.visualizations.map((v) => [v.hazard_id, v]));
 
@@ -48,8 +50,17 @@ export default function ReportPage() {
       </section>
 
       <section aria-label="Hazards">
-        {confirmed.map((h) => (
+        {confirmed.map((h, i) => (
           <div key={h.id}>
+            {(report.pack_ids.length > 1 &&
+              (i === 0 || confirmed[i - 1].pack_id !== h.pack_id)) && (
+              <h3 className="mt-5 text-lg font-semibold">
+                Checklist: {h.pack_id}
+                {h.pack_tags && h.pack_tags.length > 1
+                  ? ` (also in ${h.pack_tags.filter((x) => x !== h.pack_id).join(", ")})`
+                  : ""}
+              </h3>
+            )}
             <HazardCard hazard={h} />
             {vizByHazard.has(h.id) && (
               <BeforeAfter

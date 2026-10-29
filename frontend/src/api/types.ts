@@ -120,6 +120,7 @@ export interface Hazard {
   id: string;
   checkup_id: string;
   pack_id: string;
+  pack_tags?: string[];
   item_id: string;
   kind: ItemKind;
   room: string;
