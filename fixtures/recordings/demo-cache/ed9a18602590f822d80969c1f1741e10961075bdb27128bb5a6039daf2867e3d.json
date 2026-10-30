@@ -9,6 +9,7 @@
         "evidence_timestamps": [
           5.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "s",
           "h",
@@ -38,6 +39,7 @@
           12.5,
           13.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "t",
           "h",
@@ -61,6 +63,7 @@
         "evidence_timestamps": [
           22.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "e",
           "l",
@@ -90,6 +93,7 @@
         "evidence_timestamps": [
           35.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "h",
           "a",
@@ -113,6 +117,7 @@
         "evidence_timestamps": [
           40.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "p",
           "e",
@@ -135,6 +140,7 @@
         "evidence_timestamps": [
           55.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "s",
           "h",
@@ -164,6 +170,7 @@
         "evidence_timestamps": [
           65.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "i",
           "t",
@@ -197,6 +204,7 @@
         "evidence_timestamps": [
           88.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "t",
           "o",
@@ -219,6 +227,7 @@
         "evidence_timestamps": [
           92.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "b",
           "a",
@@ -242,6 +251,7 @@
         "evidence_timestamps": [
           10.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "d",
           "r",
@@ -266,6 +276,7 @@
       "bathroom",
       "stairs"
     ],
+    "keyframe_rooms": [],
     "cannot_assess": []
   }
 }

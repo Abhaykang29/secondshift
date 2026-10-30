@@ -70,6 +70,16 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
             [kf.image_path for kf in keyframes if kf.image_path],
             request.app.state.providers.segmenter,
         )
+    if (
+        scenario is not None
+        and not body.capture_id
+        and request.app.state.settings.provider.value != "mock"
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail="The demo home runs in demo mode (make demo). "
+            "With live providers, upload a real walkthrough instead.",
+        )
     if scenario is None and request.app.state.settings.provider.value == "mock":
         scenario = "baby_home_demo" if checkup.pack_ids == ["babyproofing"] else "parent_home_demo"
     if scenario is not None:

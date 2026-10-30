@@ -106,3 +106,50 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
   - /v1 verified via TestClient: 401 without a key, checklist compile
     200 with the local key, OpenAPI at /v1/openapi.json; the 429 rate
     limit is covered in tests. Pass-3 spend after P4: $5.17 of $50.
+
+
+## Pass 3 P5/P6 - routine + voice decisions, ablations, demo prep (2026-10-30)
+
+- entry_id: pass3_p6_eval_demo
+  - Routine (P5): NOT DONE live, hidden on purpose. The live scan
+    consumes routine contacts only from the scripted demo scenario;
+    the geometry (pipeline/routine.py) and Wonder summaries are
+    unit-tested but no feeder turns a real routine clip into boxes,
+    and no team routine clip exists in data/inbox to verify one
+    against. The app's optional routine step is HIDDEN (both copies
+    removed from CheckupNew) rather than left as a dead control.
+    Unblock: one fixed-camera routine clip + the SAM feeder build.
+  - Voice: audio.txt never arrived and the transcribe endpoint was
+    never located (Pass 2 H). No voice UI exists to remove - the
+    Learn tab states plainly that Muse Voice is not connected and
+    narration is not transcribed. Nothing in the demo script
+    mentions voice.
+  - Ablations (scripts/run_ablation.py, in-process on the acceptance
+    capture's keyframes, falls+fire+pets, the 8 ground-truth items,
+    P1 scoring convention): full (sweep + thin tiles) recall 7/8
+    family (6/8 strict), precision 6/9, 112s. no-sweep: recall 7/8,
+    precision 6/8, 5s (propose fully cache-warm). no-thin: recall
+    7/8, precision 6/8, 20s. Read honestly: (1) on this video the
+    sweep added NO recall today and one out-of-family report - yet
+    in run 3 it was the sweep that caught the pet bowls; today NO
+    config caught them. Run-to-run variance is the same size as the
+    sweep's contribution at n=1 video. (2) The thin tiles did not
+    rescue the floor cord in any config - SAM cannot segment that
+    cable even tiled. (3) The sweep costs ~+100s and ~90 SAM calls
+    per scan when live. Conclusion recorded, not hidden: the two-way
+    check is unproven at n=1; more labeled clips are the only cure.
+    Ablation spend $0.64 (ledger tag pass3-ablation).
+  - Demo: scripts/demo_check.py rewritten around the guarantees
+    that actually hold - run_demo.py's recorded mock-scenario replay
+    (parent 9 confirmed, recheck 32.1 -> 78.2, watch alert fires,
+    baby 7 confirmed, refusal + 3 alternatives) and the app demo
+    flow in mock mode. `make demo-check` passes 3/3 offline. FOUND
+    AND DOCUMENTED: replaying a real recorded scan through a fresh
+    upload is NOT bit-exact - person-blur output varies slightly
+    between runs (a handful of frames per capture), changing image
+    hashes and cache keys; all 7 propose batches of the acceptance
+    capture miss today. The real fallback is the stored reports
+    themselves (they open with zero provider calls). DEMO_SCRIPT.md
+    rewritten to the Pass 3 structure with these fallbacks stated.
+  - Pass-3 live spend, final: $5.70 of the $50 cap (tags pass3
+    $5.06 + pass3-ablation $0.64). All-time ledger $10.79.

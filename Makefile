@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend check check-backend check-frontend test demo eval smoke-meta types
+.PHONY: setup dev dev-backend dev-frontend check check-backend check-frontend test demo demo-check eval smoke-meta types
 
 VENV=.venv
 PY=$(VENV)/bin/python
@@ -37,7 +37,10 @@ test:
 	$(PY) -m pytest -q
 
 demo:
-	PROVIDER=meta CACHE_MODE=replay $(PY) -m uvicorn secondshift.main:app --app-dir backend --port 8000
+	PROVIDER=mock $(PY) -m uvicorn secondshift.main:app --app-dir backend --port 8000
+
+demo-check:
+	$(PY) scripts/demo_check.py
 
 eval:
 	$(PY) eval/run_eval.py --help

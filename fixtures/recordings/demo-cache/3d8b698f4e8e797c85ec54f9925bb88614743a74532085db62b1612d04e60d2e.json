@@ -9,6 +9,7 @@
         "evidence_timestamps": [
           10.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "s",
           "m",
@@ -32,6 +33,7 @@
         "evidence_timestamps": [
           20.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "s",
           "t",
@@ -65,6 +67,7 @@
         "evidence_timestamps": [
           28.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "b",
           "l",
@@ -89,6 +92,7 @@
         "evidence_timestamps": [
           33.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "e",
           "l",
@@ -120,6 +124,7 @@
         "evidence_timestamps": [
           38.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "t",
           "e",
@@ -155,6 +160,7 @@
         "evidence_timestamps": [
           48.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "c",
           "l",
@@ -190,6 +196,7 @@
         "evidence_timestamps": [
           45.0
         ],
+        "source_keyframe_ids": [],
         "sam_prompts": [
           "s",
           "t",
@@ -215,6 +222,7 @@
       "kitchen",
       "stairs"
     ],
+    "keyframe_rooms": [],
     "cannot_assess": []
   }
 }

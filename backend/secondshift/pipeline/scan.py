@@ -46,6 +46,11 @@ class ScanInput:
     # (scenario is None); scripted demo scenarios define their own
     # world and skip it.
     sweep: bool = False
+    # Ablation knobs (Pass 3 P6): prompt-level SAM budgets for the
+    # sweep. None = production defaults. thin_sweep_budget=0 disables
+    # the thin-object tiles; sweep_budget=0 disables normal sweep calls.
+    sweep_budget: int | None = None
+    thin_sweep_budget: int | None = None
     propose_model: str = "spark"  # recorded in stats; model choice is config
 
 
@@ -134,6 +139,16 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
             scan_input.checkup.id,
             len(proposals),
             verify_mode=scan_input.verify_mode,
+            **(
+                {"budget": scan_input.sweep_budget}
+                if scan_input.sweep_budget is not None
+                else {}
+            ),
+            **(
+                {"thin_budget": scan_input.thin_sweep_budget}
+                if scan_input.thin_sweep_budget is not None
+                else {}
+            ),
         )
         hazards = sweep_mod.merge_sweep_hazards(hazards, swept)
     hazards = attach_cross_pack_tags(hazards, scan_input.packs)
