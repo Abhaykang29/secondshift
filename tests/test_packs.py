@@ -15,6 +15,9 @@ def test_all_packs_load_and_validate() -> None:
         "pet_safety",
         "mosquito_breeding",
         "home_from_hospital",
+        "home_safety_inspection",
+        "workplace_safety",
+        "car_seat_check",
     }
 
 

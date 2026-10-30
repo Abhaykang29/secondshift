@@ -319,3 +319,43 @@ def test_room_smoothing_and_unlabeled_area() -> None:
     assert [f.room_guess for f in frames] == [
         "living", "living", "unlabeled area", "unlabeled area",
     ]
+
+
+def test_car_seat_tightness_always_cannot_assess() -> None:
+    """SEAT-TIGHTNESS can never be verified by a camera: a scan with
+    the car seat pack always carries its exact wording as a
+    cannot-assess entry and never as a hazard."""
+    from secondshift.config import Settings
+    from secondshift.domain.checkup import Checkup, Consent
+    from secondshift.pipeline.scan import ScanInput, run_scan
+    from secondshift.providers.registry import build_providers
+
+    packs_by_id = load_all_packs()
+    from datetime import UTC, datetime
+
+    checkup = Checkup(
+        created_at=datetime.now(UTC),
+        id="chk-seat",
+        home_label="Car",
+        resident_label="driver",
+        pack_ids=["car_seat_check"],
+        consent=Consent(resident_informed=True, no_private_moments=True),
+    )
+    keyframes = [
+        Keyframe(
+            id="kf-1", capture_id="cap", t=0.0, image_path="",
+            sharpness=0.5, brightness=0.5, usable=True, room_guess=None,
+        )
+    ]
+    out = run_scan(
+        build_providers(Settings()),
+        ScanInput(
+            checkup=checkup,
+            packs=[packs_by_id["car_seat_check"]],
+            keyframes=keyframes,
+        ),
+    )
+    tight = [c for c in out.cannot_assess if c.area == "SEAT-TIGHTNESS"]
+    assert len(tight) == 1
+    assert "1-inch shake test" in tight[0].detail
+    assert all(h.item_id != "SEAT-TIGHTNESS" for h in out.hazards)

@@ -186,6 +186,37 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
     # FINAL verdicts and the rooms actually seen - deduped, no items
     # that got a verdict, no rooms that were filmed.
     cannot = propose_mod.clean_cannot_assess(cannot, hazards, rooms_seen)
+    # Pass 3 P2: items no camera can settle always appear as
+    # cannot-assess with their exact wording, proposed or not; a
+    # hazard verdict for one is a pipeline bug, so drop it here.
+    hazards = [
+        h
+        for h in hazards
+        if not any(
+            item.id == h.item_id and item.always_cannot_assess
+            for pack in scan_input.packs
+            for item in pack.items
+        )
+    ]
+    verdict_items = {h.item_id for h in hazards}
+    for pack in scan_input.packs:
+        for item in pack.items:
+            if not item.always_cannot_assess or item.id in verdict_items:
+                continue
+            # The exact wording wins over any generic propose entry.
+            for entry in cannot:
+                if entry.area == item.id:
+                    entry.reason = "not_visible_by_design"
+                    entry.detail = item.always_cannot_assess
+                    break
+            else:
+                cannot.append(
+                    CannotAssess(
+                        area=item.id,
+                        reason="not_visible_by_design",
+                        detail=item.always_cannot_assess,
+                    )
+                )
     return ScanOutput(
         hazards=hazards,
         cannot_assess=cannot,

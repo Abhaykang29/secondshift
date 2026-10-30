@@ -1,0 +1,226 @@
+version: 1
+status: approved
+demo: true
+pack_id: workplace_safety
+title: Workplace safety
+audience: Shops, offices, warehouses and clinics - walking surfaces and exit routes
+high_risk_zones:
+- hallway
+- entry
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: WORK-EXIT-BLOCKED
+  title: Exit door or exit path blocked
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Boxes or furniture blocking an exit door or the path to it
+  sam_prompts:
+  - exit door
+  - boxes blocking door
+  safety_prompts: []
+  cannot_see_note: null
+  dedupe_key: exit_blocked
+  fixes:
+  - id: work-exit-clear
+    title: Clear the exit and keep it clear
+    how: Move everything away from the exit door and the exit path today, and store those items elsewhere.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the exit door and its path completely clear.
+  sources:
+  - 'TODO(SOURCE): OSHA 29 CFR 1910 Subpart E exit routes - team to verify the section before release'
+- id: WORK-EXIT-SIGN
+  title: Exit door with no exit sign
+  kind: absence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: An exit door with no exit sign visible above or beside it
+  sam_prompts:
+  - exit door
+  safety_prompts:
+  - exit sign
+  cannot_see_note: A sign may be around a corner - a person should check the whole route.
+  fixes:
+  - id: work-exit-sign-fit
+    title: Fit an exit sign over the door
+    how: Fit a clearly visible exit sign above the door and keep it lit where required.
+    difficulty: medium
+    cost_estimate: $20-60
+    visualization_prompt: Show a lit red EXIT sign above the door.
+  sources:
+  - 'TODO(SOURCE): OSHA 29 CFR 1910 Subpart E exit marking - team to verify the section before release'
+- id: WORK-EXTINGUISHER-BLOCKED
+  title: Fire extinguisher blocked by stored items
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: A fire extinguisher with boxes or items stored in front of it
+  sam_prompts:
+  - fire extinguisher
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: work-extinguisher-clear
+    title: Clear the space in front of the extinguisher
+    how: Move the stored items away and mark the floor area so it stays clear.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the extinguisher with clear floor in front of it.
+  sources:
+  - 'TODO(SOURCE): OSHA portable fire extinguisher access rules - team to verify before release'
+- id: WORK-EXTINGUISHER-ABSENT
+  title: No fire extinguisher visible along this route
+  kind: absence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: A corridor or work area with no fire extinguisher visible
+  sam_prompts:
+  - wall
+  - corridor
+  safety_prompts:
+  - fire extinguisher
+  cannot_see_note: An extinguisher may be just out of frame - a person should check the whole floor.
+  fixes:
+  - id: work-extinguisher-fit
+    title: Fit extinguishers along the exit routes
+    how: Have a qualified person place the right extinguisher type along the exit routes and service it on schedule.
+    difficulty: pro
+    cost_estimate: $50-150 each
+    visualization_prompt: Show a red fire extinguisher mounted on the corridor wall.
+  sources:
+  - 'TODO(SOURCE): OSHA portable fire extinguisher placement rules - team to verify before release'
+- id: WORK-CORD-WALKWAY
+  title: Cords or cables across a walkway
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Cords or cables running across a floor people walk on
+  thin_object: true
+  dedupe_key: cord_reroute
+  sam_prompts:
+  - cable on floor
+  - extension cord
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: work-cord-cover
+    title: Cover it or reroute it
+    how: Fit a low-profile cable cover across the walkway, or reroute the cable along a wall or overhead.
+    difficulty: easy
+    cost_estimate: $15-40
+    visualization_prompt: Show the cable inside a low black cable cover crossing the floor.
+  sources:
+  - 'TODO(SOURCE): OSHA 29 CFR 1910 Subpart D walking-working surfaces - team to verify the section before release'
+- id: WORK-HEATER-COMBUSTIBLE
+  title: Heater too close to cardboard or paper
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: A heater with cardboard, boxes or paper stored within about a metre
+  sam_prompts:
+  - baseboard heater
+  - space heater
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: work-heater-clear
+    title: Clear a metre around the heater
+    how: Move cardboard, boxes and paper at least a metre away from the heater.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the heater with clear empty floor around it.
+  sources:
+  - 'TODO(SOURCE): workplace fire safety guidance on heater clearance - team to verify before release'
+- id: WORK-BOXES-STACKED-UNSTABLE
+  title: Unstable stacks or heavy items stored high
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Tall, leaning stacks of boxes, or heavy items stored on top shelves
+  sam_prompts:
+  - stacked boxes
+  - boxes on top shelf
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: work-boxes-restack
+    title: Restack low and heavy-down
+    how: Restack boxes lower and square, with the heaviest items on the bottom shelves.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the boxes restacked in a low, square pile.
+  sources:
+  - 'TODO(SOURCE): OSHA materials handling / storage guidance - team to verify before release'
+- id: WORK-POWER-STRIP-FLOOR
+  title: Power strips daisy-chained or overloaded on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Power strips plugged into each other, or many plugs in one strip, lying on the floor
+  sam_prompts:
+  - power strip
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: work-strip-fix
+    title: Plug strips into the wall only
+    how: Remove daisy chains, plug strips directly into wall outlets, and spread the load across circuits.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show one power strip plugged straight into the wall outlet with a few plugs only.
+  sources:
+  - 'TODO(SOURCE): OSHA electrical safety guidance on relocatable power taps - team to verify before release'
+- id: WORK-WALKWAY-OBSTRUCTED
+  title: Walkway obstructed by bags, chairs or bins
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Bags, chairs or bins left standing in a walkway
+  sam_prompts:
+  - bag on floor
+  - chair in walkway
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: work-walkway-clear
+    title: Keep walkways clear
+    how: Move bags, chairs and bins out of the walkway and give them a marked storage spot.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the walkway completely clear from end to end.
+  sources:
+  - 'TODO(SOURCE): OSHA 29 CFR 1910 Subpart D walking-working surfaces - team to verify the section before release'
+- id: WORK-SPILL
+  title: Liquid spilled on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: A visible pool or sheen of liquid on the floor
+  sam_prompts:
+  - spill on floor
+  safety_prompts: []
+  needs_human_unless: liquid clearly pooled or shining on the floor
+  cannot_see_note: A shiny floor can be polish, not a spill - a person should check.
+  fixes:
+  - id: work-spill-clean
+    title: Clean it and mark it while it dries
+    how: Clean the spill now and put a wet-floor sign out until the floor is dry.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the floor clean and dry with a wet-floor sign beside the spot.
+  sources:
+  - 'TODO(SOURCE): OSHA 29 CFR 1910 Subpart D floor condition rules - team to verify the section before release'

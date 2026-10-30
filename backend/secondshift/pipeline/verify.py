@@ -42,12 +42,19 @@ _MIN_AREA, _MAX_AREA = 0.001, 0.60
 
 # Safety objects that are legitimately stored out of sight. Not seeing
 # one on camera can never confirm it is missing (smoke-test fix 5).
+HIDDEN_SAFETY_REASON = "Not visible, may be stored out of sight."
+# Absence findings that must stop at needs_human with that wording -
+# the object (or its anchor strap) is commonly out of sight, so
+# "not seen" is not "not there" (smoke-test fix 5; Pass 3 added the
+# home-inspection and workplace extinguisher/furniture items).
 HIDDEN_SAFETY_ITEMS = {
     "FIRE-EXTINGUISHER-ABSENT",
     "FIRE-CO-ALARM-ABSENT",
     "BABY-TIPOVER-FURNITURE",  # the anti-tip strap lives behind furniture
+    "HOME-EXTINGUISHER-ABSENT",
+    "HOME-TALL-FURNITURE-UNANCHORED",
+    "WORK-EXTINGUISHER-ABSENT",
 }
-HIDDEN_SAFETY_REASON = "Not visible, may be stored out of sight."
 
 
 def _nearest_keyframes(
@@ -168,7 +175,19 @@ def _verify_one(
 
     nonlocal_room = [room]
 
-    if verify_mode == "none":
+    if item.always_cannot_assess:
+        # Pass 3 P2: never settled by a camera (e.g. seat tightness) -
+        # no segmentation, no judge, always the same honest answer.
+        verification = Verification.CANNOT_ASSESS
+        reason = item.always_cannot_assess
+        cannot.append(
+            CannotAssess(
+                area=proposal.item_id,
+                reason="not_visible_by_design",
+                detail=item.always_cannot_assess,
+            )
+        )
+    elif verify_mode == "none":
         verification, reason = Verification.NEEDS_HUMAN, "Verification disabled (ablation)."
     elif not search_frames and item.kind in (ItemKind.PRESENCE, ItemKind.ABSENCE):
         verification = Verification.CANNOT_ASSESS
@@ -262,6 +281,45 @@ def _verify_one(
             if proposal.item_id in HIDDEN_SAFETY_ITEMS:
                 verification = Verification.NEEDS_HUMAN
                 reason = HIDDEN_SAFETY_REASON
+            elif item.needs_human_unless and verify_mode == "sam_plus_judge":
+                # Pass 3 P2 (window guard): confirms only when the
+                # judge can clearly see the named detail on the
+                # evidence frame; otherwise needs_human.
+                detail = item.needs_human_unless
+                anchor_best = _best_mask(anchor_masks)
+                anchor_frame = next(
+                    (f for f in search_frames if anchor_best and f.id == anchor_best.keyframe_id),
+                    search_frames[0] if search_frames else None,
+                )
+                detail_verdict = (
+                    judge.judge(
+                        JudgeRequest(
+                            claim=f"{proposal.item_id}: is it clearly true that {detail}?",
+                            images=[
+                                ImageRef(path=anchor_frame.image_path, keyframe_id=anchor_frame.id)
+                            ],
+                            context=(
+                                "absence_check: the anchor is visible and the "
+                                "safety object was not found. Confirm ONLY if "
+                                "the detail is clearly visible."
+                            ),
+                        )
+                    )
+                    if anchor_frame is not None
+                    else None
+                )
+                if detail_verdict is not None and detail_verdict.verification == "confirmed":
+                    verification = Verification.CONFIRMED
+                    reason = (
+                        "Anchor visible, no safety object found, and the judge "
+                        f"could clearly see: {detail}."
+                    )
+                else:
+                    verification = Verification.NEEDS_HUMAN
+                    reason = (
+                        "Anchor visible and no safety object found, but "
+                        f"{detail} isn't clearly visible - a person should check."
+                    )
             else:
                 verification = Verification.CONFIRMED
                 reason = "Anchor visible and no safety object found where it should be."

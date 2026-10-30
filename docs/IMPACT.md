@@ -34,3 +34,9 @@ TODO(STAT): no sourced impact facts yet. Team to source from discharge-planning 
 | Fact | Source |
 |---|---|
 | WHO received reports of 14.4 million dengue cases and 11,201 deaths in 2024, the highest global burden on record. | WHO dengue reporting for 2024 (figure provided by the team; TODO(SOURCE): link the exact WHO page before release) |
+
+## Workplace safety
+- BLS 2024 (private industry): 2,488,400 recordable cases; 479,480 days-away cases from falls, slips or trips; 844 fatal falls, slips or trips (all sectors). (Figures as supplied in the team's Pass 3 brief; TODO(SOURCE): link the BLS release before public use.)
+
+## Car seat checks
+- NHTSA's National Child Restraint Use Special Study found about 49% of child restraints misused. Top misuses: incorrect recline for rear-facing infants (42% of rear-facing misuse) and loose installation (47% of forward-facing misuse). (As supplied in the team's Pass 3 brief; TODO(SOURCE): link the NCRUSS report before public use.)

@@ -1,0 +1,324 @@
+version: 1
+status: approved
+demo: true
+pack_id: home_safety_inspection
+title: Home safety inspection
+audience: Anyone checking a home's visible safety hazards - not a property-condition or valuation inspection (no roof, foundation, plumbing or structural opinions)
+high_risk_zones:
+- kitchen
+- hallway
+- stairs
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: HOME-SMOKE-ALARM-ABSENT
+  title: No smoke alarm where one should be
+  kind: absence
+  rooms:
+  - bedroom
+  - hallway
+  severity: 3
+  observable_evidence: Bedroom or hallway ceiling with no smoke alarm visible
+  sam_prompts:
+  - ceiling
+  - hallway
+  safety_prompts:
+  - smoke alarm
+  cannot_see_note: We can see whether an alarm is there, not whether it works - press the test button monthly.
+  fixes:
+  - id: home-smoke-alarm-fit
+    title: Fit a smoke alarm and test it monthly
+    how: Fit an alarm on the ceiling outside sleeping areas, then press the test button every month.
+    difficulty: easy
+    cost_estimate: $10-30
+    visualization_prompt: Show a round smoke alarm fitted on the ceiling.
+  sources:
+  - 'TODO(SOURCE): NFPA smoke alarm placement guidance - team to verify before release'
+- id: HOME-CO-ALARM-ABSENT
+  title: No carbon monoxide alarm near sleeping areas
+  kind: absence
+  rooms:
+  - bedroom
+  - hallway
+  severity: 3
+  observable_evidence: Hallway or wall near sleeping areas with no carbon monoxide alarm visible
+  sam_prompts:
+  - hallway
+  - bedroom door
+  safety_prompts:
+  - carbon monoxide alarm
+  cannot_see_note: We can see whether an alarm is there, not whether it works.
+  fixes:
+  - id: home-co-alarm-fit
+    title: Fit a CO alarm near the bedrooms
+    how: Fit a carbon monoxide alarm outside each sleeping area and test it monthly.
+    difficulty: easy
+    cost_estimate: $20-40
+    visualization_prompt: Show a carbon monoxide alarm mounted on the hallway wall.
+  sources:
+  - 'TODO(SOURCE): NFPA carbon monoxide alarm guidance - team to verify before release'
+- id: HOME-EXTINGUISHER-ABSENT
+  title: No fire extinguisher visible in the kitchen
+  kind: absence
+  rooms:
+  - kitchen
+  severity: 3
+  observable_evidence: Kitchen with no fire extinguisher visible
+  sam_prompts:
+  - stove
+  - kitchen counter
+  safety_prompts:
+  - fire extinguisher
+  cannot_see_note: An extinguisher may be stored inside a cupboard - a person should check.
+  fixes:
+  - id: home-extinguisher-fit
+    title: Keep an extinguisher where it can be grabbed fast
+    how: Mount or stand a kitchen-rated extinguisher near the exit side of the kitchen, not over the stove.
+    difficulty: easy
+    cost_estimate: $25-50
+    visualization_prompt: Show a red fire extinguisher mounted on the kitchen wall near the doorway.
+  sources:
+  - 'TODO(SOURCE): NFPA home fire extinguisher guidance - team to verify before release'
+- id: HOME-POWER-STRIP-CHAIN
+  title: Power strip plugged into another power strip
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: One power strip plugged into a second power strip (daisy-chained)
+  sam_prompts:
+  - power strip
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: home-strip-unchain
+    title: Plug strips into the wall, never into each other
+    how: Unplug the chain and plug each strip directly into a wall outlet, or fit another outlet.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the second power strip removed, with the remaining strip plugged straight into the wall outlet.
+  sources:
+  - 'TODO(SOURCE): electrical fire safety guidance on daisy-chaining - team to verify before release'
+- id: HOME-EXPOSED-WIRING
+  title: Exposed wiring or a missing cover plate
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Outlet or switch with its cover plate missing, or visible bare wires
+  sam_prompts:
+  - outlet without cover plate
+  - exposed wires
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: home-wiring-cover
+    title: Fit the cover plate; call an electrician for bare wires
+    how: Fit a replacement cover plate. If wires are bare or damaged, switch the circuit off and call a licensed electrician.
+    difficulty: easy
+    cost_estimate: $2-10 for a plate
+    visualization_prompt: Show a clean white cover plate fitted over the outlet.
+  sources:
+  - 'TODO(SOURCE): electrical safety guidance - team to verify before release'
+- id: HOME-CORD-UNDER-RUG
+  title: Cord running under a rug or furniture
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Electrical cord passing under a rug or furniture where it can overheat or wear
+  thin_object: true
+  dedupe_key: cord_reroute
+  sam_prompts:
+  - cord under rug
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: home-cord-under-rug-move
+    title: Reroute the cord around, not under
+    how: Move the cord so it runs along the wall instead of under the rug, or move the lamp or device closer to the outlet.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the cord rerouted along the baseboard instead of disappearing under the rug.
+  sources:
+  - 'TODO(SOURCE): electrical fire safety guidance on cords under rugs - team to verify before release'
+- id: HOME-TRIP-CORD-WALKWAY
+  title: Cord across a walkway
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Electrical cord or cable crossing a walking path
+  thin_object: true
+  dedupe_key: cord_reroute
+  sam_prompts:
+  - electrical cord on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: home-trip-cord-reroute
+    title: Reroute it along the wall or cover it
+    how: Run the cord along the wall, or fit a low-profile cord cover where people walk.
+    difficulty: easy
+    cost_estimate: free-$20
+    visualization_prompt: Show the cord inside a low cord cover running along the wall.
+  sources:
+  - 'TODO(SOURCE): falls prevention guidance on trip cords - team to verify before release'
+- id: HOME-STAIRS-RAIL
+  title: Stairs without a handrail
+  kind: absence
+  rooms:
+  - stairs
+  severity: 3
+  observable_evidence: A staircase with no handrail on either side
+  sam_prompts:
+  - staircase
+  safety_prompts:
+  - handrail
+  cannot_see_note: null
+  dedupe_key: stairs_rail
+  fixes:
+  - id: home-stairs-rail-fit
+    title: Fit a handrail along the full flight
+    how: Fit a sturdy handrail at hand height along the whole flight, fixed into studs or masonry.
+    difficulty: pro
+    cost_estimate: $150-400
+    visualization_prompt: Show a wooden handrail fitted along the staircase wall.
+  sources:
+  - 'TODO(SOURCE): building guidance on stair handrails - team to verify before release'
+- id: HOME-STAIRS-OBJECTS
+  title: Things left on the stairs
+  kind: presence
+  rooms:
+  - stairs
+  severity: 2
+  observable_evidence: Objects stored or left on the stair treads
+  sam_prompts:
+  - object on stairs
+  safety_prompts: []
+  cannot_see_note: null
+  dedupe_key: stairs_objects
+  fixes:
+  - id: home-stairs-clear
+    title: Keep the stairs completely clear
+    how: Move everything off the treads and give those items a home elsewhere.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the staircase with empty, clear treads.
+  sources:
+  - 'TODO(SOURCE): falls prevention guidance on stair clutter - team to verify before release'
+- id: HOME-HEATER-COMBUSTIBLE
+  title: Heater too close to things that burn
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Space or baseboard heater with paper, cardboard, curtains or bedding within about a metre
+  sam_prompts:
+  - space heater
+  - baseboard heater
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: home-heater-clear
+    title: Clear a metre around the heater
+    how: Move paper, cardboard, curtains and bedding at least a metre away from the heater.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the heater with clear empty floor around it for a metre.
+  sources:
+  - 'TODO(SOURCE): NFPA heating equipment clearance guidance - team to verify before release'
+- id: HOME-WINDOW-GUARD
+  title: Upper-floor window open with no guard or stop
+  kind: absence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: An upper-floor window standing open with no guard or window stop fitted
+  sam_prompts:
+  - open window
+  safety_prompts:
+  - window guard
+  needs_human_unless: the window is clearly open with no guard or stop fitted
+  cannot_see_note: From a video it is hard to tell whether a window can open wide - a person should check.
+  fixes:
+  - id: home-window-guard-fit
+    title: Fit a window guard or a stop
+    how: Fit a guard or a stop that limits the window opening to about 10 cm on upper floors.
+    difficulty: medium
+    cost_estimate: $20-60
+    visualization_prompt: Show a white window guard fitted across the open window.
+  sources:
+  - 'TODO(SOURCE): window fall prevention guidance - team to verify before release'
+- id: HOME-CHEMICALS-LOW
+  title: Cleaning chemicals where children can reach them
+  kind: presence
+  rooms:
+  - kitchen
+  - bathroom
+  severity: 2
+  observable_evidence: Cleaners or chemicals on the floor or on low open shelves
+  sam_prompts:
+  - cleaning spray bottle
+  - detergent
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: home-chemicals-high
+    title: Move chemicals up high or behind a latch
+    how: Store cleaners on a high shelf or in a cupboard with a child lock.
+    difficulty: easy
+    cost_estimate: free-$10
+    visualization_prompt: Show the cleaning bottles moved to a high shelf.
+  sources:
+  - 'TODO(SOURCE): poison prevention guidance - team to verify before release'
+- id: HOME-EXIT-BLOCKED
+  title: Clutter blocking a door or exit path
+  kind: presence
+  rooms:
+  - entry
+  - hallway
+  - living
+  severity: 3
+  observable_evidence: Boxes, furniture or clutter blocking a door or the path to get out
+  sam_prompts:
+  - clutter blocking door
+  safety_prompts: []
+  cannot_see_note: null
+  dedupe_key: exit_blocked
+  fixes:
+  - id: home-exit-clear
+    title: Clear the exit path
+    how: Move everything out of the doorway and keep the exit path clear at all times.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the doorway and exit path completely clear.
+  sources:
+  - 'TODO(SOURCE): fire escape guidance - team to verify before release'
+- id: HOME-TALL-FURNITURE-UNANCHORED
+  title: Tall furniture that may not be anchored
+  kind: absence
+  rooms:
+  - living
+  - bedroom
+  - nursery
+  severity: 3
+  observable_evidence: A tall bookcase or dresser; its wall anchor is usually hidden behind it
+  sam_prompts:
+  - bookcase
+  - dresser
+  safety_prompts:
+  - furniture strap
+  cannot_see_note: The anchor strap is usually hidden behind the furniture - a person should check.
+  dedupe_key: tipover_furniture
+  fixes:
+  - id: home-furniture-anchor
+    title: Anchor it to the wall
+    how: Fit an anti-tip strap between the top of the furniture and a wall stud.
+    difficulty: medium
+    cost_estimate: $10-20
+    visualization_prompt: Show an anti-tip strap fitted between the bookcase top and the wall.
+  sources:
+  - 'TODO(SOURCE): furniture tip-over prevention guidance - team to verify before release'

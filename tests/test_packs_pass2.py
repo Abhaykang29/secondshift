@@ -21,6 +21,9 @@ EXPECTED = {
     "pet_safety": 10,
     "home_from_hospital": 11,
     "mosquito_breeding": 8,
+    "home_safety_inspection": 14,
+    "workplace_safety": 10,
+    "car_seat_check": 8,
 }
 
 
@@ -121,7 +124,7 @@ def test_mosquito_water_items_require_a_human_unless_water_is_visible() -> None:
         "MOSQ-BOTTLES-CANS",
         "MOSQ-TARP-POOLING",
     }
-    assert load_all_packs()["pet_safety"].demo is False
+    assert load_all_packs()["pet_safety"].demo is True  # Pass 3 s3.4: pets return to the demo
 
 
 class _Seg:

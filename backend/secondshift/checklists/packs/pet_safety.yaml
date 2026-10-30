@@ -1,6 +1,5 @@
 version: 1
 status: approved
-demo: false
 pack_id: pet_safety
 title: Pet-safe home
 audience: Homes with cats or dogs

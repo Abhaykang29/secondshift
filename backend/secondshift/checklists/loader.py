@@ -47,6 +47,10 @@ class PackItem(BaseModel):
     needs_human_unless: str | None = None
     # Pass 3 P1: thin/elongated objects (cords, towels, straps) are
     # swept on tiled crops instead of wide frames.
+    # Pass 3 P2: items no camera can ever settle (e.g. car-seat
+    # installation tightness). The value is the exact user-facing text
+    # of the cannot-assess entry; the pipeline never verifies these.
+    always_cannot_assess: str | None = None
     thin_object: bool = False
     # Pass 3 P1: when set, the sweep segments these anchor prompts too
     # and only confirms the item when a found object overlaps (or sits

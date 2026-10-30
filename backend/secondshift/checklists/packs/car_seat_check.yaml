@@ -1,0 +1,178 @@
+version: 1
+status: approved
+demo: true
+pack_id: car_seat_check
+title: Car seat check
+audience: Parents and caregivers - screening only, not a replacement for a certified Child Passenger Safety Technician. Use a doll in all footage, never a real child.
+high_risk_zones: []
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: SEAT-DIRECTION
+  title: Which way the seat faces
+  kind: measurement
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Whether the child seat is rear-facing or forward-facing
+  sam_prompts:
+  - child car seat
+  safety_prompts: []
+  measurement_threshold: Compare ONLY with the direction and limits printed on this seat's own label, together with the age and weight the parent enters. Never invent thresholds.
+  cannot_see_note: We can see which way the seat faces, not whether it suits this child - check it against the seat's own label.
+  fixes:
+  - id: seat-direction-check
+    title: Check the direction against the seat's label
+    how: Read the direction and the height/weight limits on the seat's own label and compare them with your child's age, height and weight.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the child seat fitted rear-facing against the vehicle seat back.
+  sources:
+  - 'TODO(SOURCE): NHTSA child restraint guidance - team to verify before release'
+- id: SEAT-RECLINE-INDICATOR
+  title: Recline indicator in range (rear-facing)
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: The seat's recline indicator bubble or line sitting inside its marked range
+  sam_prompts:
+  - recline indicator on car seat
+  safety_prompts: []
+  needs_human_unless: the recline indicator is legible and its bubble or line sits inside the marked range
+  cannot_see_note: The indicator is small; if it is not legible on video, a person should read it in the car.
+  fixes:
+  - id: seat-recline-adjust
+    title: Adjust the recline until the indicator is in range
+    how: Use the seat's recline foot or a pool noodle / rolled towel only if the seat's manual allows it, until the indicator sits in range.
+    difficulty: medium
+    cost_estimate: free
+    visualization_prompt: Show the car seat base adjusted so its recline indicator sits level.
+  sources:
+  - 'TODO(SOURCE): NHTSA / seat manufacturer recline guidance - team to verify before release'
+- id: SEAT-TOP-TETHER
+  title: Top tether not attached (forward-facing)
+  kind: absence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: A forward-facing seat whose top tether strap is not connected to the vehicle's tether anchor
+  sam_prompts:
+  - car seat
+  safety_prompts:
+  - top tether strap
+  cannot_see_note: The anchor point sits behind the seat and may be out of view - a person should check.
+  fixes:
+  - id: seat-tether-attach
+    title: Attach the top tether and pull it snug
+    how: Clip the top tether to the vehicle's tether anchor (check the vehicle manual for its location) and pull the slack out.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the top tether strap clipped to the anchor behind the vehicle seat and pulled snug.
+  sources:
+  - 'TODO(SOURCE): NHTSA top tether guidance - team to verify before release'
+- id: SEAT-HARNESS-TWISTED
+  title: Twisted harness strap
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: A harness strap with a visible twist or fold in it
+  thin_object: true
+  sam_prompts:
+  - twisted harness strap
+  safety_prompts: []
+  needs_human_unless: the strap is clearly twisted
+  cannot_see_note: A strap can look twisted from one angle - a person should run a hand along it.
+  fixes:
+  - id: seat-harness-untwist
+    title: Flatten the harness straps
+    how: Unbuckle, slide your fingers along each strap to work the twist out, and re-buckle flat.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show both harness straps lying flat and untwisted over the doll's shoulders.
+  sources:
+  - 'TODO(SOURCE): NHTSA harness guidance - team to verify before release'
+- id: SEAT-CHEST-CLIP
+  title: Chest clip at belly level instead of armpit level
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: The chest clip sitting at belly or tummy level instead of at armpit level (checked with a doll)
+  sam_prompts:
+  - chest clip on harness
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: seat-clip-raise
+    title: Slide the chest clip up to armpit level
+    how: After buckling and tightening, slide the chest clip so its top edge is level with the armpits.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the chest clip slid up to armpit level on the doll.
+  sources:
+  - 'TODO(SOURCE): NHTSA harness / chest clip guidance - team to verify before release'
+- id: SEAT-STRAP-BEHIND
+  title: Harness strap behind the arm or back
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: A harness strap running behind the arm or behind the back instead of over the shoulder (checked with a doll)
+  sam_prompts:
+  - harness strap
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: seat-strap-over
+    title: Bring both straps over the shoulders
+    how: Unbuckle, place both straps over the shoulders and chest, then buckle and tighten.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show both harness straps over the doll's shoulders, none behind the arm or back.
+  sources:
+  - 'TODO(SOURCE): NHTSA harness guidance - team to verify before release'
+- id: SEAT-TIGHTNESS
+  title: How tight the installation is
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Installation tightness cannot be seen on video
+  sam_prompts: []
+  safety_prompts: []
+  always_cannot_assess: I can't check how tight it is. Do the 1-inch shake test at the belt path - the seat should not move more than an inch side to side or front to back.
+  cannot_see_note: Tightness is a hands-on check, never a visual one.
+  fixes:
+  - id: seat-shake-test
+    title: Do the 1-inch shake test
+    how: Grip the seat at the belt path and shake side to side and front to back. More than an inch of movement means reinstall it tighter.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show a hand gripping the seat at the belt path, checking it does not move.
+  sources:
+  - 'TODO(SOURCE): NHTSA installation guidance (1-inch test) - team to verify before release'
+- id: SEAT-OBJECTS-LOOSE
+  title: Heavy loose objects near the seat
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Heavy loose objects on the seat or parcel shelf near the child seat that could fly in a sudden stop
+  sam_prompts:
+  - loose object on car seat
+  - items on rear shelf
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: seat-objects-trunk
+    title: Move loose heavy items to the trunk
+    how: Put heavy loose items in the trunk or footwell so they cannot become projectiles in a sudden stop.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the rear seat area clear, with the heavy items removed.
+  sources:
+  - 'TODO(SOURCE): unsecured cargo in vehicles guidance - team to verify before release'
