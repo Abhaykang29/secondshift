@@ -7,7 +7,7 @@ import en from "../i18n/en.json";
  * Check flow (Pass 3 spec 4.3 steps 2-3): one short consent screen,
  * then the capture guide with three ways to get footage - record in
  * the app camera, import from Photos (incl. Ray-Ban Meta clips), and
- * an optional routine clip ("add the route"). Consent is recorded by
+ * Consent is recorded by
  * POST /checkups before any capture exists (unchanged API usage);
  * uploads post to /checkups/{id}/captures with kind walkthrough /
  * routine. After an upload the flow hands off to the processing page.
@@ -39,7 +39,6 @@ export default function CheckupNew() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [walkthrough, setWalkthrough] = useState<{ id: string; frames: number } | null>(null);
-  const [routineDone, setRoutineDone] = useState(false);
   const [uploading, setUploading] = useState<"walkthrough" | "routine" | null>(null);
 
   async function agree() {
@@ -67,8 +66,6 @@ export default function CheckupNew() {
       const capture = await api.uploadCapture(checkupId, file, kind);
       if (kind === "walkthrough") {
         setWalkthrough({ id: capture.id, frames: capture.keyframe_count });
-      } else {
-        setRoutineDone(true);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed");
@@ -181,28 +178,6 @@ export default function CheckupNew() {
           <p className="mt-2 text-sm font-medium text-[#1f3d2b]">
             Video in — {walkthrough.frames} frames found.
           </p>
-        )}
-      </section>
-
-      <section aria-label="Add the route" className="mt-4 rounded border bg-white p-4">
-        <h2 className="font-medium">Add the route (optional)</h2>
-        <p className="mt-1 text-sm opacity-80">
-          Prop the phone still and film the daily route once — bed to
-          bathroom, chair to kitchen. It shows what the person touches and
-          where the path is tight.
-        </p>
-        <label className="mt-3 block">
-          <span className="sr-only">Choose an optional routine video</span>
-          <input
-            type="file"
-            accept="video/*"
-            className="block w-full rounded border p-3"
-            onChange={(e) => void upload("routine", e.target.files?.[0])}
-          />
-        </label>
-        {uploading === "routine" && <p className="mt-2 text-sm">Uploading the route clip...</p>}
-        {routineDone && (
-          <p className="mt-2 text-sm font-medium text-[#1f3d2b]">Route clip added.</p>
         )}
       </section>
 
