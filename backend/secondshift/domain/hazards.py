@@ -42,6 +42,10 @@ class HazardProposal(BaseModel):
     room: str
     description: str
     evidence_timestamps: list[float]
+    # Pipeline provenance (not a model claim): the keyframes in the
+    # propose batch this finding came from. Used when the model omits
+    # usable evidence timestamps - never replaced with a default t=0.
+    source_keyframe_ids: list[str] = Field(default_factory=list)
     sam_prompts: list[str]
     safety_prompts: list[str] = Field(default_factory=list)
     confidence: float
@@ -102,7 +106,7 @@ class Visualization(BaseModel):
     source_keyframe_id: str
     image_path: str
     prompt_used: str
-    watermark: str = "Visualization \u2014 not a photo"
+    watermark: str = "Visualization - not a photo"
 
 
 class RoutineInsight(BaseModel):

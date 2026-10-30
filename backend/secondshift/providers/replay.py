@@ -49,6 +49,7 @@ class RecordingVision:
         payload = {
             "proposals": [p.model_dump(mode="json") for p in response.proposals],
             "rooms_seen": response.rooms_seen,
+            "keyframe_rooms": response.keyframe_rooms,
             "cannot_assess": [c.model_dump(mode="json") for c in response.cannot_assess],
         }
         self.cache.put(_propose_key(self.scenario_name), payload, model="recorded")
@@ -127,7 +128,6 @@ class ReplayVision:
         """Rules are not compiled in replay."""
         return None
 
-
     def __init__(self, cache: RecordReplayCache, scenario: str) -> None:
         self.cache = cache
         self.scenario_name = scenario
@@ -140,6 +140,7 @@ class ReplayVision:
         return ProposeResponse(
             proposals=[HazardProposal.model_validate(p) for p in payload["proposals"]],
             rooms_seen=list(payload["rooms_seen"]),
+            keyframe_rooms=list(payload.get("keyframe_rooms", [])),
             cannot_assess=[],
         )
 

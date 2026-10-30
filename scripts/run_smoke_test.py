@@ -17,7 +17,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
 from fastapi.testclient import TestClient  # noqa: E402
-
 from secondshift.main import create_app  # noqa: E402
 
 

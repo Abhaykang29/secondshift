@@ -50,6 +50,9 @@ class ProposeResponse:
     proposals: list[HazardProposal]
     cannot_assess: list[CannotAssess] = field(default_factory=list)
     rooms_seen: list[str] = field(default_factory=list)
+    # One room label per keyframe in the request, aligned by image
+    # order. Empty when the provider gives no per-frame labels.
+    keyframe_rooms: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -95,11 +98,12 @@ class VisionReasoner(Protocol):
         """Run a prompt and validate the reply against a Pydantic schema."""
         ...
 
-
-
     def plan_fix(
-        self, hazard_title: str, description: str,
-        fixes: list[dict[str, str]], language: str,
+        self,
+        hazard_title: str,
+        description: str,
+        fixes: list[dict[str, str]],
+        language: str,
     ) -> dict[str, object] | None:
         """Pick a fix from the library (pass 2 E.6). None = no opinion."""
         ...

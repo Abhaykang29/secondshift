@@ -64,11 +64,12 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
     # itself is not the privacy surface), but visualize.py must then use
     # the blur-all-but fallback for any image it writes.
     if keyframes and keyframes[0].image_path:
-        from secondshift.privacy.blur import blur_persons
+        from secondshift.privacy.blur import blur_keyframes
 
-        for kf in keyframes:
-            if kf.image_path:
-                blur_persons(kf.image_path, request.app.state.providers.segmenter)
+        blur_keyframes(
+            [kf.image_path for kf in keyframes if kf.image_path],
+            request.app.state.providers.segmenter,
+        )
     if scenario is None and request.app.state.settings.provider.value == "mock":
         scenario = "baby_home_demo" if checkup.pack_ids == ["babyproofing"] else "parent_home_demo"
     if scenario is not None:

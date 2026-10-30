@@ -83,6 +83,38 @@ def build_chat_payload(
     return payload
 
 
+def build_propose_payload(
+    prompt: str,
+    keyframes: list[Any],
+    model_role: Literal["fast", "deep"],
+) -> dict[str, Any]:
+    """Build a propose payload with every image explicitly labeled.
+
+    The propose prompt has always told the model that images are
+    labeled with their timestamps; the old payload never actually sent
+    labels, so the model guessed (and guessed t=0, 1, 2...). Each image
+    now carries a text part with its keyframe id and real timestamp in
+    seconds, immediately before the image itself.
+    """
+    content: list[dict[str, Any]] = [{"type": "text", "text": prompt}]
+    total = len(keyframes)
+    for idx, keyframe in enumerate(keyframes):
+        content.append(
+            {
+                "type": "text",
+                "text": (
+                    f"Image {idx + 1} of {total}: keyframe_id={keyframe.id}; "
+                    f"timestamp_seconds={keyframe.t:g}"
+                ),
+            }
+        )
+        content.append(image_part(ImageRef(path=keyframe.image_path, keyframe_id=keyframe.id)))
+    return {
+        "model": MODEL_BY_ROLE[model_role],
+        "messages": [{"role": "user", "content": content}],
+    }
+
+
 def normalize_chat_content(payload: dict[str, Any]) -> str:
     """Extract the assistant text from a chat response payload.
 
@@ -137,7 +169,8 @@ def _coerce_cannot_assess(raw: Any) -> dict[str, Any]:
         }
     out = dict(raw)
     out.setdefault("area", str(out.get("item_id", "unknown area")))
-    if out.get("reason") not in (
+    raw_reason = out.get("reason")
+    if raw_reason not in (
         "not_filmed",
         "too_dark",
         "too_blurry",
@@ -145,6 +178,9 @@ def _coerce_cannot_assess(raw: Any) -> dict[str, Any]:
         "needs_measurement",
         "not_visible_by_design",
     ):
+        # A free-text reason is the model's detail, not a schema reason.
+        if isinstance(raw_reason, str) and raw_reason.strip() and "detail" not in out:
+            out["detail"] = raw_reason.strip()
         out["reason"] = "not_filmed"
     out.setdefault("detail", "The model listed this as not assessable from the footage.")
     return out
@@ -217,23 +253,25 @@ class MetaVisionReasoner:
                     "properties": {
                         "proposals": {"type": "array", "items": _HP.model_json_schema()},
                         "rooms_seen": {"type": "array", "items": {"type": "string"}},
+                        "keyframe_rooms": {"type": "array", "items": {"type": "string"}},
                         "cannot_assess": {"type": "array", "items": {"type": "object"}},
                     },
                     "required": ["proposals", "rooms_seen", "cannot_assess"],
                 }
             ),
         )
-        images = [ImageRef(path=k.image_path, keyframe_id=k.id) for k in req.keyframes]
-        data = self._post_chat(build_chat_payload(prompt, images, "fast"))
+        data = self._post_chat(build_propose_payload(prompt, req.keyframes, "fast"))
         parsed = extract_json(normalize_chat_content(data))
         from secondshift.domain.hazards import CannotAssess, HazardProposal
 
+        keyframe_rooms = parsed.get("keyframe_rooms") or parsed.get("rooms_by_image_index") or []
         return ProposeResponse(
             proposals=[
                 HazardProposal.model_validate(_coerce_proposal(p))
                 for p in parsed.get("proposals", [])
             ],
             rooms_seen=[str(r) for r in parsed.get("rooms_seen", [])],
+            keyframe_rooms=[str(r) for r in keyframe_rooms],
             cannot_assess=[
                 CannotAssess.model_validate(_coerce_cannot_assess(c))
                 for c in parsed.get("cannot_assess", [])
@@ -247,7 +285,9 @@ class MetaVisionReasoner:
         from secondshift.providers.prompts import load_prompt
 
         prompt = load_prompt("verify_judge", claim=req.claim, sam_summary=req.context)
-        data = self._post_chat(build_chat_payload(prompt, req.images, "fast", reasoning_effort="low"))
+        data = self._post_chat(
+            build_chat_payload(prompt, req.images, "fast", reasoning_effort="low")
+        )
         parsed = extract_json(normalize_chat_content(data))
         return JudgeResponse(
             verification=str(parsed.get("verification", "needs_human")),
@@ -281,8 +321,11 @@ class MetaVisionReasoner:
     # --- Pass 2 Phase E/G prompt-backed methods. Each returns None on
     # any parse problem so pipelines fall back to deterministic paths.
     def plan_fix(
-        self, hazard_title: str, description: str,
-        fixes: list[dict[str, str]], language: str,
+        self,
+        hazard_title: str,
+        description: str,
+        fixes: list[dict[str, str]],
+        language: str,
     ) -> dict[str, Any] | None:
         """Spark picks a fix FROM THE LIBRARY (prompts/fix_plan.md)."""
         import json as _json

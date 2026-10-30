@@ -12,6 +12,8 @@ Depends on: providers.base (Segmenter), opencv.
 """
 
 import logging
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import cv2
@@ -22,6 +24,7 @@ from secondshift.providers.base import ImageRef, Segmenter
 logger = logging.getLogger(__name__)
 
 _cache: dict[tuple[str, float], int] = {}
+_cache_lock = threading.Lock()
 
 
 def _blur_region(frame: np.ndarray, bbox: tuple[float, ...]) -> None:
@@ -50,8 +53,9 @@ def blur_persons(image_path: str, segmenter: Segmenter) -> int:
     if not path.exists():
         return -1
     key = (str(path), path.stat().st_mtime)
-    if key in _cache:
-        return _cache[key]
+    with _cache_lock:
+        if key in _cache:
+            return _cache[key]
     frame = cv2.imread(str(path))
     if frame is None:
         return -1
@@ -65,8 +69,22 @@ def blur_persons(image_path: str, segmenter: Segmenter) -> int:
         _blur_region(frame, mask.bbox)
     if masks:
         cv2.imwrite(str(path), frame)
-    _cache[key] = len(masks)
+    with _cache_lock:
+        _cache[key] = len(masks)
     return len(masks)
+
+
+def blur_keyframes(image_paths: list[str], segmenter: Segmenter, max_workers: int = 8) -> list[int]:
+    """Blur persons in many keyframes in parallel (smoke-test fix 8).
+
+    Order-preserving; each frame's SAM call still goes through the
+    transport's per-model throttle. Returns blur_persons' per-frame
+    results (count blurred, or -1 on failure).
+    """
+    if not image_paths:
+        return []
+    with ThreadPoolExecutor(max_workers=min(max_workers, len(image_paths))) as pool:
+        return list(pool.map(lambda p: blur_persons(p, segmenter), image_paths))
 
 
 def blur_all_but(image_path: str, keep_bbox: tuple[float, ...] | None) -> bool:
@@ -85,8 +103,8 @@ def blur_all_but(image_path: str, keep_bbox: tuple[float, ...] | None) -> bool:
     if keep_bbox is not None:
         x0, y0 = int(keep_bbox[0] * width), int(keep_bbox[1] * height)
         x1, y1 = int(keep_bbox[2] * width), int(keep_bbox[3] * height)
-        blurred[max(0, y0):max(0, y1), max(0, x0):max(0, x1)] = frame[
-            max(0, y0):max(0, y1), max(0, x0):max(0, x1)
+        blurred[max(0, y0) : max(0, y1), max(0, x0) : max(0, x1)] = frame[
+            max(0, y0) : max(0, y1), max(0, x0) : max(0, x1)
         ]
     cv2.imwrite(str(path), blurred)
     return True

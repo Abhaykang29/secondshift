@@ -4,7 +4,7 @@ For the top 3 ranked hazards whose fix has a visualization_prompt:
 
 - BEFORE: the real evidence keyframe (already person-blurred at scan
   time) with the SAM outline drawn on it - an outline only, labeled
-  "SAM outline (box)" while mask strings don't decode (Decision D10).
+  "Found by SAM (box)" while mask strings don't decode (Decision D10).
 - AFTER: a real Muse Image EDIT of the keyframe region.
 
 Edit method (Phase F.2): the Image Get-code snippet exposes no mask
@@ -34,7 +34,7 @@ from secondshift.providers.base import ImageEditor, ImageRef, Segmenter
 
 logger = logging.getLogger(__name__)
 
-WATERMARK = "Visualization \u2014 not a photo"
+WATERMARK = "Visualization - not a photo"
 MOCK_STAMP = "MOCK - no edit"
 EDIT_SUFFIX = (
     " Change only what the instruction says; keep the same room, light and "
@@ -44,27 +44,54 @@ EDIT_SUFFIX = (
 
 def _region_for(hazard: Hazard, w: int, h: int) -> tuple[int, int, int, int] | None:
     """Pixel crop region for the edit (presence: dilated hazard box;
-    absence: the space beside the anchor box)."""
+    absence: a placement region beside/above/below the anchor box).
+
+    Smoke-test fix 1: the old absence region reused the anchor's own
+    width AND height next to it. For a thin, wide anchor (the kitchen
+    counter strip SAM returned for the extinguisher) that produced a
+    thin sliver at the frame edge - the glitch strip in the after
+    photo. The placement region now has a sane minimum size (at least
+    ~20% of the frame wide and ~26% tall, capped so it stays a local
+    edit), is clamped inside the frame, and must not overlap the
+    anchor. If no such region fits, there is no honest edit: None.
+    """
     if not hazard.evidence.masks:
         return None
     mask = hazard.evidence.masks[0]
     x0, y0, x1, y1 = mask.bbox
     bw, bh = (x1 - x0) * w, (y1 - y0) * h
     if hazard.kind is ItemKind.ABSENCE:
-        # Beside the anchor: prefer right, fall back to left.
-        rx0 = x1 * w + 0.02 * w
-        rx1 = rx0 + bw
-        if rx1 > w:
-            rx1 = x0 * w - 0.02 * w
-            rx0 = rx1 - bw
-        box = (rx0, y0 * h, rx1, y1 * h)
-    else:
-        box = (
-            x0 * w - 0.10 * bw,
-            y0 * h - 0.10 * bh,
-            x1 * w + 0.10 * bw,
-            y1 * h + 0.10 * bh,
-        )
+        ax0, ay0, ax1, ay1 = x0 * w, y0 * h, x1 * w, y1 * h
+        gap = 0.02 * w
+        cx, cy = (ax0 + ax1) / 2.0, (ay0 + ay1) / 2.0
+        # Try the full placement size first, then smaller ones: a big
+        # anchor (a bed filling the frame) leaves only a modest free
+        # area, and a smaller honest region beats no visualization.
+        for scale in (1.0, 0.75, 0.55):
+            tw = min(max(bw, 0.20 * w), 0.38 * w) * scale
+            th = min(max(bh * 2.5, 0.26 * h), 0.42 * h) * scale
+            candidates = [
+                (ax1 + gap, cy - th / 2.0),  # right of the anchor
+                (ax0 - gap - tw, cy - th / 2.0),  # left of the anchor
+                (cx - tw / 2.0, ay1 + gap),  # below the anchor
+                (cx - tw / 2.0, ay0 - gap - th),  # above the anchor
+            ]
+            for rx0, ry0 in candidates:
+                rx0 = min(max(rx0, 0.0), w - tw)
+                ry0 = min(max(ry0, 0.0), h - th)
+                rx1, ry1 = rx0 + tw, ry0 + th
+                overlap_x = max(0.0, min(rx1, ax1) - max(rx0, ax0))
+                overlap_y = max(0.0, min(ry1, ay1) - max(ry0, ay0))
+                if overlap_x * overlap_y > 0:
+                    continue  # never edit on top of the anchor itself
+                return int(rx0), int(ry0), int(rx1), int(ry1)
+        return None
+    box = (
+        x0 * w - 0.10 * bw,
+        y0 * h - 0.10 * bh,
+        x1 * w + 0.10 * bw,
+        y1 * h + 0.10 * bh,
+    )
     ix0, iy0 = max(0, int(box[0])), max(0, int(box[1]))
     ix1, iy1 = min(w, int(box[2])), min(h, int(box[3]))
     if ix1 - ix0 < 16 or iy1 - iy0 < 16:
@@ -103,7 +130,7 @@ def _draw_outline(draw: ImageDraw.ImageDraw, hazard: Hazard, w: int, h: int) -> 
         if mask.polygon:
             pts = [(x * w, y * h) for x, y in mask.polygon]
             draw.line([*pts, pts[0]], fill=(255, 90, 60), width=3)
-    draw.text((12, 30), "SAM outline (box)", fill=(255, 90, 60))
+    draw.text((12, 30), "Found by SAM (box)", fill=(255, 90, 60))
 
 
 def render_visualizations(
@@ -132,6 +159,28 @@ def render_visualizations(
         for h in hazards
         if h.id in fixes_by_hazard and fixes_by_hazard[h.id].chosen.visualization_prompt
     ][:3]
+    if len(candidates) > 1:
+        # Image edits are the slowest step in the scan; render the
+        # (<= 3) candidates in parallel, one recursive call each.
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _one(hazard: Hazard) -> tuple[list[Visualization], dict[str, str]]:
+            return render_visualizations(
+                [hazard],
+                [fixes_by_hazard[hazard.id]],
+                out_dir,
+                keyframes=keyframes,
+                image_editor=image_editor,
+                segmenter=segmenter,
+            )
+
+        with ThreadPoolExecutor(max_workers=len(candidates)) as pool:
+            merged_viz: list[Visualization] = []
+            merged_befores: dict[str, str] = {}
+            for viz_list, before_map in pool.map(_one, candidates):
+                merged_viz.extend(viz_list)
+                merged_befores.update(before_map)
+            return merged_viz, merged_befores
     for hazard in candidates:
         card = fixes_by_hazard[hazard.id]
         prompt = f"{card.chosen.visualization_prompt}{EDIT_SUFFIX}"

@@ -64,26 +64,29 @@ def insert(conn: sqlite3.Connection, row: dict[str, Any]) -> None:
 
 def total(conn: sqlite3.Connection) -> float:
     """Total actual spend across all rows."""
-    cur = conn.execute("SELECT COALESCE(SUM(actual_cost), 0) FROM api_calls")
-    return float(cur.fetchone()[0])
+    with _lock:
+        cur = conn.execute("SELECT COALESCE(SUM(actual_cost), 0) FROM api_calls")
+        return float(cur.fetchone()[0])
 
 
 def totals_by(conn: sqlite3.Connection, field: str) -> dict[str, float]:
     """Actual spend grouped by a column (model or phase_tag)."""
     if field not in ("model", "phase_tag", "role", "endpoint"):
         raise ValueError(f"cannot group by {field}")
-    cur = conn.execute(
-        f"SELECT {field}, COALESCE(SUM(actual_cost), 0) FROM api_calls GROUP BY {field}"
-    )
-    return {str(k): float(v) for k, v in cur.fetchall()}
+    with _lock:
+        cur = conn.execute(
+            f"SELECT {field}, COALESCE(SUM(actual_cost), 0) FROM api_calls GROUP BY {field}"
+        )
+        return {str(k): float(v) for k, v in cur.fetchall()}
 
 
 def recent(conn: sqlite3.Connection, limit: int = 50) -> list[dict[str, Any]]:
     """Most recent call rows, newest first."""
-    cur = conn.execute(
-        "SELECT at, role, model, endpoint, est_cost, actual_cost, cache_hit,"
-        " latency_ms, phase_tag FROM api_calls ORDER BY id DESC LIMIT ?",
-        (limit,),
-    )
-    cols = [d[0] for d in cur.description]
-    return [dict(zip(cols, row, strict=True)) for row in cur.fetchall()]
+    with _lock:
+        cur = conn.execute(
+            "SELECT at, role, model, endpoint, est_cost, actual_cost, cache_hit,"
+            " latency_ms, phase_tag FROM api_calls ORDER BY id DESC LIMIT ?",
+            (limit,),
+        )
+        cols = [d[0] for d in cur.description]
+        return [dict(zip(cols, row, strict=True)) for row in cur.fetchall()]

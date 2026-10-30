@@ -25,6 +25,9 @@ Rules:
 4. If an area is too dark, blurry, or not filmed, list it in cannot_assess. Saying "I can't tell" is good.
 5. Be calibrated: confidence 0.9+ only when the image is unambiguous.
 6. Write why_risky in one plain sentence about the space, for a worried family member.
+7. Also return keyframe_rooms: exactly one room label per image, in the same order as the
+   images, each from this list only: kitchen, bathroom, bedroom, living, hallway, stairs,
+   entry, nursery, other. This is the room label the rest of the pipeline uses for that frame.
 
 Return ONLY JSON matching this schema:
 {{ json_schema }}

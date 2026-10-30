@@ -24,6 +24,7 @@ import os
 import random
 import sqlite3
 import sys
+import threading
 import time as _time
 from datetime import UTC as _UTC
 from datetime import datetime as _datetime
@@ -80,6 +81,7 @@ def auth_headers(explicit_key: str | None = None) -> dict[str, str]:
 # ---------------------------------------------------------------------------
 _config: dict[str, Any] = {}
 _last_call_at: dict[str, float] = {}
+_throttle_lock = threading.Lock()
 
 
 def configure(
@@ -205,12 +207,19 @@ def _record(
 
 
 def _throttle(model: str) -> None:
-    """Per-model client-side rate limit (min 0.2s between calls)."""
-    now = _time.monotonic()
-    wait = 0.2 - (now - _last_call_at.get(model, 0.0))
+    """Per-model client-side rate limit (min 0.2s between calls).
+
+    Thread-safe reservation: each caller atomically claims the next
+    0.2s slot for its model, then sleeps outside the lock, so parallel
+    pipeline workers queue at the limit instead of bursting past it.
+    """
+    with _throttle_lock:
+        now = _time.monotonic()
+        scheduled = max(now, _last_call_at.get(model, 0.0) + 0.2)
+        _last_call_at[model] = scheduled
+    wait = scheduled - now
     if wait > 0:
         _time.sleep(wait)
-    _last_call_at[model] = _time.monotonic()
 
 
 def _raw_post(
@@ -291,5 +300,9 @@ def post_json(
     if mode == "record":
         target = _cache_path(key)
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(_json.dumps(payload))
+        # Atomic publish: parallel workers may record at the same time,
+        # and a reader must never see a half-written cache file.
+        tmp = target.with_name(f"{target.name}.tmp-{os.getpid()}-{id(payload)}")
+        tmp.write_text(_json.dumps(payload))
+        tmp.replace(target)
     return payload

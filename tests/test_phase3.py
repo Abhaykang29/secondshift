@@ -45,7 +45,7 @@ def test_visualizations_are_watermarked_pngs() -> None:
     checkup_id, report = _demo_report()
     assert len(report["visualizations"]) >= 1
     viz = report["visualizations"][0]
-    assert viz["watermark"] == "Visualization \u2014 not a photo"
+    assert viz["watermark"] == "Visualization - not a photo"
     res = client.get(f"/api/reports/{checkup_id}/image/{viz['image_path']}")
     assert res.status_code == 200
     assert res.headers["content-type"] == "image/png"

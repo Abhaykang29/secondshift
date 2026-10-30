@@ -97,9 +97,7 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
         path_obstacle_items = list(scenario.get("routine", {}).get("path_obstacles", []))
     if contacts:
         insights.extend(
-            routine_mod.summarize_contacts(
-                scan_input.checkup.id, contacts, vision=providers.vision
-            )
+            routine_mod.summarize_contacts(scan_input.checkup.id, contacts, vision=providers.vision)
         )
         support_ids = [h.id for h in hazards if h.item_id == "FALL-FURNITURE-SUPPORT"]
         for insight in insights:
@@ -132,6 +130,10 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
         confidences,
         scan_input.narration_facts,
     )
+    # Smoke-test fix 3: the couldn't-assess list is cleaned against the
+    # FINAL verdicts and the rooms actually seen - deduped, no items
+    # that got a verdict, no rooms that were filmed.
+    cannot = propose_mod.clean_cannot_assess(cannot, hazards, rooms_seen)
     return ScanOutput(
         hazards=hazards,
         cannot_assess=cannot,
@@ -167,13 +169,10 @@ def assemble_report(
             {
                 "home_label": label,
                 "confirmed": [
-                    {"title": h.title, "room": h.room, "risk": h.risk_score}
-                    for h in confirmed
+                    {"title": h.title, "room": h.room, "risk": h.risk_score} for h in confirmed
                 ],
                 "needs_human": [
-                    h.title
-                    for h in output.hazards
-                    if h.verification is Verification.NEEDS_HUMAN
+                    h.title for h in output.hazards if h.verification is Verification.NEEDS_HUMAN
                 ],
                 "cannot_assess_count": len(output.cannot_assess),
             }

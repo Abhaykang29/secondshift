@@ -20,7 +20,8 @@ items:
   rooms:
   - any
   severity: 3
-  observable_evidence: Loose throw rug or small mat on a walking area
+  observable_evidence: 'Small, loose throw rug or mat on a walking area. A large area rug
+    held down by furniture is NOT a finding unless its edges are visibly curled.'
   dedupe_key: rug_on_path
   sam_prompts:
   - throw rug

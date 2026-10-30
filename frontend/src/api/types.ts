@@ -141,6 +141,7 @@ export interface HazardProposal {
   room: string;
   description: string;
   evidence_timestamps: number[];
+  source_keyframe_ids?: string[];
   sam_prompts: string[];
   safety_prompts?: string[];
   confidence: number;

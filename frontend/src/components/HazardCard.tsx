@@ -5,12 +5,15 @@ const SEVERITY_FILL: Record<number, string> = { 3: "#d33", 2: "#e90", 1: "#ec0" 
 /**
  * One hazard card: the evidence frame area with the SAM mask drawn as an
  * SVG polygon overlay (normalized coords scale to any width), a
- * "Confirmed by SAM" badge, and the plain-language why.
+ * "Found by SAM (box)" badge, and the plain-language why.
  * For absence hazards the anchor outline is drawn and labelled missing.
+ * The evidence is the single selected SAM frame (backend guarantee);
+ * a missing timestamp is shown as no timestamp, never as 0s.
  */
 export default function HazardCard({ hazard }: { hazard: Hazard }) {
   const mask = hazard.evidence.masks?.[0];
   const isAbsence = hazard.kind === "absence";
+  const evidenceT = hazard.evidence.timestamps?.[0];
   return (
     <article className="mt-4 rounded border p-4" aria-label={hazard.title}>
       <div className="flex items-start justify-between gap-2">
@@ -18,8 +21,11 @@ export default function HazardCard({ hazard }: { hazard: Hazard }) {
           {hazard.rank ? `#${hazard.rank} ` : ""}
           {hazard.title}
         </h3>
-        {hazard.verification === "confirmed" && (
-          <span className="rounded bg-green-100 px-2 py-1 text-sm">Confirmed by SAM</span>
+        {hazard.verification === "confirmed" && mask && (
+          <span className="rounded bg-green-100 px-2 py-1 text-sm">Found by SAM (box)</span>
+        )}
+        {hazard.verification === "confirmed" && !mask && (
+          <span className="rounded bg-green-100 px-2 py-1 text-sm">Confirmed</span>
         )}
         {hazard.verification === "needs_human" && (
           <span className="rounded bg-amber-100 px-2 py-1 text-sm">Needs a human look</span>
@@ -31,7 +37,7 @@ export default function HazardCard({ hazard }: { hazard: Hazard }) {
       </p>
       <div className="relative mt-3 aspect-video w-full overflow-hidden rounded bg-neutral-700">
         <span className="absolute left-2 top-2 text-sm text-white">
-          Evidence frame at {hazard.evidence.timestamps[0] ?? 0}s
+          {evidenceT !== undefined ? `Evidence frame at ${evidenceT}s` : "Evidence frame"}
         </span>
         {mask?.polygon && (
           <svg
