@@ -15,9 +15,11 @@ from secondshift.api import (
     costs,
     eval_routes,
     health,
+    homes,
     packs,
     recheck,
     reports,
+    reviews,
     rules,
     scan,
     settings,
@@ -70,6 +72,8 @@ def create_app() -> FastAPI:
         scan,
         recheck,
         camera,
+        reviews,
+        homes,
     ):
         app.include_router(module.router, prefix="/api")
     return app

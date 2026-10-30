@@ -40,6 +40,15 @@ class Repository:
         prefix = f"{kind}:"
         return [v for k, v in self._store.items() if k.startswith(prefix)]
 
+    def delete(self, kind: str, object_id: str) -> bool:
+        """Delete one object by kind and id. Returns True if it existed."""
+        key = f"{kind}:{object_id}"
+        if key not in self._store:
+            return False
+        del self._store[key]
+        self._save()
+        return True
+
     def delete_all(self) -> None:
         """Delete everything (the Settings 'Delete everything' button)."""
         self._store = {}
