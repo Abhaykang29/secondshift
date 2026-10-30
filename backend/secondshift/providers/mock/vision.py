@@ -74,6 +74,28 @@ class MockVisionReasoner:
 
     # Pass 2 E/G: the mock has no opinions - pipelines use their
     # deterministic paths, and the UI banner says results are mock.
+    def compile_checklist_item(self, line: str):  # type: ignore[no-untyped-def]
+        """Mock compiler: refuses hands-on checks, compiles the rest
+        as a simple presence item (dev-mode determinism)."""
+        lowered = line.lower()
+        for word in ("tight", "bolted", "screwed", "smell", "sound", "works", "pressure"):
+            if word in lowered:
+                return {
+                    "status": "refused",
+                    "reason": "That needs a hands-on check, not a camera.",
+                }
+        return {
+            "status": "ok",
+            "title": line.strip().capitalize(),
+            "kind": "presence",
+            "rooms": ["any"],
+            "severity": 2,
+            "observable_evidence": line.strip(),
+            "sam_prompts": [lowered.strip()],
+            "safety_prompts": [],
+            "thin_object": "cord" in lowered or "cable" in lowered,
+        }
+
     def plan_edit(self, image, instruction):  # type: ignore[no-untyped-def]
         """Mock: no opinion - the pack instruction is used verbatim."""
         return None

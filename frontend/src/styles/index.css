@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* SecondShift global style (spec section 13): base font 18px, calm/warm,
-   tap targets >= 48px, WCAG AA contrast. Large-text toggle bumps to 22px. */
+/* SecondShift global style (Pass 3 spec 4.8): base font 18px, calm/warm
+   (#faf7f2 paper, #1f3d2b deep green), tap targets >= 48px, WCAG AA
+   contrast. The Large text toggle (persisted) bumps the base to 20px. */
 html { font-size: 18px; }
-html.large-text { font-size: 22px; }
+html.large-text { font-size: 20px; }
+body { background: #faf7f2; color: #1c2321; }
 button, a { min-height: 48px; }
 
 :focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }

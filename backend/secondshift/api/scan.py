@@ -11,7 +11,6 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from secondshift.checklists.loader import load_all_packs
 from secondshift.domain.checkup import Checkup, Keyframe
 from secondshift.pipeline.scan import ScanInput, run_scan_job
 
@@ -33,8 +32,9 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
     if raw is None:
         raise HTTPException(status_code=404, detail=f"Unknown checkup {checkup_id}")
     checkup = Checkup.model_validate(raw)
-    packs_by_id = load_all_packs()
-    packs = [packs_by_id[pid] for pid in checkup.pack_ids if pid in packs_by_id]
+    from secondshift.checklists.resolve import resolve_packs
+
+    packs = resolve_packs(store, checkup.pack_ids)
     keyframes: list[Keyframe] = []
     if body.capture_id:
         stored = store.get("keyframes", body.capture_id)

@@ -33,6 +33,7 @@ class Checkup(BaseModel):
     id: str
     created_at: datetime
     pack_ids: list[str]
+    home_label: str = "Home"
     resident_label: str | None = None
     language: str = "en"
     consent: Consent

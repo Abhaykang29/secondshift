@@ -13,6 +13,7 @@ from secondshift.api import (
     captures,
     checkups,
     costs,
+    custom,
     eval_routes,
     health,
     homes,
@@ -76,6 +77,13 @@ def create_app() -> FastAPI:
         homes,
     ):
         app.include_router(module.router, prefix="/api")
+    app.include_router(custom.router, prefix="/api")
+    from secondshift.api.v1 import build_v1_app
+
+    app.mount(
+        "/v1",
+        build_v1_app(app.state.settings, app.state.providers, app.state.store),
+    )
     return app
 
 

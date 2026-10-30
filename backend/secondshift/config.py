@@ -98,7 +98,8 @@ class Settings:
     # Privacy / eval flags
     allow_contributor_for_synthetic_text: bool = False
     retention_days: int = 30
-    credits_mode: str = "free"  # free | paid - drives the privacy copy (see PRIVACY.md)
+    credits_mode: str = "free"
+    v1_api_keys: str = ""  # 'name:key,name:key' for the /v1 API; empty = local dev key  # free | paid - drives the privacy copy (see PRIVACY.md)
     watch_thumbnail_retention_days: int = 7
     price_table: dict[str, dict[str, float]] = field(default_factory=lambda: PRICE_TABLE)
     model_ids: dict[str, str] = field(default_factory=lambda: MODEL_IDS)
@@ -125,6 +126,7 @@ class Settings:
             budget_usd=_f("BUDGET_USD", 140.0),
             budget_override=os.environ.get("BUDGET_OVERRIDE", "0") == "1",
             credits_mode=os.environ.get("CREDITS_MODE", "free"),
+            v1_api_keys=os.environ.get("V1_API_KEYS", ""),
             meta_api_key=os.environ.get("META_API_KEY") or None,
             data_dir=os.environ.get("DATA_DIR", "data"),
             max_capture_minutes=_f("MAX_CAPTURE_MINUTES", 6.0),

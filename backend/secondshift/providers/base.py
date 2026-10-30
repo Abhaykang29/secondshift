@@ -135,6 +135,12 @@ class VisionReasoner(Protocol):
         (surface-naming edit planner, 2026-10-30). None = no opinion."""
         ...
 
+    def compile_checklist_item(self, line: str) -> dict[str, object] | None:
+        """Compile one plain-English checklist line into a structured
+        item, or a refusal (Pass 3 P4, bring-your-own-checklist).
+        None = no opinion."""
+        ...
+
 
 class Segmenter(Protocol):
     """Text-prompted segmentation (SAM). The verifier, not decoration."""

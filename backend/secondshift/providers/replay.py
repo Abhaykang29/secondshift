@@ -82,6 +82,10 @@ class RecordingVision:
         """Delegate."""
         return self.inner.plan_edit(*args, **kwargs)
 
+    def compile_checklist_item(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.compile_checklist_item(*args, **kwargs)
+
     def routine_insights(self, *args, **kwargs):  # type: ignore[no-untyped-def]
         """Delegate."""
         return self.inner.routine_insights(*args, **kwargs)
@@ -117,6 +121,10 @@ class ReplayVision:
         return None
 
     def plan_edit(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def compile_checklist_item(self, *args, **kwargs):  # type: ignore[no-untyped-def]
         """No opinion in replay."""
         return None
 

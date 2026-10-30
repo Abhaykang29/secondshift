@@ -399,6 +399,24 @@ class MetaVisionReasoner:
         rewritten = str(parsed.get("instruction") or "").strip()
         return rewritten or None
 
+    def compile_checklist_item(self, line: str) -> dict[str, Any] | None:
+        """Compile one plain-English checklist line (Pass 3 P4) via
+        prompts/checklist_compiler.md. Returns the parsed dict
+        ({"status": "ok", ...} or {"status": "refused", ...}), or
+        None when the call or the JSON fails - the caller then
+        refuses the line honestly rather than guessing."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("checklist_compiler", line=line)
+        try:
+            data = self._post_chat(build_chat_payload(prompt, [], "fast"))
+            parsed = extract_json(normalize_chat_content(data))
+        except Exception:
+            return None
+        if parsed.get("status") not in ("ok", "refused"):
+            return None
+        return parsed
+
     def routine_insights(self, computed_numbers: str) -> list[dict[str, Any]] | None:
         """Wonder writes routine summaries from geometry (prompts/routine_insights.md)."""
 

@@ -1,14 +1,24 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import en from "../i18n/en.json";
 
 /**
- * Consent & setup (spec 5.1 steps 1-4): pack choice, resident label,
- * consent checkboxes, capture guidance, then the demo scan. Real video
- * upload posts to /captures; "Use the demo home" runs the mock scenario
- * so the full flow works before real footage exists (TODO(TEAM): footage).
+ * Check flow (Pass 3 spec 4.3 steps 2-3): one short consent screen,
+ * then the capture guide with three ways to get footage - record in
+ * the app camera, import from Photos (incl. Ray-Ban Meta clips), and
+ * an optional routine clip ("add the route"). Consent is recorded by
+ * POST /checkups before any capture exists (unchanged API usage);
+ * uploads post to /checkups/{id}/captures with kind walkthrough /
+ * routine. After an upload the flow hands off to the processing page.
  */
+const GUIDE = [
+  { icon: "🐢", title: "Walk slowly", text: "Room by room: entry, living, kitchen, hallway, bedroom, stairs." },
+  { icon: "📱", title: "Hold landscape", text: "Turn the phone sideways, lights on, keep it steady." },
+  { icon: "🧱", title: "Show floors and walls", text: "Include floors, stair edges, outlets and where cords run." },
+  { icon: "⏸️", title: "Pause and narrate", text: "Pause on each hazard and say what it is out loud." },
+];
+
 export default function CheckupNew() {
   const navigate = useNavigate();
   const [packIds] = useState<string[]>(() => {
@@ -21,13 +31,18 @@ export default function CheckupNew() {
       return ["falls_older_adults"];
     }
   });
+  const [step, setStep] = useState<"consent" | "capture">("consent");
+  const [checkupId, setCheckupId] = useState("");
   const [label, setLabel] = useState("");
   const [informed, setInformed] = useState(false);
   const [noPrivate, setNoPrivate] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [walkthrough, setWalkthrough] = useState<{ id: string; frames: number } | null>(null);
+  const [routineDone, setRoutineDone] = useState(false);
+  const [uploading, setUploading] = useState<"walkthrough" | "routine" | null>(null);
 
-  async function start() {
+  async function agree() {
     setBusy(true);
     setError("");
     try {
@@ -36,60 +51,183 @@ export default function CheckupNew() {
         resident_label: label || null,
         consent: { resident_informed: informed, no_private_moments: noPrivate },
       });
-      await api.scan(checkup.id);
-      navigate(`/checkup/${checkup.id}/report`);
+      setCheckupId(checkup.id);
+      setStep("capture");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
-      setBusy(false);
     }
+    setBusy(false);
+  }
+
+  async function upload(kind: "walkthrough" | "routine", file: File | undefined) {
+    if (!file || !checkupId) return;
+    setUploading(kind);
+    setError("");
+    try {
+      const capture = await api.uploadCapture(checkupId, file, kind);
+      if (kind === "walkthrough") {
+        setWalkthrough({ id: capture.id, frames: capture.keyframe_count });
+      } else {
+        setRoutineDone(true);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+    }
+    setUploading(null);
+  }
+
+  if (step === "consent") {
+    return (
+      <main className="p-4">
+        <h1 className="text-2xl font-semibold">Before you film</h1>
+        <p className="mt-3">{en.consent_intro}</p>
+
+        <fieldset className="mt-5">
+          <legend className="font-medium">Checklists for this walkthrough</legend>
+          <p className="mt-1 opacity-80">
+            {packIds.join(", ")} — chosen on the Check tab (up to 3). One
+            walkthrough is checked against all of them.
+          </p>
+        </fieldset>
+
+        <label className="mt-5 block">
+          Name this place
+          <input
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            className="mt-1 block w-full rounded border bg-white p-3"
+            placeholder="Mom's home"
+          />
+        </label>
+
+        <label className="mt-5 flex items-start gap-3">
+          <input
+            type="checkbox"
+            className="mt-1 h-6 w-6 shrink-0"
+            checked={informed}
+            onChange={(e) => setInformed(e.target.checked)}
+          />
+          <span>The person who lives or works here knows and agrees to this check.</span>
+        </label>
+        <label className="mt-3 flex items-start gap-3">
+          <input
+            type="checkbox"
+            className="mt-1 h-6 w-6 shrink-0"
+            checked={noPrivate}
+            onChange={(e) => setNoPrivate(e.target.checked)}
+          />
+          <span>No one is filmed in a bathroom or while undressed.</span>
+        </label>
+
+        <p className="mt-5 rounded bg-white p-3 text-sm">{en.data_note}</p>
+
+        {error && <p role="alert" className="mt-3 text-red-700">{error}</p>}
+        <button
+          type="button"
+          disabled={!informed || !noPrivate || busy}
+          onClick={() => void agree()}
+          className="mt-6 w-full rounded bg-[#1f3d2b] px-4 py-3 text-white disabled:opacity-40"
+        >
+          {busy ? "Saving..." : "Agree and continue"}
+        </button>
+      </main>
+    );
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Check a home</h1>
-      <p className="mt-3">{en.consent_intro}</p>
+    <main className="p-4">
+      <h1 className="text-2xl font-semibold">Film the walkthrough</h1>
 
-      <fieldset className="mt-5">
-        <legend className="font-medium">Checklists for this walkthrough</legend>
-        <p className="mt-1 opacity-80">
-          {packIds.join(", ")} — chosen on the home screen (up to 3). One
-          walkthrough is checked against all of them.
+      <section aria-label="How to film" className="mt-4 grid grid-cols-2 gap-3">
+        {GUIDE.map((panel) => (
+          <div key={panel.title} className="rounded border bg-white p-3">
+            <span className="text-3xl" aria-hidden>{panel.icon}</span>
+            <h2 className="mt-1 font-medium">{panel.title}</h2>
+            <p className="text-sm opacity-80">{panel.text}</p>
+          </div>
+        ))}
+      </section>
+
+      <section aria-label="Record now" className="mt-5 rounded border bg-white p-4">
+        <h2 className="font-medium">Record now</h2>
+        <p className="mt-1 text-sm opacity-80">
+          Use this phone&rsquo;s camera in the app, up to 3 minutes.
         </p>
-      </fieldset>
+        <Link
+          to={`/camera?checkup=${checkupId}`}
+          className="mt-3 flex w-full items-center justify-center rounded bg-[#1f3d2b] px-4 py-3 text-white"
+        >
+          Open the camera
+        </Link>
+      </section>
 
-      <label className="mt-5 block">
-        First name (optional)
-        <input value={label} onChange={(e) => setLabel(e.target.value)}
-          className="mt-1 block w-full rounded border p-3" placeholder="Mom" />
-      </label>
+      <section aria-label="Import from Photos" className="mt-4 rounded border bg-white p-4">
+        <h2 className="font-medium">Import from Photos</h2>
+        <p className="mt-1 text-sm opacity-80">
+          Ray-Ban Meta: say &ldquo;Hey Meta, take a video&rdquo;, then import
+          the clip from your Photos here.
+        </p>
+        <label className="mt-3 block">
+          <span className="sr-only">Choose a walkthrough video</span>
+          <input
+            type="file"
+            accept="video/*"
+            className="block w-full rounded border p-3"
+            onChange={(e) => void upload("walkthrough", e.target.files?.[0])}
+          />
+        </label>
+        {uploading === "walkthrough" && <p className="mt-2 text-sm">Uploading and reading frames...</p>}
+        {walkthrough && (
+          <p className="mt-2 text-sm font-medium text-[#1f3d2b]">
+            Video in — {walkthrough.frames} frames found.
+          </p>
+        )}
+      </section>
 
-      <label className="mt-5 block">
-        <input type="checkbox" checked={informed} onChange={(e) => setInformed(e.target.checked)} />{" "}
-        The person who lives here knows and agrees to this check-up.
-      </label>
-      <label className="mt-2 block">
-        <input type="checkbox" checked={noPrivate} onChange={(e) => setNoPrivate(e.target.checked)} />{" "}
-        I will not film anyone in a bathroom or while undressing.
-      </label>
-
-      <section className="mt-5 rounded bg-neutral-100 p-4">
-        <h2 className="font-medium">How to film (2-3 minutes)</h2>
-        <ol className="mt-2 list-decimal pl-6">
-          <li>Room order: entry, living, kitchen, hallway, bedroom, bathroom, stairs.</li>
-          <li>Lights on, slow pan, include floors and stair edges.</li>
-          <li>Narrate as you go - tell us anything we should know.</li>
-          <li>Optional routine clip: prop the phone still and film the daily path once.</li>
-        </ol>
-        <p className="mt-2 text-sm">{en.data_note}</p>
+      <section aria-label="Add the route" className="mt-4 rounded border bg-white p-4">
+        <h2 className="font-medium">Add the route (optional)</h2>
+        <p className="mt-1 text-sm opacity-80">
+          Prop the phone still and film the daily route once — bed to
+          bathroom, chair to kitchen. It shows what the person touches and
+          where the path is tight.
+        </p>
+        <label className="mt-3 block">
+          <span className="sr-only">Choose an optional routine video</span>
+          <input
+            type="file"
+            accept="video/*"
+            className="block w-full rounded border p-3"
+            onChange={(e) => void upload("routine", e.target.files?.[0])}
+          />
+        </label>
+        {uploading === "routine" && <p className="mt-2 text-sm">Uploading the route clip...</p>}
+        {routineDone && (
+          <p className="mt-2 text-sm font-medium text-[#1f3d2b]">Route clip added.</p>
+        )}
       </section>
 
       {error && <p role="alert" className="mt-3 text-red-700">{error}</p>}
-      <button type="button" disabled={!informed || !noPrivate || busy} onClick={start}
-        className="mt-6 w-full rounded bg-blue-700 px-4 py-3 text-white disabled:opacity-40">
-        {busy ? "Checking the home..." : "Use the demo home and run the check-up"}
+
+      <button
+        type="button"
+        disabled={!walkthrough}
+        onClick={() =>
+          navigate(`/checkup/${checkupId}/processing?capture=${walkthrough?.id ?? ""}`)
+        }
+        className="mt-6 w-full rounded bg-[#1f3d2b] px-4 py-3 text-white disabled:opacity-40"
+      >
+        Start the check
+      </button>
+      <button
+        type="button"
+        onClick={() => navigate(`/checkup/${checkupId}/processing`)}
+        className="mt-3 w-full rounded border bg-white px-4 py-3"
+      >
+        No video handy? Run the demo home check
       </button>
       <p className="mt-2 text-sm opacity-70">
-        Demo home = recorded mock scenario. Real footage upload: TODO(TEAM) footage + Phase 7 keys.
+        The demo home is a recorded scenario so the full flow works before
+        real footage exists.
       </p>
     </main>
   );

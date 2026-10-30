@@ -24,7 +24,7 @@ def list_homes(request: Request) -> dict[str, Any]:
     store = request.app.state.store
     grouped: dict[str, list[dict[str, Any]]] = {}
     for raw in store.list("checkup"):
-        grouped.setdefault(str(raw.get("home_label") or "Home"), []).append(raw)
+        grouped.setdefault(str(raw.get("home_label") or raw.get("resident_label") or "Home"), []).append(raw)
     homes: list[dict[str, Any]] = []
     for label, checkups in sorted(grouped.items()):
         checkups.sort(key=lambda c: str(c.get("created_at", "")))
@@ -65,7 +65,7 @@ def delete_home(label: str, request: Request) -> dict[str, Any]:
     targets = [
         raw
         for raw in store.list("checkup")
-        if str(raw.get("home_label") or "Home") == label
+        if str(raw.get("home_label") or raw.get("resident_label") or "Home") == label
     ]
     if not targets:
         raise HTTPException(status_code=404, detail="No such home.")

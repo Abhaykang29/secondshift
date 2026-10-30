@@ -39,6 +39,7 @@ export interface Checkup {
   id: string;
   created_at: string;
   pack_ids: string[];
+  home_label?: string;
   resident_label?: string | null;
   language?: string;
   consent: Consent;

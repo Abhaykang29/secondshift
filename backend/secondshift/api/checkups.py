@@ -21,6 +21,7 @@ class CreateCheckup(BaseModel):
     """Request body for creating a checkup."""
 
     pack_ids: list[str]
+    home_label: str | None = None
     resident_label: str | None = None
     language: str = "en"
     consent: Consent
@@ -41,6 +42,7 @@ def create_checkup(body: CreateCheckup, request: Request) -> dict[str, Any]:
         id=uuid.uuid4().hex,
         created_at=datetime.now(UTC),
         pack_ids=body.pack_ids,
+        home_label=body.home_label or body.resident_label or "Home",
         resident_label=body.resident_label,
         language=body.language,
         consent=body.consent,

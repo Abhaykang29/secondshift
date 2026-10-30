@@ -79,3 +79,30 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
 ### pass3_p2_packs — REPORTED (2026-10-30, manual entry; test_1.mp4 only, NOT official footage)
 - detail: Pass 3 P2 - 10 packs / 110 items load and validate. One live scan per new pack on test_1.mp4: home_safety_inspection (156s) correctly capped HOME-EXTINGUISHER-ABSENT at needs_human with the standard wording and produced a planner-rewritten visualization; workplace_safety (213s) capped WORK-EXTINGUISHER-ABSENT at needs_human in two rooms, honest rejections elsewhere (a home is not a workplace); car_seat_check (77s) is a correct true negative - no vehicle interior, nothing confirmed, SEAT-OBJECTS-LOOSE honestly rejected. SEAT-TIGHTNESS always lands as cannot-assess with the exact shake-test wording (a first run showed a generic propose entry winning; the pipeline now normalizes it - verified on a 13s warm re-run). pet_safety is back in the demo set per the Pass 3 brief.
 - cost: ~$1.95 across the four runs (phase_tag pass3; pass-3 total $4.39 of $50 after P2)
+
+
+## Pass 3 P4 - engine layer + bring-your-own-checklist (2026-10-30)
+
+- entry_id: pass3_p4_engine
+  - core/ package: compile_checklist (packs + custom), check, recheck,
+    compile_rule, live - domain-agnostic; an AST-level test enforces
+    that nothing in core/ imports the app layer. docs/ENGINE.md
+    documents the interface, the /v1 REST API (API keys, 30/min rate
+    limit, the shared cost guard) and the roadmap list.
+  - Live compile (Spark, checklist_compiler v1): 5 lines in -> 4 items
+    (cords presence/thin, plant presence, towels presence/thin,
+    extinguisher absence with anchors [front door, wall by front
+    door]) and 1 honest refusal ("extinguisher bracket screwed tight"
+    -> "Video cannot tell if the bracket screws are tight so check
+    them by hand instead.").
+  - Live run of the compiled custom-942b3dca on test_1.mp4: towels
+    CONFIRMED in the kitchen; cords CONFIRMED in living room and
+    bedroom (TV + desk cords), honestly rejected in the kitchen;
+    plant REJECTED (a recall miss - the pack item finds it; the
+    compiled draft's context is thinner; recorded, not hidden);
+    extinguisher absence -> CANNOT ASSESS (the front-door anchor was
+    not clearly filmed, so no fake needs-human). One duplicate:
+    towels also reported under "living" (room-attribution split).
+  - /v1 verified via TestClient: 401 without a key, checklist compile
+    200 with the local key, OpenAPI at /v1/openapi.json; the 429 rate
+    limit is covered in tests. Pass-3 spend after P4: $5.17 of $50.
