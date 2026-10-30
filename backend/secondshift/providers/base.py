@@ -130,6 +130,11 @@ class VisionReasoner(Protocol):
         """Judge an object's visible state in one frame (pass 2 G.2)."""
         ...
 
+    def plan_edit(self, image: ImageRef, instruction: str) -> str | None:
+        """Rewrite a visualization instruction against the actual photo
+        (surface-naming edit planner, 2026-10-30). None = no opinion."""
+        ...
+
 
 class Segmenter(Protocol):
     """Text-prompted segmentation (SAM). The verifier, not decoration."""

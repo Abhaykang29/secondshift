@@ -74,6 +74,10 @@ class MockVisionReasoner:
 
     # Pass 2 E/G: the mock has no opinions - pipelines use their
     # deterministic paths, and the UI banner says results are mock.
+    def plan_edit(self, image, instruction):  # type: ignore[no-untyped-def]
+        """Mock: no opinion - the pack instruction is used verbatim."""
+        return None
+
     def plan_fix(self, hazard_title, description, fixes, language):  # type: ignore[no-untyped-def]
         return None
 

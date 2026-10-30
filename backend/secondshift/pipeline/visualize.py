@@ -42,6 +42,24 @@ EDIT_SUFFIX = (
 )
 
 
+def _expand_context(
+    region: tuple[int, int, int, int], w: int, h: int
+) -> tuple[int, int, int, int]:
+    """Grow an edit region to a minimum context size (2026-10-30 edits
+    experiment): at least ~55% of the frame wide and ~80% tall, kept
+    centred on the original region and clamped inside the frame. Small
+    crops made the editor paint a miniature scene into the box; with
+    the room around the change in view (and an instruction naming the
+    existing surface) the same edits come out photographic."""
+    x0, y0, x1, y1 = region
+    tw = max(x1 - x0, int(0.55 * w))
+    th = max(y1 - y0, int(0.80 * h))
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    nx0 = min(max(0, int(cx - tw / 2)), max(0, w - tw))
+    ny0 = min(max(0, int(cy - th / 2)), max(0, h - th))
+    return nx0, ny0, min(w, nx0 + tw), min(h, ny0 + th)
+
+
 def _region_for(hazard: Hazard, w: int, h: int) -> tuple[int, int, int, int] | None:
     """Pixel crop region for the edit (presence: dilated hazard box;
     absence: a placement region beside/above/below the anchor box).
@@ -140,6 +158,7 @@ def render_visualizations(
     keyframes: dict[str, str] | None = None,
     image_editor: ImageEditor | None = None,
     segmenter: Segmenter | None = None,
+    vision: object | None = None,
 ) -> tuple[list[Visualization], dict[str, str]]:
     """Render before/after images for the top 3 visual fix candidates.
 
@@ -172,6 +191,7 @@ def render_visualizations(
                 keyframes=keyframes,
                 image_editor=image_editor,
                 segmenter=segmenter,
+                vision=vision,
             )
 
         with ThreadPoolExecutor(max_workers=len(candidates)) as pool:
@@ -183,10 +203,24 @@ def render_visualizations(
             return merged_viz, merged_befores
     for hazard in candidates:
         card = fixes_by_hazard[hazard.id]
-        prompt = f"{card.chosen.visualization_prompt}{EDIT_SUFFIX}"
         kf_path = (keyframes or {}).get(
             hazard.evidence.keyframe_ids[0] if hazard.evidence.keyframe_ids else ""
         )
+        # Edits experiment (2026-10-30): rewrite the pack instruction
+        # against the actual photo first - naming the existing surface
+        # (or phrasing a move-out-of-frame as a removal) is what makes
+        # the edit photographic instead of a miniature scene. Any
+        # planner failure keeps the pack instruction verbatim.
+        instruction = card.chosen.visualization_prompt
+        plan_edit = getattr(vision, "plan_edit", None)
+        if plan_edit is not None and kf_path and Path(kf_path).exists():
+            try:
+                planned = plan_edit(ImageRef(path=kf_path), instruction or "")
+            except Exception:
+                planned = None
+            if planned:
+                instruction = planned
+        prompt = f"{instruction}{EDIT_SUFFIX}"
         before_path = out / f"before-{hazard.id}.png"
         after_path = out / f"viz-{hazard.id}.png"
         if not kf_path or not Path(kf_path).exists():
@@ -226,6 +260,8 @@ def render_visualizations(
         befores[hazard.id] = str(before_path)
 
         region = _region_for(hazard, base.width, base.height)
+        if region is not None:
+            region = _expand_context(region, base.width, base.height)
         after_img: Image.Image | None = None
         if region is not None and image_editor is not None:
             crop = base.crop(region)

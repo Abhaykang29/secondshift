@@ -95,6 +95,7 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         scenario_name=scenario,
         narration_facts=narration_facts,
         verify_mode=request.app.state.settings.verify_mode,
+        sweep=scenario is None,
     )
     job, report = run_scan_job(
         store,

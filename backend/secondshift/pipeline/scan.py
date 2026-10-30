@@ -42,6 +42,10 @@ class ScanInput:
     narration_facts: list[NarrationFact] = field(default_factory=list)
     scenario_name: str | None = None  # mock providers only
     verify_mode: str = "sam_plus_judge"
+    # Two-way check (2026-10-30): the SAM sweep runs on the live path
+    # (scenario is None); scripted demo scenarios define their own
+    # world and skip it.
+    sweep: bool = False
     propose_model: str = "spark"  # recorded in stats; model choice is config
 
 
@@ -85,6 +89,26 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
         verify_mode=scan_input.verify_mode,
     )
     cannot = cannot + verify_cannot
+    if scan_input.sweep and scan_input.verify_mode != "none":
+        from secondshift.pipeline import sweep as sweep_mod
+
+        covered = {
+            (h.item_id, h.room)
+            for h in hazards
+            if h.verification in (Verification.CONFIRMED, Verification.NEEDS_HUMAN)
+        }
+        swept = sweep_mod.sweep_presence(
+            providers.segmenter,
+            providers.vision,
+            scan_input.packs,
+            scan_input.keyframes,
+            rooms_seen,
+            covered,
+            scan_input.checkup.id,
+            len(proposals),
+            verify_mode=scan_input.verify_mode,
+        )
+        hazards = sweep_mod.merge_sweep_hazards(hazards, swept)
     insights: list[RoutineInsight] = []
     # Routine step: computed contacts come from the routine analysis; on
     # mocks they are the scenario's labelled contacts (the geometry that
@@ -233,6 +257,7 @@ def run_scan_job(
             keyframes={kf.id: kf.image_path for kf in scan_input.keyframes if kf.image_path},
             image_editor=providers.image_editor,
             segmenter=providers.segmenter,
+            vision=providers.vision,
         )
         holder["visualizations"] = visualizations
 

@@ -111,6 +111,10 @@ def build_propose_payload(
         content.append(image_part(ImageRef(path=keyframe.image_path, keyframe_id=keyframe.id)))
     return {
         "model": MODEL_BY_ROLE[model_role],
+        # Propose stability (2026-10-30): temperature 0 is accepted by
+        # the API (probed live, HTTP 200) and costs nothing extra -
+        # preferred over running propose twice and merging.
+        "temperature": 0,
         "messages": [{"role": "user", "content": content}],
     }
 
@@ -373,6 +377,23 @@ class MetaVisionReasoner:
         except Exception:
             return None
         return parsed if isinstance(parsed, dict) else None
+
+    def plan_edit(self, image: ImageRef, instruction: str) -> str | None:
+        """Rewrite a viz instruction against the actual photo
+        (prompts/edit_instruction.md): names the existing surface the
+        change belongs on, or phrases a move-out-of-frame as a removal.
+        Returns None on any failure - the caller keeps the pack's
+        original instruction (2026-10-30 edits experiment)."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("edit_instruction", instruction=instruction)
+        try:
+            data = self._post_chat(build_chat_payload(prompt, [image], "fast"))
+            parsed = extract_json(normalize_chat_content(data))
+        except Exception:
+            return None
+        rewritten = str(parsed.get("instruction") or "").strip()
+        return rewritten or None
 
     def routine_insights(self, computed_numbers: str) -> list[dict[str, Any]] | None:
         """Wonder writes routine summaries from geometry (prompts/routine_insights.md)."""
