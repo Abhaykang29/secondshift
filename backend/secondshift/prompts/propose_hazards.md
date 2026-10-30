@@ -27,7 +27,7 @@ Rules:
 6. Write why_risky in one plain sentence about the space, for a worried family member.
 7. Also return keyframe_rooms: exactly one room label per image, in the same order as the
    images, each from this list only: kitchen, bathroom, bedroom, living, hallway, stairs,
-   entry, nursery, other. This is the room label the rest of the pipeline uses for that frame.
+   entry, nursery. If you truly cannot tell, use "unknown". This is the room label the rest of the pipeline uses for that frame.
 
 Return ONLY JSON matching this schema:
 {{ json_schema }}

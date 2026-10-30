@@ -88,6 +88,7 @@ items:
   - any
   severity: 3
   observable_evidence: Window blind or curtain cords hanging within reach
+  thin_object: true
   sam_prompts:
   - blind cord
   - curtain cord
@@ -239,6 +240,7 @@ items:
   - kitchen
   severity: 2
   observable_evidence: Kettle, iron or toaster cords dangling off the counter edge
+  thin_object: true
   sam_prompts:
   - dangling cord
   - kettle cord

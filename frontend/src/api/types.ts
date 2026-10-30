@@ -158,6 +158,7 @@ export interface Keyframe {
   brightness: number;
   usable: boolean;
   room_guess?: string | null;
+  room_confidence?: number | null;
 }
 
 export interface Mask {

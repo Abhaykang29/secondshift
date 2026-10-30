@@ -137,6 +137,7 @@ items:
   - any
   severity: 2
   observable_evidence: Loose electrical cords or charging cables lying at floor level
+  thin_object: true
   sam_prompts:
   - electrical cord
   - charging cable

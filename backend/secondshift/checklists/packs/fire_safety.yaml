@@ -84,8 +84,14 @@ items:
   severity: 2
   observable_evidence: Towels, paper or packaging on or next to the stovetop
   sam_prompts:
-  - dish towel near stove
-  - paper towel near stove
+  - dish towel
+  - paper towel roll
+  - towel hanging on oven handle
+  - paper towels
+  sweep_anchor_prompts:
+  - stove
+  - cooktop
+  - oven
   safety_prompts: []
   cannot_see_note: null
   fixes:
@@ -191,6 +197,7 @@ items:
   - any
   severity: 2
   observable_evidence: Electrical cord passing under a rug or furniture where it can overheat or wear
+  thin_object: true
   sam_prompts:
   - cord under rug
   - rug over cord

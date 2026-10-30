@@ -68,6 +68,33 @@ def _set_scenario(providers: Providers, scenario_name: str | None) -> None:
             setattr(provider, "scenario_name", scenario_name)
 
 
+def attach_cross_pack_tags(hazards: list[Hazard], packs: list[Pack]) -> list[Hazard]:
+    """Pass 3 P1.3: one physical object can satisfy items in several
+    packs (a floor cord is both FALL-FLOOR-CORD and PET-CORDS-
+    CHEWABLE). Items sharing a dedupe_key are the same object class:
+    a confirmed (or needs-human) hazard earns the pack tag of every
+    selected pack that carries an item with the same dedupe_key, even
+    when that pack's own item was never separately proposed - one
+    hazard card, several pack chips."""
+    key_by_item: dict[str, str | None] = {}
+    packs_by_key: dict[str, set[str]] = {}
+    for pack in packs:
+        for item in pack.items:
+            key_by_item[item.id] = item.dedupe_key
+            if item.dedupe_key:
+                packs_by_key.setdefault(item.dedupe_key, set()).add(pack.pack_id)
+    for hazard in hazards:
+        if hazard.verification not in (Verification.CONFIRMED, Verification.NEEDS_HUMAN):
+            continue
+        key = key_by_item.get(hazard.item_id)
+        if not key:
+            continue
+        for pack_id in sorted(packs_by_key.get(key, set())):
+            if pack_id not in hazard.pack_tags:
+                hazard.pack_tags.append(pack_id)
+    return hazards
+
+
 def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
     """Run propose/verify/routine/rank and return the scan output."""
     _set_scenario(providers, scan_input.scenario_name)
@@ -109,6 +136,7 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
             verify_mode=scan_input.verify_mode,
         )
         hazards = sweep_mod.merge_sweep_hazards(hazards, swept)
+    hazards = attach_cross_pack_tags(hazards, scan_input.packs)
     insights: list[RoutineInsight] = []
     # Routine step: computed contacts come from the routine analysis; on
     # mocks they are the scenario's labelled contacts (the geometry that

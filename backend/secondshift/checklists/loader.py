@@ -45,6 +45,13 @@ class PackItem(BaseModel):
     measurement_threshold: str | None = None
     dedupe_key: str | None = None
     needs_human_unless: str | None = None
+    # Pass 3 P1: thin/elongated objects (cords, towels, straps) are
+    # swept on tiled crops instead of wide frames.
+    thin_object: bool = False
+    # Pass 3 P1: when set, the sweep segments these anchor prompts too
+    # and only confirms the item when a found object overlaps (or sits
+    # within 10% of frame width of) an anchor box on the same frame.
+    sweep_anchor_prompts: list[str] = Field(default_factory=list)
 
     @field_validator("severity")
     @classmethod

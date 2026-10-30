@@ -53,6 +53,24 @@ _ROOM_ALIASES = {
 }
 
 
+# Pass 3 P1.4: keyframe room labels come from this fixed list only.
+# "other" is gone; anything outside the list is unlabeled until the
+# neighbour smoothing pass fills it or it becomes "unlabeled area".
+FIXED_ROOMS = {
+    "kitchen", "bathroom", "bedroom", "living",
+    "hallway", "stairs", "entry", "nursery",
+}
+UNLABELED_AREA = "unlabeled area"
+_PROPOSE_LABEL_CONFIDENCE = 0.75
+_CONFIDENT = 0.6
+
+
+def normalize_keyframe_room(room: str | None) -> str:
+    """A keyframe room label, or "" when it is outside the fixed list."""
+    normalized = normalize_room(room)
+    return normalized if normalized in FIXED_ROOMS else ""
+
+
 def normalize_room(room: str | None) -> str:
     """Canonical room label: lowercase, spaces/hyphens folded, aliases mapped."""
     if not room:
@@ -126,7 +144,8 @@ def _classify_missing_rooms(vision: VisionReasoner, keyframes: list[Keyframe]) -
     """One classify_room call per still-unlabeled keyframe, in parallel.
 
     Providers with no opinion (mock/replay) return None and the frame
-    simply stays unlabeled - the model's own room text is the fallback.
+    simply stays unlabeled. The classifier's confidence is recorded so
+    the smoothing pass can overrule weak labels (pass 3 P1.4).
     """
     missing = [kf for kf in keyframes if not kf.room_guess and kf.image_path]
     if not missing or not hasattr(vision, "classify_room"):
@@ -138,12 +157,49 @@ def _classify_missing_rooms(vision: VisionReasoner, keyframes: list[Keyframe]) -
         except Exception:
             return
         if isinstance(result, dict):
-            room = normalize_room(str(result.get("room_type") or result.get("room") or ""))
+            room = normalize_keyframe_room(
+                str(result.get("room_type") or result.get("room") or "")
+            )
             if room:
                 kf.room_guess = room
+                confidence = result.get("confidence")
+                if isinstance(confidence, (int, float)):
+                    kf.room_confidence = float(confidence)
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         list(pool.map(_one, missing))
+
+
+def _smooth_room_labels(keyframes: list[Keyframe]) -> None:
+    """Pass 3 P1.4: a frame whose room confidence is under 0.6 takes
+    the nearest confident neighbour's label within 3 seconds; a frame
+    still unlabeled (or only weakly labeled) after that becomes
+    "unlabeled area" - never "other", never blank."""
+
+    if not any(kf.room_guess or kf.room_confidence is not None for kf in keyframes):
+        return  # no labeling happened at all (scripted providers): leave
+        # frames untouched - proposals carry the rooms in that mode.
+
+    def _weak(kf: Keyframe) -> bool:
+        return kf.room_confidence is not None and kf.room_confidence < _CONFIDENT
+
+    def _confident(kf: Keyframe) -> bool:
+        return bool(kf.room_guess) and kf.room_guess != UNLABELED_AREA and not _weak(kf)
+
+    for kf in keyframes:
+        if kf.room_guess and not _weak(kf):
+            continue
+        best: tuple[float, str] | None = None
+        for other in keyframes:
+            if other is kf or not _confident(other):
+                continue
+            gap = abs(other.t - kf.t)
+            if gap <= 3.0 and (best is None or gap < best[0]):
+                best = (gap, other.room_guess or "")
+        if best is not None:
+            kf.room_guess = best[1]
+        elif not kf.room_guess or _weak(kf):
+            kf.room_guess = UNLABELED_AREA
 
 
 def _sanitize_proposal(proposal: HazardProposal, batch: list[Keyframe]) -> None:
@@ -225,10 +281,12 @@ def propose_hazards(
         labels = getattr(response, "keyframe_rooms", []) or []
         # Labels are aligned by image order; a short list labels a prefix.
         for kf, label in zip(batch, labels):
-            room = normalize_room(label)
+            room = normalize_keyframe_room(label)
             if room and not kf.room_guess:
                 kf.room_guess = room
+                kf.room_confidence = _PROPOSE_LABEL_CONFIDENCE
     _classify_missing_rooms(vision, keyframes)
+    _smooth_room_labels(keyframes)
 
     found: dict[tuple[str, str], HazardProposal] = {}
     cannot: list[CannotAssess] = []

@@ -56,15 +56,20 @@ def test_plan_sweep_budget_covered_and_presence_only() -> None:
     frames = [_kf(i, room, float(i * 3), 0.5) for i, room in enumerate(["living", "kitchen", "bedroom"] * 2)]
     by_room = sweep_mod.best_frames_by_room(frames)
     plan = sweep_mod.plan_sweep(packs, by_room, covered=set(), budget=10)
-    assert len(plan) == 10  # budget is a hard cap
+    # the budget is a hard cap in prompt-level SAM calls (Pass 3 P1)
+    prompt_cost = sum(
+        len(c.item.sam_prompts) * (2 if c.item.sweep_anchor_prompts else 1)
+        for c in plan if c.tile is None
+    )
+    assert 0 < prompt_cost <= 10
     # covered (item, room) pairs are never planned
-    covered = {(plan[0][1].id, plan[0][2].room_guess or "")}
+    covered = {(plan[0].item.id, plan[0].frame.room_guess or "")}
     plan2 = sweep_mod.plan_sweep(packs, by_room, covered=covered, budget=100)
-    assert all((item.id, frame.room_guess or "") not in covered for _p, item, frame in plan2)
+    assert all((c.item.id, c.frame.room_guess or "") not in covered for c in plan2)
     # absence/measurement/interaction items are never swept
     from secondshift.domain.enums import ItemKind
 
-    assert all(item.kind is ItemKind.PRESENCE for _p, item, _f in plan2)
+    assert all(c.item.kind is ItemKind.PRESENCE for c in plan2)
 
 
 class _StubSegmenter:
@@ -233,3 +238,84 @@ def test_visualize_uses_planned_instruction(tmp_path) -> None:  # type: ignore[n
         vision=None,
     )
     assert "nightstand next to the bed" in viz2[0].prompt_used
+
+
+# --- Pass 3 P1: tiles, proximity, cross-pack tags, room smoothing ---
+
+
+def test_thin_items_plan_tiles_within_thin_budget(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from PIL import Image
+
+    frame_path = tmp_path / "frame.jpg"
+    Image.new("RGB", (640, 480), (90, 90, 90)).save(frame_path)
+    packs_by_id = load_all_packs()
+    packs = [packs_by_id["falls_older_adults"], packs_by_id["pet_safety"]]
+    frames = [
+        Keyframe(
+            id="kf-1", capture_id="cap", t=1.0, image_path=str(frame_path),
+            sharpness=0.9, brightness=0.5, usable=True, room_guess="living",
+        )
+    ]
+    by_room = sweep_mod.best_frames_by_room(frames)
+    plan = sweep_mod.plan_sweep(packs, by_room, covered=set(), thin_budget=40)
+    tile_calls = [c for c in plan if c.tile is not None]
+    thin_items = {c.item.id for c in tile_calls}
+    assert "FALL-FLOOR-CORD" in thin_items  # the living-room cord gets tiles
+    spent = sum(len(c.item.sam_prompts) for c in tile_calls)
+    assert spent <= 40
+    # 5 tiles per (thin item, room): 2x2 + floor band
+    cord_tiles = [c for c in tile_calls if c.item.id == "FALL-FLOOR-CORD"]
+    assert len({c.tile for c in cord_tiles}) == len(sweep_mod.TILES)
+
+
+def test_tile_mask_remaps_to_full_frame() -> None:
+    mask = Mask(keyframe_id="kf-1", bbox=(0.5, 0.5, 1.0, 1.0), score=0.9, prompt="cord")
+    remapped = sweep_mod._remap_mask(mask, (0.5, 0.0, 1.0, 0.5))  # top-right tile
+    assert remapped.bbox == (0.75, 0.25, 1.0, 0.5)
+
+
+def test_proximity_near_and_far() -> None:
+    towel = Mask(keyframe_id="k", bbox=(0.40, 0.40, 0.50, 0.60), score=0.9, prompt="dish towel")
+    stove = Mask(keyframe_id="k", bbox=(0.45, 0.30, 0.75, 0.55), score=0.9, prompt="stove")
+    far_stove = Mask(keyframe_id="k", bbox=(0.85, 0.30, 0.99, 0.55), score=0.9, prompt="stove")
+    assert sweep_mod._near(towel, stove) is True  # overlapping
+    assert sweep_mod._near(towel, far_stove) is False  # 0.35 away > 0.10
+
+
+def test_cross_pack_tags_cord_gets_both_packs() -> None:
+    from secondshift.pipeline.scan import attach_cross_pack_tags
+
+    packs_by_id = load_all_packs()
+    packs = [packs_by_id["falls_older_adults"], packs_by_id["pet_safety"]]
+    hazard = _hazard("PET-CORDS-CHEWABLE", "living", Verification.CONFIRMED)
+    hazard.pack_id = "pet_safety"
+    hazard.pack_tags = ["pet_safety"]
+    out = attach_cross_pack_tags([hazard], packs)
+    assert "falls_older_adults" in out[0].pack_tags  # same dedupe_key: cord_reroute
+    rejected = _hazard("FALL-FLOOR-CORD", "living", Verification.REJECTED)
+    rejected.pack_id = "falls_older_adults"
+    rejected.pack_tags = ["falls_older_adults"]
+    out2 = attach_cross_pack_tags([rejected], packs)
+    assert out2[0].pack_tags == ["falls_older_adults"]  # rejected earns nothing
+
+
+def test_room_smoothing_and_unlabeled_area() -> None:
+    from secondshift.pipeline.propose import _smooth_room_labels
+
+    def kf(idx: int, t: float, room: str | None, conf: float | None) -> Keyframe:
+        return Keyframe(
+            id=f"k{idx}", capture_id="c", t=t, image_path="/tmp/x.jpg",
+            sharpness=0.5, brightness=0.5, usable=True,
+            room_guess=room, room_confidence=conf,
+        )
+
+    frames = [
+        kf(1, 0.0, "living", 0.9),
+        kf(2, 2.0, None, None),        # adopts living (within 3s)
+        kf(3, 30.0, "bedroom", 0.4),   # weak, no confident neighbour -> unlabeled area
+        kf(4, 60.0, None, None),       # nothing nearby -> unlabeled area
+    ]
+    _smooth_room_labels(frames)
+    assert [f.room_guess for f in frames] == [
+        "living", "living", "unlabeled area", "unlabeled area",
+    ]

@@ -58,6 +58,7 @@ items:
   severity: 3
   observable_evidence: Electrical cord or cable crossing a walking path
   dedupe_key: cord_reroute
+  thin_object: true
   sam_prompts:
   - electrical cord
   - extension cord

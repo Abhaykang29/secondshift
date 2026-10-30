@@ -103,7 +103,11 @@ def build_propose_payload(
             {
                 "type": "text",
                 "text": (
-                    f"Image {idx + 1} of {total}: keyframe_id={keyframe.id}; "
+                    # DECISIONS D11: index + timestamp only - keyframe
+                    # ids are random per capture, so including one
+                    # changed the cache key without changing anything
+                    # the answer depends on, defeating warm re-checks.
+                    f"Image {idx + 1} of {total}: "
                     f"timestamp_seconds={keyframe.t:g}"
                 ),
             }

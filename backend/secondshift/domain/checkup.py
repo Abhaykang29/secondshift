@@ -63,6 +63,7 @@ class Keyframe(BaseModel):
     brightness: float
     usable: bool
     room_guess: str | None = None
+    room_confidence: float | None = None
 
 
 class NarrationSegment(BaseModel):
