@@ -242,8 +242,8 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
 
 
 def plain_summary(
-    hazards: list,  # list[Hazard]
-    cannot_assess: list,  # list[CannotAssess]
+    hazards: list[Hazard],
+    cannot_assess: list[CannotAssess],
     fix_first: list[str],
     pack_ids: list[str],
 ) -> str:
