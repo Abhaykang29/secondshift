@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend check check-backend check-frontend test demo demo-check eval smoke-meta types
+.PHONY: setup dev dev-backend dev-frontend check check-backend check-frontend test demo demo-check demo-reset eval smoke-meta types
 
 VENV=.venv
 PY=$(VENV)/bin/python
@@ -41,6 +41,9 @@ demo:
 
 demo-check:
 	$(PY) scripts/demo_check.py
+
+demo-reset:
+	$(PY) scripts/demo_reset.py
 
 eval:
 	$(PY) eval/run_eval.py --help

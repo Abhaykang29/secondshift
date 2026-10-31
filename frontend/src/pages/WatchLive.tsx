@@ -7,14 +7,19 @@ interface EventView {
 interface DemoResult { events: EventView[]; alerts: number; note?: string }
 
 /**
- * Watch live view (spec 5.2 step 5): run the demo timeline (gate opens
- * for 60 seconds) through the real engine and show the state timeline -
- * exactly one alert. The still-frame strip is a placeholder panel: live
- * frames need a real source (TODO(TEAM) phone setup).
+ * Live Check view: compile a plain-English rule, claim the room, get
+ * consent, and run the real live watch against the phone camera
+ * stream (events arrive over SSE). A scripted simulation of the same
+ * flow exists for development only and renders solely with ?dev=1
+ * in the URL - it is never part of the product surface.
  */
 interface LiveStartResult {
   started: boolean; status?: string; message?: string; session_id?: string; room?: string;
 }
+
+const DEV_MODE =
+  typeof window !== "undefined" &&
+  new URLSearchParams(window.location.search).has("dev");
 
 export default function WatchLive() {
   const [result, setResult] = useState<DemoResult | null>(null);
@@ -96,23 +101,27 @@ export default function WatchLive() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold">Watch — simulation</h1>
-      <div className="relative mt-4 aspect-video w-full rounded bg-neutral-700">
-        <span className="absolute left-2 top-2 text-sm text-white">
-          Simulation — not a camera. Scripted timeline (gate opens 10s–70s). For a real camera, open /camera on a phone (live loop: pass 2 Phase G).
-        </span>
-        <span className="absolute bottom-2 right-2 rounded bg-black/60 px-2 py-1 text-sm text-white">
-          State: {result?.events[result.events.length - 1]?.state_to ?? "idle"}
-        </span>
-      </div>
+      <h1 className="text-2xl font-semibold">Live Check</h1>
+      {DEV_MODE && (
+        <div className="relative mt-4 aspect-video w-full rounded bg-neutral-700">
+          <span className="absolute left-2 top-2 text-sm text-white">
+            Simulation — not a camera. Scripted timeline for trying rules without a camera.
+          </span>
+          <span className="absolute bottom-2 right-2 rounded bg-black/60 px-2 py-1 text-sm text-white">
+            State: {result?.events[result.events.length - 1]?.state_to ?? "idle"}
+          </span>
+        </div>
+      )}
       <label className="mt-4 block">Rule
         <textarea value={rule} onChange={(e) => setRule(e.target.value)} rows={2}
           className="mt-1 block w-full rounded border p-3" />
       </label>
-      <button type="button" onClick={() => void run()}
-        className="mt-3 w-full rounded bg-blue-700 px-4 py-3 text-white">
-        Run the demo watch
-      </button>
+      {DEV_MODE && (
+        <button type="button" onClick={() => void run()}
+          className="mt-3 w-full rounded bg-blue-700 px-4 py-3 text-white">
+          Run the simulated watch (dev)
+        </button>
+      )}
       <section className="mt-6 rounded border bg-white p-4" aria-label="Live watch">
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-semibold">Live watch (real camera)</h2>
@@ -166,8 +175,8 @@ export default function WatchLive() {
           </ol>
         )}
       </section>
-      {result && (
-        <section className="mt-5" aria-label="Watch events">
+      {DEV_MODE && result && (
+        <section className="mt-5" aria-label="Simulated watch events">
           <p className="font-medium">Alerts sent: {result.alerts}</p>
           {result.note && <p className="mt-1">{result.note}</p>}
           <ol className="mt-2">

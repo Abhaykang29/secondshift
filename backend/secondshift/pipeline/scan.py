@@ -241,6 +241,63 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
     )
 
 
+def plain_summary(
+    hazards: list,  # list[Hazard]
+    cannot_assess: list,  # list[CannotAssess]
+    fix_first: list[str],
+    pack_ids: list[str],
+) -> str:
+    """The report summary: exactly two plain sentences (demo cleanup,
+    2026-10-30 - the model-written prose summary was dropped: it
+    padded and editorialized). Sentence 1: what to fix first.
+    Sentence 2: what could not be checked."""
+    from secondshift.checklists.loader import load_all_packs
+
+    titles: dict[str, str] = {}
+    packs = load_all_packs()
+    for pack_id in pack_ids:
+        pack = packs.get(pack_id)
+        if pack:
+            titles.update({item.id: item.title for item in pack.items})
+    by_id = {h.id: h for h in hazards}
+    first: list[str] = []
+    for fid in fix_first:
+        if fid in by_id and by_id[fid].title not in first:
+            first.append(by_id[fid].title)
+        if len(first) == 2:
+            break
+    if first:
+        s1 = f"Fix first: {first[0]}"
+        if len(first) > 1:
+            s1 += f", then {first[1]}"
+        if len(fix_first) > 2:
+            s1 += " - the full ranked list is below"
+        s1 += "."
+    else:
+        needs_human = sum(1 for h in hazards if h.verification.value == "needs_human")
+        if needs_human:
+            noun = "finding needs" if needs_human == 1 else "findings need"
+            s1 = f"Nothing was confirmed to fix; {needs_human} {noun} a human look first."
+        else:
+            s1 = "No hazards were confirmed in this check."
+    if not cannot_assess:
+        s2 = "Everything on the checklist could be checked from this video."
+    else:
+        names: list[str] = []
+        for entry in cannot_assess:
+            name = titles.get(entry.area) or entry.area.replace("-", " ").lower()
+            if name not in names:
+                names.append(name)
+        shown = names[:2]
+        noun = "item" if len(cannot_assess) == 1 else "items"
+        s2 = f"Couldn't check {len(cannot_assess)} {noun}, including {shown[0]}"
+        if len(shown) > 1:
+            s2 += f" and {shown[1]}"
+        s2 += "."
+    return f"{s1} {s2}"
+
+
+
 def assemble_report(
     checkup: Checkup,
     output: ScanOutput,
@@ -249,35 +306,14 @@ def assemble_report(
 ) -> Report:
     """Assemble the Report from a scan output.
 
-    Pass 2 E.7: with a live vision provider, Spark writes the summary
-    via prompts/report_summary.md from the report's own facts; the
-    deterministic summary remains the fallback (and the mock path).
+    The summary is the deterministic two-sentence plain_summary()
+    (fix first + what couldn't be checked). The vision parameter is
+    kept for signature compatibility; model-written summaries are
+    no longer used (demo cleanup, 2026-10-30).
     """
-    confirmed = [h for h in output.hazards if h.verification is Verification.CONFIRMED]
-    label = checkup.resident_label or "This home"
-    summary = (
-        f"{label}: {len(confirmed)} confirmed hazards to fix, "
-        f"{len(output.cannot_assess)} things we couldn't check. "
-        "Start with the highest-ranked items below."
+    summary = plain_summary(
+        output.hazards, output.cannot_assess, output.fix_first, checkup.pack_ids
     )
-    if vision is not None:
-        import json as _json
-
-        facts = _json.dumps(
-            {
-                "home_label": label,
-                "confirmed": [
-                    {"title": h.title, "room": h.room, "risk": h.risk_score} for h in confirmed
-                ],
-                "needs_human": [
-                    h.title for h in output.hazards if h.verification is Verification.NEEDS_HUMAN
-                ],
-                "cannot_assess_count": len(output.cannot_assess),
-            }
-        )
-        written = vision.summarize_report(facts, "en")  # type: ignore[attr-defined]
-        if written:
-            summary = written
     return Report(
         checkup_id=checkup.id,
         generated_at=datetime.now(UTC),

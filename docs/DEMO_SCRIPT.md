@@ -27,7 +27,8 @@ the night before filming, never from memory.
   app's demo-home flow works with no provider calls.
 - **Real-footage fallback:** the recorded real scans' reports are in
   the app's store and open with **no provider calls at all** — open
-  the test_1 report (7 of 8) directly.
+  one from the Homes tab. (`make demo-reset` removes the build's
+  test places before recording; results stay in LIVE_VERIFICATION.md.)
 - **Do not** promise a fresh live re-scan as an instant fallback:
   replaying a real scan through a new upload is not bit-exact
   (person-blur output varies slightly between runs, which changes

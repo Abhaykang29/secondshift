@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { plural } from "../plural";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { PackItemSummary } from "../api/extra";
@@ -177,16 +178,16 @@ export default function ReportPage() {
         aria-label="Summary"
         className="mt-4 flex flex-wrap gap-x-4 gap-y-1 rounded bg-[#1f3d2b] p-4 text-white"
       >
-        <span><strong>{confirmed.length}</strong> things to fix</span>
-        <span><strong>{needsHuman.length}</strong> need a human look</span>
+        <span><strong>{plural(confirmed.length, "thing")} to fix</strong></span>
+        <span><strong>{needsHuman.length}</strong> {needsHuman.length === 1 ? "needs" : "need"} a human look</span>
         <span><strong>{report.cannot_assess.length}</strong> couldn&rsquo;t check</span>
       </section>
       <p className="mt-2 text-sm font-medium">
-        🏷️ Your reviews: {labelCount} findings labeled
+        🏷️ Your reviews: {plural(labelCount, "finding")} labeled
       </p>
 
       <section aria-label="Fix these first" className="mt-6 rounded bg-amber-50 p-4">
-        <h2 className="text-xl font-semibold">Fix these {report.fix_first.length} first</h2>
+        <h2 className="text-xl font-semibold">{report.fix_first.length === 1 ? "Fix this one first" : `Fix these ${report.fix_first.length} first`}</h2>
         <ol className="mt-2 list-decimal pl-6">
           {report.fix_first.map((hid) => (
             <li key={hid}>{byId.get(hid)?.title ?? hid}</li>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { plural } from "../plural";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { Report } from "../api/types";
@@ -33,7 +34,7 @@ export default function Fixes() {
   return (
     <main className="p-4">
       <h1 className="text-2xl font-semibold">Fix tracker</h1>
-      <p className="mt-2">{done} of {report.fixes.length} fixes done</p>
+      <p className="mt-2">{done} of {plural(report.fixes.length, "fix", "fixes")} done</p>
       <div className="mt-2 h-3 w-full rounded bg-neutral-200" role="progressbar"
         aria-valuenow={done} aria-valuemax={report.fixes.length}>
         <div className="h-3 rounded bg-green-600"

@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
+import { plural } from "../plural";
 import type { HomeSummary, PackSummary } from "../api/extra";
 import en from "../i18n/en.json";
 
@@ -105,7 +106,7 @@ export default function Home() {
                       ? new Date(home.last_check_at).toLocaleDateString()
                       : "—"}
                     {" · "}
-                    {home.open_findings} open findings
+                    {plural(home.open_findings, "open finding")}
                   </span>
                 </span>
                 <span aria-hidden className="text-xl opacity-60">›</span>

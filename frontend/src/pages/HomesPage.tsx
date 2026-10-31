@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { plural } from "../plural";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import type { HomeSummary } from "../api/extra";
@@ -56,8 +57,8 @@ export default function HomesPage() {
             <h2 className="text-lg font-semibold">{home.label}</h2>
             <ul className="mt-1 text-sm opacity-85">
               <li>Last check: {fmtDate(home.last_check_at)}</li>
-              <li>Open findings: {home.open_findings}</li>
-              <li>Open fixes: {home.open_fixes}</li>
+              <li>{plural(home.open_findings, "open finding")}</li>
+              <li>{plural(home.open_fixes, "open fix", "open fixes")}</li>
               <li>Re-check due: {fmtDate(home.recheck_due)}</li>
             </ul>
             <div className="mt-3 flex flex-wrap gap-2">

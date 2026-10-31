@@ -43,7 +43,7 @@ export default function EvalPage() {
         <p className="mt-3" role="status">
           The latest eval run uses <strong>mock labels</strong>, so it is hidden by
           default — mock numbers validate the harness, not the product. Real
-          numbers appear here once the team labels real footage (pass 2 Phase J).
+          numbers appear here once real footage is labeled.
         </p>
         <p className="mt-2 text-sm opacity-80">
           To inspect the mock run anyway, open this page with ?show_mock=1.
