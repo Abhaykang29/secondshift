@@ -1,8 +1,14 @@
 # SecondShift
 
-**SecondShift — a safety check for the places people live and work.
-Film a walkthrough, get the hazards with proof, honest "can't tell"
-answers, and a re-check that confirms the fix.**
+**SecondShift turns plain-English rules into checks a camera can
+run, and answers each with Yes, No, or Can't tell — plus the proof.**
+
+A safety check for the places people live and work: film a
+walkthrough, get the hazards with proof, honest "can't tell"
+answers, guided re-film instructions for whatever the camera
+missed, and a re-check that confirms the fix. The numbers behind
+its accuracy live in `eval/HONESTY.md` (computed from stored
+results by `scripts/honesty_report.py`).
 
 An installable phone app (PWA) built on a reusable checking engine:
 a checklist in plain English plus a video goes in; evidence-backed

@@ -1,0 +1,35 @@
+{
+  "clips": 1,
+  "items": 25,
+  "answered_items": 11,
+  "abstained_items": 14,
+  "abstain_rate_pct": 56.0,
+  "review_labels": {
+    "right": 0,
+    "wrong": 0
+  },
+  "answered_accuracy_pct": null,
+  "wrong_and_confident": [],
+  "ground_truth": {
+    "clip": "test_1.mp4",
+    "targets": 8,
+    "answered": 7,
+    "strict_recall": 5,
+    "family_recall": 6,
+    "false_alarms": [
+      "FALL-PET-PATH (kitchen, confirmed)"
+    ]
+  },
+  "clean_room": {
+    "clips_found": [],
+    "false_alarms": null
+  },
+  "refilm": {
+    "clips": 3,
+    "resolved": 0,
+    "follow_up_hazards": 0
+  },
+  "partner_notes_found": false,
+  "small_sample": true,
+  "skipped_store_records": 74
+}

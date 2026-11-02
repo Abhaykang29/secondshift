@@ -4,6 +4,10 @@
 
 **Tagline:** A safety check for the places people live and work.
 
+**One line:** SecondShift turns plain-English rules into checks a
+camera can run, and answers each with Yes, No, or Can't tell — plus
+the proof.
+
 **What it is.** An installable phone app (PWA) on a reusable checking
 engine. Film a 2–3 minute walkthrough of a home or workplace, pick a
 checklist — or type your own in plain English — and get back the
@@ -26,11 +30,19 @@ call is costed in a SQLite ledger behind a hard budget cap; the
 whole pass-3 build spent about $5.70 of its $50 live cap.
 
 **Measured, not claimed** (one real, unstaged home walkthrough,
-labeled by its owner — `docs/LIVE_VERIFICATION.md` has every run):
-the scan reports 7 of the 8 hazards the owner listed, with no false
-alarms among reported findings on the acceptance run; ~78 seconds
+labeled by its owner — `docs/LIVE_VERIFICATION.md` has every run;
+`eval/HONESTY.md` has the computed figures): the latest stored scan
+found 6 of the 8 hazards the owner listed (7 of 8 on the Pass 3
+acceptance run - run-to-run variance is real and we say so), with 1
+reported finding outside the owner's list; the abstain rate on that
+report is 56% (14 of 25 items answered "can't tell"); ~78 seconds
 warm / ~6 minutes cold per scan; about a dollar of model calls per
-scan. An ablation (sweep on/off, thin-object crops on/off) is in the
+scan. Guided re-film turns each can't-tell item into a filming
+instruction ("In the bathroom, point camera at wall by toilet for 3
+seconds"); on the only footage we have, three follow-up cuts
+honestly resolved 0 items (the tour never framed a bathroom,
+ceiling or high shelf), and the merge machinery is test-proven end
+to end - the demo films its re-film beat with a real follow-up clip. An ablation (sweep on/off, thin-object crops on/off) is in the
 log with an uncomfortable result stated plainly: on this one video
 the sweep's extra recall did not repeat — run-to-run variance is the
 same size as its contribution, and the thin white cable it was built

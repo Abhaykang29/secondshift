@@ -66,6 +66,7 @@ export const api = {
     form.append("source", "phone_upload");
     return postForm<CaptureUploadResponse>(`/checkups/${checkupId}/captures`, form);
   },
+  honesty: () => getJson<Record<string, unknown>>("/eval/honesty"),
   refilm: (checkupId: string, file: File) => {
     const form = new FormData();
     form.append("video", file);

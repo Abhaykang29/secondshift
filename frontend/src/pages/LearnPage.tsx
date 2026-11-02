@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import HonestyCard from "../components/HonestyCard";
 import en from "../i18n/en.json";
 
 /**
@@ -56,6 +57,8 @@ export default function LearnPage() {
           not connected in this build, so narration is not transcribed.
         </p>
       </section>
+
+      <HonestyCard />
 
       <section aria-label="Honest limits" className="mt-6">
         <h2 className="text-xl font-semibold">Honest limits</h2>

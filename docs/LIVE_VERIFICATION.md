@@ -153,3 +153,69 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
     rewritten to the Pass 3 structure with these fallbacks stated.
   - Pass-3 live spend, final: $5.70 of the $50 cap (tags pass3
     $5.06 + pass3-ablation $0.64). All-time ledger $10.79.
+
+
+## Final pass item 1 - guided re-film, verified live on test_1 (2026-11-01)
+
+- entry_id: final_refilm_instructions
+  - Fresh live scan of test_1 (falls+fire+pets, checkup 83a3995c,
+    "Mom"): 5 confirmed / 1 needs-human / 5 rejected, 14 cannot-
+    assess (9 item-mapped). First assembly produced ZERO refilm
+    instructions: extract_json only parses JSON objects and the
+    first prompt asked for a bare array - the failure was silent by
+    design (instructions never fail a scan). Fixed the same pass:
+    the prompt now returns {"instructions": [...]} and the parser
+    reads it. The report was then regenerated from the recorded
+    transport cache + the stored blurred keyframes (an in-process
+    mock-provider test had overwritten the fresh report in the
+    store; the re-run reproduced the same findings and attached the
+    instructions in assembly - the full path, not a patch). Final
+    state: 9 instructions for the 9 item-mapped items, e.g.
+    bathroom: "point camera at wall by toilet for 3 seconds"
+    (grab bar), "point camera inside tub floor for 3 seconds"
+    (non-slip); bedroom: "tilt camera up to ceiling for 3 seconds"
+    (smoke alarm); hallway: "point camera at low walls and outlets
+    for 3 seconds" (night light). Room-level cannot-assess entries
+    (5) correctly got no instruction. always_cannot_assess items
+    never get instructions (unit-tested).
+- entry_id: final_refilm_merge
+  - Three follow-up cuts of test_1 itself, uploaded through
+    POST /api/checkups/{id}/refilm (78-106s each): kitchen t=24-44
+    (missed the kitchen window - evidence timestamps put it at
+    t=12-24), kitchen t=10-26, bedroom t=40-55. All three merged
+    live: refilm_clips=3, the targeted items kept CANNOT_TELL with
+    NEW reasons ("kitchen high shelves not clearly filmed, only low
+    counters in background"; alarms: ceilings were never framed in
+    the tour), and nothing else in the report changed. Resolved:
+    0 - stated plainly. The scan outputs themselves contained zero
+    hazards for the refilm checklist (verified by re-running one
+    scan in-process), so there was nothing to merge: this is a
+    model/footage limit, not a merge failure. The resolution paths
+    are proven by tests: the mock full-stack endpoint test resolves
+    a grab-bar item end-to-end (hazard lands with origin
+    follow_up), and unit tests cover ->confirmed, ->rejected and
+    stays-with-new-reason. No cut of test_1 can resolve the
+    bathroom items - the apartment tour contains no bathroom.
+    Real-footage resolution awaits the user's own follow-up clip
+    (their item 1d plan); the endpoint and app card are live.
+  - Final-pass spend so far: $0.95 of the $15 cap (ledger tag
+    final-pass; 604 calls).
+
+## Final pass item 2 - honesty numbers (2026-11-01)
+
+- entry_id: final_honesty_numbers
+  - scripts/honesty_report.py computed eval/HONESTY.md +
+    eval/honesty.json from stored results (command in the file).
+    The Learn tab renders the same JSON via GET /api/eval/honesty
+    (screenshot-verified at 390px). Numbers: 1 clip scored (plainly
+    flagged as fewer than 10), 25 items, abstain rate 56.0%,
+    answered accuracy = no data (zero Right/Wrong labels exist),
+    owner ground truth on the current test_1 report: family recall
+    6/8, strict 5/8 (misses: pet bowls; the bedside-lamp verdict
+    flipped to rejected this run - variance, recorded), 1 reported
+    finding outside the owner's list (FALL-PET-PATH, kitchen,
+    confirmed). Wrong-and-confident from labels: 0 of 0 labels.
+    Clean-room false alarms: NOT COMPUTABLE - 09_clean_a /
+    10_clean_b were never received. Partner notes NN_notes.txt:
+    never received (searched the workspace) - no score against
+    them exists. Re-film before/after: 0 resolved by 3 clips.

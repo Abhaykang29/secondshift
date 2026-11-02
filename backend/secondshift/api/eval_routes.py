@@ -16,6 +16,22 @@ router = APIRouter(prefix="/eval", tags=["eval"])
 REPORTS_DIR = Path(__file__).parents[3] / "eval" / "reports"
 
 
+@router.get("/honesty")
+def honesty() -> dict[str, Any]:
+    """The honesty numbers card data (final pass, item 2): read from
+    eval/honesty.json, which scripts/honesty_report.py computes from
+    stored results. 404 when the script has not been run - the app
+    shows no numbers rather than invented ones."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    path = _Path(__file__).resolve().parents[3] / "eval" / "honesty.json"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Honesty numbers not computed yet.")
+    data: dict[str, Any] = _json.loads(path.read_text())
+    return data
+
+
 @router.get("/latest")
 def latest(request: Request) -> dict[str, Any]:
     """Return the newest eval run's results.json."""
