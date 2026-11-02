@@ -11,18 +11,23 @@ the hook worker resolves every clip through it:
 
 Actions:
 - "scan": run a normal check-up scan with pack_ids.
+- "custom_check": compile checklist_lines into a custom checklist,
+  store the compiled pack, and run a check with it.
 - "refilm": a follow-up clip for the base_stem checkup; merge it into
   that checkup's report via the re-film endpoint (fills gaps in the
   SAME visit - never the re-check diff).
 - "recheck": the same home filmed again after fixes; scan it and
-  compare against the base_stem checkup's stored report.
+  compare against the base_stem checkup's stored report. When
+  checklist_lines is set, the base was a custom check - re-run with
+  the same compiled custom pack.
 - "live_check": run Live Check (watch engine over a FileSource) with
   the plain-English rule in `rule`.
 - "unmapped": no partner mapping - never invent one.
 
 Extensions .mp4 / .mov are accepted case-insensitively, and stems are
-matched case-insensitively. Numbered clips 14 and up that are not in
-the table get the default scan packs.
+matched case-insensitively. Clips may be shot on glasses - any aspect
+ratio, including vertical, is accepted as-is. Numbered clips 14 and
+up that are not in the table get the default scan packs.
 """
 
 from __future__ import annotations
@@ -47,6 +52,19 @@ MOSQUITO = "mosquito_breeding"
 
 DOOR_RULE = "Tell me if the door is open for more than 30 seconds"
 
+#: Custom checklists for the before/after pairs (compiled live on
+#: 2026-11-02; see docs/LIVE_VERIFICATION.md for items and refusals).
+TABLE_CHECKLIST_LINES = [
+    "Table has no dishes or cups.",
+    "All chairs are pushed in.",
+]
+KITCHEN_OFF_CHECKLIST_LINES = [
+    "Stove burners are off.",
+    "Taps are off.",
+    "Windows are closed.",
+    "Space heater or fan is off.",
+]
+
 #: Clips numbered 14+ default to the general home sweep.
 DEFAULT_PACK_IDS = [FALLS, HOME_SAFETY, FIRE]
 
@@ -55,12 +73,14 @@ DEFAULT_PACK_IDS = [FALLS, HOME_SAFETY, FIRE]
 class ClipPlan:
     """What the watcher should do with one inbox clip."""
 
-    action: str  # scan | refilm | recheck | live_check | unmapped
+    action: str  # scan | custom_check | refilm | recheck | live_check | unmapped
     pack_ids: list[str]
     stem: str = ""
     base_stem: str | None = None  # refilm/recheck: the clip this follows
     rule: str | None = None  # live_check: the plain-English rule
     false_alarm_test: bool = False  # clean-room clips: expect zero findings
+    checklist_lines: list[str] | None = None  # custom_check / custom recheck
+    post_refilm_instructions: bool = False  # surface the report's re-film list
 
 
 def _scan(stem: str, pack_ids: list[str], *, false_alarm_test: bool = False) -> ClipPlan:
@@ -92,6 +112,40 @@ _KNOWN: dict[str, ClipPlan] = {
     "11_door": ClipPlan(action="live_check", pack_ids=[], stem="11_door", rule=DOOR_RULE),
     "12_carseat": _scan("12_carseat", [CAR_SEAT]),
     "13_workplace": _scan("13_workplace", [WORKPLACE]),
+    "18a_before": ClipPlan(
+        action="custom_check",
+        pack_ids=[],
+        stem="18a_before",
+        checklist_lines=TABLE_CHECKLIST_LINES,
+    ),
+    "18b_after": ClipPlan(
+        action="recheck",
+        pack_ids=[],
+        stem="18b_after",
+        base_stem="18a_before",
+        checklist_lines=TABLE_CHECKLIST_LINES,
+    ),
+    "19a_before": ClipPlan(
+        action="custom_check",
+        pack_ids=[],
+        stem="19a_before",
+        checklist_lines=KITCHEN_OFF_CHECKLIST_LINES,
+    ),
+    "19b_after": ClipPlan(
+        action="recheck",
+        pack_ids=[],
+        stem="19b_after",
+        base_stem="19a_before",
+        checklist_lines=KITCHEN_OFF_CHECKLIST_LINES,
+    ),
+    "20_vacuum": _scan("20_vacuum", [FALLS]),
+    "21a": ClipPlan(
+        action="scan",
+        pack_ids=[FALLS, HOME_SAFETY],
+        stem="21a",
+        post_refilm_instructions=True,
+    ),
+    "21b": ClipPlan(action="refilm", pack_ids=[], stem="21b", base_stem="21a"),
 }
 
 _NUMBER_PREFIX = re.compile(r"^(\d+)")

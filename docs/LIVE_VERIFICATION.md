@@ -219,3 +219,62 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
     10_clean_b were never received. Partner notes NN_notes.txt:
     never received (searched the workspace) - no score against
     them exists. Re-film before/after: 0 resolved by 3 clips.
+
+## Partner clips 18-21 prep - rule + checklist compiles, mapping (2026-11-02)
+
+- entry_id: partner_rules_compile
+  - Compiled live with the frozen rule compiler (rule_compiler@v2,
+    muse-spark-1.3, no prompt changes), ledger tag partner-rules,
+    9 calls, $0.0679 total (includes the two checklist compiles
+    below):
+  - "Tell me if the stove is on and nobody is in the kitchen for
+    1 minute." -> COMPILED (id stove-kitchen-1min, mode watch):
+    object_state(stove = on) + zone_empty_for_duration(kitchen,
+    1.0 min). Summary: "Alert if the stove is on and the kitchen
+    is empty for 1 minute."
+  - "Tell me if the kitchen tap is running for more than 1 minute."
+    -> COMPILED (mode watch): state_for_duration(kitchen tap =
+    running, 1.0 min). Summary: "Alert if the kitchen tap is
+    running for more than 1 minute."
+  - Neither rule has been run on footage: no 15_stove / 17_tap
+    clip (or any partner clip) has arrived in data/inbox/, and
+    NN_notes.txt has never been received (searched the whole
+    machine 2026-11-02), so no alert-timing score exists yet.
+
+- entry_id: partner_checklists_compile
+  - 18a table checklist ("Table has no dishes or cups." / "All
+    chairs are pushed in.") -> compiled via core.compile_checklist,
+    pack custom-25925646, 2 items, NO refusals: CUSTOM-01 "No
+    dishes or cups on table" (presence; SAM: dish on table, cup on
+    table), CUSTOM-02 "Chairs pushed in" (presence; SAM: chair,
+    office chair, dining chair).
+  - 19a kitchen-off checklist -> pack custom-677970a4, only 1 of 4
+    lines compiled: "Windows are closed." -> CUSTOM-01 "Windows
+    closed" (presence; SAM: window, window frame; evidence: an
+    open window's visible sash gap). REFUSED lines, verbatim
+    reasons: "Stove burners are off." - "Video cannot show heat or
+    gas flow so check knobs, look for flame and feel for residual
+    heat in person." / "Taps are off." - "Video cannot reliably
+    tell if a tap is fully off or still running or dripping, so
+    check each tap in person by looking and listening for water."
+    / "Space heater or fan is off." - "Video cannot show whether
+    a space heater or fan is switched off or still running, so
+    check the power switch, indicator lights, sound and heat in
+    person." The 19a/19b checks therefore verify windows only -
+    the refused lines are never claimed as checked.
+  - Inbox mapping extended in backend/secondshift/inbox_map.py
+    (commit with tests, 46 mapping tests): 18a_before ->
+    custom_check (table lines); 18b_after -> recheck vs 18a;
+    19a_before -> custom_check (kitchen-off lines); 19b_after ->
+    recheck vs 19a; 20_vacuum -> scan [falls_older_adults];
+    21a -> scan [falls_older_adults, home_safety_inspection] with
+    post_refilm_instructions; 21b -> refilm of 21a. The inbox hook
+    instructions carry the same routes (custom checks compile
+    in-process because the app API rejects checklists under 3
+    lines; glasses clips of any aspect ratio, incl. vertical, are
+    accepted as-is).
+  - Still outstanding (inputs, not code): ALL partner clips
+    (data/inbox/ holds only test_1.mp4) and NN_notes.txt. Per-clip
+    scoring, the 21a re-film instruction post, and this log's
+    per-clip entries happen when the footage lands - the hook is
+    live and mapped for exactly these names.

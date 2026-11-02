@@ -143,3 +143,72 @@ def test_every_mapped_pack_id_exists() -> None:
     for stem in stems:
         for pack_id in plan_for_filename(f"{stem}.mp4").pack_ids:
             assert pack_id in packs, f"{stem} maps to unknown pack {pack_id}"
+
+
+from secondshift.inbox_map import (  # noqa: E402
+    KITCHEN_OFF_CHECKLIST_LINES,
+    TABLE_CHECKLIST_LINES,
+)
+
+
+def test_18a_is_a_custom_check_with_the_table_lines() -> None:
+    plan = plan_for_filename("18a_before.mp4")
+    assert plan.action == "custom_check"
+    assert plan.checklist_lines == [
+        "Table has no dishes or cups.",
+        "All chairs are pushed in.",
+    ]
+    assert plan.checklist_lines == TABLE_CHECKLIST_LINES
+    # explicit entry beats the numbered-14+ default scan
+    assert plan.pack_ids == []
+
+
+def test_18b_is_a_recheck_against_18a_with_the_same_lines() -> None:
+    plan = plan_for_filename("18b_after.mp4")
+    assert plan.action == "recheck"
+    assert plan.base_stem == "18a_before"
+    assert plan.checklist_lines == TABLE_CHECKLIST_LINES
+
+
+def test_19a_is_a_custom_check_with_the_kitchen_off_lines() -> None:
+    plan = plan_for_filename("19a_before.mp4")
+    assert plan.action == "custom_check"
+    assert plan.checklist_lines == [
+        "Stove burners are off.",
+        "Taps are off.",
+        "Windows are closed.",
+        "Space heater or fan is off.",
+    ]
+    assert plan.checklist_lines == KITCHEN_OFF_CHECKLIST_LINES
+
+
+def test_19b_is_a_recheck_against_19a_with_the_same_lines() -> None:
+    plan = plan_for_filename("19b_after.mp4")
+    assert plan.action == "recheck"
+    assert plan.base_stem == "19a_before"
+    assert plan.checklist_lines == KITCHEN_OFF_CHECKLIST_LINES
+
+
+def test_20_vacuum_scans_the_falls_pack_only() -> None:
+    plan = plan_for_filename("20_vacuum.mp4")
+    assert plan.action == "scan"
+    assert plan.pack_ids == ["falls_older_adults"]
+
+
+def test_21a_scans_and_asks_for_its_refilm_instructions() -> None:
+    plan = plan_for_filename("21a.mp4")
+    assert plan.action == "scan"
+    assert plan.pack_ids == ["falls_older_adults", "home_safety_inspection"]
+    assert plan.post_refilm_instructions is True
+
+
+def test_21b_is_the_refilm_of_21a() -> None:
+    plan = plan_for_filename("21b.mp4")
+    assert plan.action == "refilm"
+    assert plan.base_stem == "21a"
+
+
+@pytest.mark.parametrize("name", ["18A_BEFORE.MOV", "19B_AFTER.Mp4", "21B.MP4"])
+def test_new_partner_names_are_case_insensitive(name: str) -> None:
+    assert plan_for_filename(name).action == plan_for_filename(name.lower()).action
+    assert plan_for_filename(name).action != "unmapped"
