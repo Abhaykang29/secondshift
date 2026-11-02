@@ -381,6 +381,20 @@ def run_scan_job(
             "cost_usd": providers.cost.spent_usd,
         }
         report = assemble_report(scan_input.checkup, output, stats, vision=providers.vision)
+        # Guided re-film (final pass): one filming instruction per
+        # refilmable cannot-tell item. Instruction failure must never
+        # fail a scan - the items simply show without guidance.
+        try:
+            from secondshift.pipeline import refilm as refilm_mod
+
+            report.refilm_instructions = refilm_mod.generate_refilm_instructions(
+                output.cannot_assess,
+                scan_input.packs,
+                scan_input.keyframes,
+                providers.vision,
+            )
+        except Exception:
+            report.refilm_instructions = []
         report.fixes = holder.get("fix_cards", [])
         report.visualizations = holder.get("visualizations", [])
         holder["report"] = report

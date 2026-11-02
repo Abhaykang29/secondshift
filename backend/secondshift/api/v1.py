@@ -191,6 +191,70 @@ def build_v1_app(settings: Settings, providers: Providers, store: Repository) ->
         threading.Thread(target=_run, daemon=True).start()
         return {"job_id": new_id, "status": "running"}
 
+    @app.post("/checks/{job_id}/refilm")
+    async def refilm_check(
+        job_id: str,
+        video: UploadFile = File(...),  # noqa: B008
+        _client: str = Depends(require_key),
+    ) -> dict[str, Any]:
+        """Guided re-film (final pass): a <=60s follow-up clip settles
+        the original check's cannot-tell items and merges into the
+        SAME report - unlike /recheck, which diffs a later visit.
+        {id} is a /v1 check job id, or a checkup id with a stored
+        report."""
+        from secondshift.domain.hazards import Report
+
+        with lock:
+            previous_job = jobs.get(job_id)
+        previous_report: Report | None = None
+        if previous_job is not None and previous_job.get("status") == "done":
+            previous_report = Report.model_validate(previous_job["report"])
+        else:
+            raw = store.get("report", job_id)
+            if raw is not None:
+                previous_report = Report.model_validate(raw)
+        if previous_report is None:
+            raise HTTPException(
+                status_code=404, detail="No completed check with that id."
+            )
+        new_id = uuid.uuid4().hex
+        work = Path(settings.data_dir) / "v1" / new_id
+        work.mkdir(parents=True, exist_ok=True)
+        video_path = work / f"video{Path(video.filename or 'video.mp4').suffix or '.mp4'}"
+        video_path.write_bytes(await video.read())
+
+        def _run() -> None:
+            try:
+                from secondshift.checklists.resolve import resolve_packs
+                from secondshift.core.refilm import refilm as core_refilm
+
+                packs = resolve_packs(store, previous_report.pack_ids)
+                merged = core_refilm(
+                    previous_report,
+                    str(video_path),
+                    packs,
+                    providers,
+                    settings,
+                    str(work),
+                    store=store,
+                )
+                with lock:
+                    jobs[new_id].update(
+                        status="done", report=merged.model_dump(mode="json")
+                    )
+            except Exception as exc:
+                with lock:
+                    jobs[new_id].update(status="error", error=str(exc))
+
+        with lock:
+            jobs[new_id] = {
+                "status": "running",
+                "checklist_id": previous_report.pack_ids[0] if previous_report.pack_ids else "",
+                "refilm_of": job_id,
+            }
+        threading.Thread(target=_run, daemon=True).start()
+        return {"job_id": new_id, "status": "running"}
+
     @app.post("/rules/compile")
     def compile_rule_endpoint(
         body: RuleBody, _client: str = Depends(require_key)

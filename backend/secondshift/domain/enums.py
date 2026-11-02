@@ -22,6 +22,7 @@ class CaptureKind(StrEnum):
     WALKTHROUGH = "walkthrough"
     ROUTINE = "routine"
     RECHECK = "recheck"
+    REFILM = "refilm"
 
 
 class ItemKind(StrEnum):

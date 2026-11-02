@@ -417,6 +417,45 @@ class MetaVisionReasoner:
             return None
         return parsed
 
+    def refilm_instructions(
+        self, items_json: str, room: str, image: Any | None
+    ) -> list[dict[str, Any]] | None:
+        """One filming instruction per cannot-tell item in a room
+        (guided re-film) via prompts/refilm_instruction.md - Spark,
+        reasoning low. Word caps from the spec are enforced here by
+        truncation so the stored schema always holds. None on any
+        failure: the caller then shows the items without guidance
+        rather than inventing instructions."""
+        from secondshift.providers.prompts import load_prompt
+
+        prompt = load_prompt("refilm_instruction", room=room, items_json=items_json)
+        images = [image] if image is not None else []
+        try:
+            data = self._post_chat(
+                build_chat_payload(prompt, images, "fast", reasoning_effort="low")
+            )
+            parsed = extract_json(normalize_chat_content(data))
+        except Exception:
+            return None
+        if not isinstance(parsed, list):
+            return None
+        out: list[dict[str, Any]] = []
+        for entry in parsed:
+            if not isinstance(entry, dict) or not entry.get("item_id"):
+                continue
+            instruction = " ".join(str(entry.get("instruction", "")).split()[:15])
+            what = " ".join(str(entry.get("what_to_show", "")).split()[:6])
+            if not instruction:
+                continue
+            out.append(
+                {
+                    "item_id": str(entry["item_id"]),
+                    "instruction": instruction,
+                    "what_to_show": what or "the area",
+                }
+            )
+        return out or None
+
     def routine_insights(self, computed_numbers: str) -> list[dict[str, Any]] | None:
         """Wonder writes routine summaries from geometry (prompts/routine_insights.md)."""
 

@@ -70,6 +70,10 @@ class RecordingVision:
         """Delegate."""
         return self.inner.plan_fix(*args, **kwargs)
 
+    def refilm_instructions(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """Delegate."""
+        return self.inner.refilm_instructions(*args, **kwargs)
+
     def summarize_report(self, *args, **kwargs):  # type: ignore[no-untyped-def]
         """Delegate."""
         return self.inner.summarize_report(*args, **kwargs)
@@ -109,6 +113,10 @@ class ReplayVision:
     # Pass 2 E/G: replay has no opinions - deterministic paths reproduce
     # the recorded demo exactly.
     def plan_fix(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        """No opinion in replay."""
+        return None
+
+    def refilm_instructions(self, *args, **kwargs):  # type: ignore[no-untyped-def]
         """No opinion in replay."""
         return None
 

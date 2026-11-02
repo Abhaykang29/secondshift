@@ -103,6 +103,34 @@ class MockVisionReasoner:
     def plan_fix(self, hazard_title, description, fixes, language):  # type: ignore[no-untyped-def]
         return None
 
+    def refilm_instructions(self, items_json, room, image):  # type: ignore[no-untyped-def]
+        """Mock filming instructions: a deterministic template per
+        item (dev mode + tests; the wording pattern mirrors the real
+        prompt's shape)."""
+        import json as _json
+
+        try:
+            items = _json.loads(items_json)
+        except Exception:
+            return None
+        out = []
+        for item in items:
+            title = str(item.get("title", "the area"))
+            instruction = (
+                f"In the {room}, point the camera at the "
+                f"{title[0].lower() + title[1:] if title else 'area'} "
+                "for 3 seconds."
+            )
+            out.append(
+                {
+                    "item_id": str(item.get("item_id", "")),
+                    # Same word caps the live provider enforces.
+                    "instruction": " ".join(instruction.split()[:15]),
+                    "what_to_show": " ".join(title.split()[:6]),
+                }
+            )
+        return out or None
+
     def summarize_report(self, report_json, language):  # type: ignore[no-untyped-def]
         return None
 

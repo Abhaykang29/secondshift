@@ -5,7 +5,7 @@
  */
 
 export type Mode = "checkup" | "watch";
-export type CaptureKind = "walkthrough" | "routine" | "recheck";
+export type CaptureKind = "walkthrough" | "routine" | "recheck" | "refilm";
 export type ItemKind = "presence" | "absence" | "interaction" | "measurement";
 export type Severity = 1 | 2 | 3;
 export type Verification = "confirmed" | "needs_human" | "rejected" | "cannot_assess";
@@ -130,6 +130,7 @@ export interface Hazard {
   why_it_matters: string;
   severity: Severity;
   on_routine_path?: boolean;
+  origin?: "walkthrough" | "follow_up";
   verification: Verification;
   verification_reason: string;
   evidence: Evidence;
@@ -215,6 +216,13 @@ export interface RecheckItem {
   after_keyframe_id: string | null;
 }
 
+export interface RefilmInstruction {
+  item_id: string;
+  room: string;
+  instruction: string;
+  what_to_show: string;
+}
+
 export interface Report {
   checkup_id: string;
   generated_at: string;
@@ -226,6 +234,7 @@ export interface Report {
   visualizations: Visualization[];
   routine_insights: RoutineInsight[];
   cannot_assess: CannotAssess[];
+  refilm_instructions?: RefilmInstruction[];
   stats: Record<string, number>;
   disclaimer: string;
 }
