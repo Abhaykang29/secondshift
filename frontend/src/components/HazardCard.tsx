@@ -19,10 +19,12 @@ export default function HazardCard({
   hazard,
   packTitles,
   footer,
+  flash,
 }: {
   hazard: Hazard;
   packTitles?: Record<string, string>;
   footer?: ReactNode;
+  flash?: boolean;
 }) {
   const mask = hazard.evidence.masks?.[0];
   const isAbsence = hazard.kind === "absence";
@@ -33,7 +35,7 @@ export default function HazardCard({
     : [hazard.pack_id];
   return (
     <article
-      className="mt-4 rounded border-2 bg-white p-4"
+      className={`mt-4 rounded border-2 bg-white p-4${flash ? " refilm-flash" : ""}`}
       style={{ borderColor: color }}
       aria-label={hazard.title}
     >
@@ -50,6 +52,9 @@ export default function HazardCard({
         )}
         {hazard.verification === "needs_human" && (
           <span className="shrink-0 rounded bg-amber-100 px-2 py-1 text-sm">Needs a human look</span>
+        )}
+        {hazard.origin === "follow_up" && (
+          <span className="shrink-0 rounded bg-blue-100 px-2 py-1 text-sm">From follow-up clip</span>
         )}
       </div>
       <p className="text-sm uppercase tracking-wide opacity-70">

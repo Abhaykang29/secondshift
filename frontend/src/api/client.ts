@@ -66,6 +66,11 @@ export const api = {
     form.append("source", "phone_upload");
     return postForm<CaptureUploadResponse>(`/checkups/${checkupId}/captures`, form);
   },
+  refilm: (checkupId: string, file: File) => {
+    const form = new FormData();
+    form.append("video", file);
+    return postForm<Report>(`/checkups/${checkupId}/refilm`, form);
+  },
   reviews: (checkupId: string) =>
     getJson<ReviewsResponse>(`/checkups/${checkupId}/reviews`),
   postReview: (checkupId: string, hazardId: string, mark: "right" | "wrong") =>

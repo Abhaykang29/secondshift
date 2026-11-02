@@ -437,10 +437,11 @@ class MetaVisionReasoner:
             parsed = extract_json(normalize_chat_content(data))
         except Exception:
             return None
-        if not isinstance(parsed, list):
+        entries = parsed.get("instructions") if isinstance(parsed, dict) else parsed
+        if not isinstance(entries, list):
             return None
         out: list[dict[str, Any]] = []
-        for entry in parsed:
+        for entry in entries:
             if not isinstance(entry, dict) or not entry.get("item_id"):
                 continue
             instruction = " ".join(str(entry.get("instruction", "")).split()[:15])

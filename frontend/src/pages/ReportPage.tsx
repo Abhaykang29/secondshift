@@ -6,6 +6,7 @@ import type { PackItemSummary } from "../api/extra";
 import type { Report } from "../api/types";
 import BeforeAfter from "../components/BeforeAfter";
 import HazardCard from "../components/HazardCard";
+import RefilmCard from "../components/RefilmCard";
 import en from "../i18n/en.json";
 
 /**
@@ -33,6 +34,7 @@ const REASON_LABELS: Record<string, string> = {
 export default function ReportPage() {
   const { id = "" } = useParams();
   const [report, setReport] = useState<Report | null>(null);
+  const [justRefilmed, setJustRefilmed] = useState(false);
   const [error, setError] = useState("");
   const [shareUrl, setShareUrl] = useState("");
   const [packTitles, setPackTitles] = useState<Record<string, string>>({});
@@ -212,7 +214,12 @@ export default function ReportPage() {
                 Checklist: {packTitles[h.pack_id] ?? h.pack_id}
               </h3>
             )}
-            <HazardCard hazard={h} packTitles={packTitles} footer={reviewControls(h.id)} />
+            <HazardCard
+              hazard={h}
+              packTitles={packTitles}
+              footer={reviewControls(h.id)}
+              flash={justRefilmed && h.origin === "follow_up"}
+            />
             {vizByHazard.has(h.id) && (
               <BeforeAfter
                 title={h.title}
@@ -260,10 +267,20 @@ export default function ReportPage() {
               hazard={h}
               packTitles={packTitles}
               footer={reviewControls(h.id)}
+              flash={justRefilmed && h.origin === "follow_up"}
             />
           ))}
         </section>
       )}
+
+      <RefilmCard
+        checkupId={id}
+        instructions={report.refilm_instructions ?? []}
+        onMerged={(merged) => {
+          setReport(merged);
+          setJustRefilmed(true);
+        }}
+      />
 
       {report.cannot_assess.length > 0 && (
         <section aria-label="Couldn't check" className="mt-8">

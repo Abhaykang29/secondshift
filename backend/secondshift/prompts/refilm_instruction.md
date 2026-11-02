@@ -20,5 +20,6 @@ Rules:
 
 Items (JSON): {{ items_json }}
 
-Answer with ONLY a JSON array, one object per item, in the same
-order: {"item_id": "...", "instruction": "...", "what_to_show": "..."}
+Answer with ONLY a JSON object: {"instructions": [{"item_id": "...",
+"instruction": "...", "what_to_show": "..."}]} - one entry per item,
+in the same order as the items above.

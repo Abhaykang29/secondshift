@@ -12,3 +12,14 @@ button, a { min-height: 48px; }
 
 :focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* Guided re-film: a hazard resolved by a follow-up clip animates in
+   (the "can't tell -> answer" moment) when the merged report lands. */
+@keyframes refilm-in {
+  0% { background-color: #fef3c7; transform: translateY(8px); opacity: 0.3; }
+  60% { background-color: #fef9e7; }
+  100% { background-color: #ffffff; transform: translateY(0); opacity: 1; }
+}
+.refilm-flash {
+  animation: refilm-in 1.4s ease-out 2;
+}

@@ -285,15 +285,21 @@ def plain_summary(
     else:
         names: list[str] = []
         for entry in cannot_assess:
-            name = titles.get(entry.area) or entry.area.replace("-", " ").lower()
-            if name not in names:
+            name = titles.get(entry.area)
+            if name and name not in names:
                 names.append(name)
         shown = names[:2]
         noun = "item" if len(cannot_assess) == 1 else "items"
-        s2 = f"Couldn't check {len(cannot_assess)} {noun}, including {shown[0]}"
-        if len(shown) > 1:
-            s2 += f" and {shown[1]}"
-        s2 += "."
+        if shown:
+            s2 = f"Couldn't check {len(cannot_assess)} {noun}, including {shown[0]}"
+            if len(shown) > 1:
+                s2 += f" and {shown[1]}"
+            s2 += "."
+        else:
+            s2 = (
+                f"Couldn't check {len(cannot_assess)} {noun} - "
+                "some areas were not filmed."
+            )
     return f"{s1} {s2}"
 
 
