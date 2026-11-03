@@ -24,8 +24,10 @@ Usage:
 """
 
 import json
+import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -151,6 +153,45 @@ Respond with a JSON object only:
 
 
 
+def probe_creation_time(video: Path) -> datetime | None:
+    """Recording time from the file's QuickTime metadata, if present.
+
+    Prefers com.apple.quicktime.creationdate (the actual recording
+    time) over the generic creation_time tag (often the export time).
+    """
+    try:
+        out = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries",
+             "format_tags=creation_time,com.apple.quicktime.creationdate",
+             "-of", "json", str(video)],
+            capture_output=True, text=True, check=True,
+        )
+        tags = json.loads(out.stdout).get("format", {}).get("tags", {})
+    except Exception:
+        return None
+    raw = tags.get("com.apple.quicktime.creationdate") or tags.get("creation_time")
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def order_pair(
+    spark_before: str,
+    spark_after: str,
+    created: dict[str, datetime | None],
+) -> tuple[str, str, str]:
+    """Order a before/after pair: recording time wins when both
+    clips carry it; Spark's more-problems call is only the fallback."""
+    a, b = created.get(spark_before), created.get(spark_after)
+    if a is not None and b is not None and a != b:
+        before, after = (spark_before, spark_after) if a < b else (spark_after, spark_before)
+        return before, after, "recording_time"
+    return spark_before, spark_after, "problems_visible"
+
+
 def pair_prompt(summaries: dict[str, dict[str, Any]]) -> str:
     lines = "\n".join(
         f"- {name}: space={d.get('space')!r}, problems_visible={d.get('problems_visible')}"
@@ -190,10 +231,12 @@ def main() -> int:
 
     work_root = ROOT / "data" / "triage"
     decisions: dict[str, dict[str, Any]] = {}
+    created: dict[str, datetime | None] = {}
     pair_frames: list[ImageRef] = []
 
     for video in args:
         started = time.time()
+        created[video.name] = probe_creation_time(video)
         duration, samples = sample_keyframes(video, work_root / video.stem)
         blur_keyframes([str(p) for _, p in samples], providers.segmenter)
         labeled = [
@@ -215,6 +258,7 @@ def main() -> int:
             "reason": raw.get("reason"),
             "duration_s": round(duration, 1),
             "keyframes": len(samples),
+            "recorded_at": created[video.name].isoformat() if created[video.name] else None,
         }
         if decision["action"] == "scan" and not decision["pack_ids"] and not decision["checklist"]:
             decision["action"] = "unprocessable"
@@ -240,22 +284,34 @@ def main() -> int:
             for img in pair_frames
         ]
         raw_pairs = ask_spark(vision, pair_prompt(decisions), labeled_pairs)
+        originals = {
+            n: (d["pack_ids"], d["checklist"]) for n, d in decisions.items()
+        }
         for pair in raw_pairs.get("pairs") or []:
             a, b = pair.get("a"), pair.get("b")
-            before, after = pair.get("before"), pair.get("after")
-            if a not in decisions or b not in decisions or before not in (a, b) or after not in (a, b):
+            spark_before, spark_after = pair.get("before"), pair.get("after")
+            if a not in decisions or b not in decisions or spark_before not in (a, b) or spark_after not in (a, b):
                 continue
-            base = decisions[str(before)]
-            for name, role in ((str(before), "before"), (str(after), "after")):
+            before, after, basis = order_pair(
+                str(spark_before), str(spark_after), created
+            )
+            # the pair runs the (final) "before" clip's target on both
+            base_packs, base_checklist = originals[before]
+            for name, role in ((before, "before"), (after, "after")):
                 d = decisions[name]
                 d["action"] = "before_after_pair"
                 d["pair_with"] = b if name == a else a
                 d["pair_role"] = role
                 d["pair_reason"] = pair.get("reason")
-                # the pair runs the "before" clip's target on both clips
-                d["pack_ids"] = base["pack_ids"]
-                d["checklist"] = base["checklist"]
-            print(f"pair: {before} (before) + {after} (after) - {pair.get('reason')}")
+                d["pair_order_basis"] = basis
+                d["pack_ids"] = base_packs
+                d["checklist"] = base_checklist
+            note = (
+                " [order corrected by recording time]"
+                if basis == "recording_time" and before != spark_before
+                else ""
+            )
+            print(f"pair: {before} (before, {basis}) + {after} (after) - {pair.get('reason')}{note}")
 
     out = {
         "generated_by": "scripts/triage_inbox.py",

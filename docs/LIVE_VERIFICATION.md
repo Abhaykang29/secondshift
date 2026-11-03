@@ -441,3 +441,76 @@ reports are untouched). Compiles (frozen compiler):
     candidate fix if he authorizes it.
   - Costs: this round $0.842 (210 calls, tag team-footage);
     all-time ledger $17.93.
+
+## Pair order, keyframe coverage experiment + revert, robustness status (2026-11-03)
+
+- entry_id: pair_order_recording_time
+  - ffprobe QuickTime creationdate: 6c40efdc =
+    2026-11-02T23:19:30Z; c8dd8a20 = 2026-11-02T23:21:41Z. 6c is
+    the earlier recording, so the triage order (6c before, c8
+    after) was already correct and NO swap re-check was run (the
+    user's condition was "if c8 is earlier"). The robot pair's
+    found->fixed table therefore stands: empty - the before clip
+    found nothing (dishes rejected as "in dishwasher rack",
+    t=17.0s), the after clip confirmed dishes on counter t=60.5s
+    and dishes in sink needs_human t=24.5-28.0s. Recording order
+    makes the sequence stranger, not cleaner: dishwasher being
+    loaded first, dirty dishes on the counter two minutes later.
+    The user's answer key still adjudicates the pairing itself.
+  - Triage fix (scripts/triage_inbox.py): order_pair() - when
+    both clips carry QuickTime recording times, the earlier one
+    is "before" (basis recording_time; the pair's checklist
+    target follows the time-before clip); Spark's more-problems
+    order is only the fallback when metadata is missing or
+    equal. recorded_at is now stored per video in triage.json.
+    4 regression tests in tests/test_triage_inbox.py.
+- entry_id: coverage_92d_rerun (checkup c9a0aae8, problems pack)
+  - With the coverage selector (next entry): 20 keyframes
+    spanning t=1.5-36.0s, 17 marked low_sharpness - versus 3
+    keyframes at t=31-32.5s before. CUSTOM-01 "Stove burner left
+    on" CONFIRMED t=12.5s (evidence frame data/c9a0aae8f05a464c88a
+    9e1af50a7c1db/e86e67bb98dd45f69141b57e2f8f01bf/frames/
+    frame_00026.jpg); CUSTOM-02 burnable item CONFIRMED t=24.0s
+    (frame_00049.jpg, same folder); cannot-assess ZERO. Cost
+    $0.14. This stored report was produced by the coverage
+    selector that was then reverted - it stands as a stored
+    result, not as current selector behavior.
+- entry_id: regression_test1_cold_coverage
+  - test_1 cold (fresh cache dir, tag regression-check), packs
+    falls+fire+pets, checkup bffc3615, scan 449s, $1.064.
+    Confirmed: PET-TOXIC-PLANT, FIRE-STOVE-COMBUSTIBLES (kitchen,
+    plus a living-room duplicate), PET-CORDS-CHEWABLE (living),
+    FALL-BED-LIGHT-REACH; needs_human FIRE-EXTINGUISHER-ABSENT;
+    the big anchored rug correctly rejected.
+  - Recall vs the 8-item key (ablation convention): family 5/8
+    (T2 cord in living, T4 plant, T5 stove combustibles, T7 bed
+    light, T8 extinguisher as needs-human). Misses: T1 floor
+    cord under its own falls id (chronic), T3 bedroom cords, T6
+    pet bowls. Strict 4/8. BELOW the user's 6/8 bar.
+  - Per the standing rule, the coverage fill was REVERTED
+    before ever being committed. For the record: the regression
+    capture's keyframe set differed from the old selector's by
+    only 1 of 80 frames (a single coverage add), so the drop is
+    most consistent with the documented run-to-run propose
+    variance (Pass 3 ablation full config: 7/8 family; final-pass
+    run: 6/8; this cold run: 5/8) - not with selector dilution.
+    The revert stands unless the user countermands it; the
+    coverage design and its (passing, now removed) regression
+    test are described here and in a comment in
+    capture/keyframes.py.
+  - Kept from this round: the Keyframe.low_sharpness field
+    (+ regenerated frontend types) and the zero-keyframe
+    fallback's use of it - that fallback is the previously
+    shipped fix, not the reverted one. Suite after the revert:
+    196 passed, ruff + mypy clean.
+  - Round spend against the $5 cap: $1.20 (regression $1.064 +
+    92d re-run $0.140). All-time ledger $19.14.
+- entry_id: robustness_pass_status
+  - The user asked for the status of a hardening pass
+    (robustness sweep, fresh-clone test, progress stages, CI)
+    and its ROBUSTNESS.md table. Status: NOT STARTED in this
+    chat. No such order, file, or work product exists in this
+    repo, its git history, or the assistant's memory of this
+    project; if it was sent in another chat it never reached
+    this one (the user's lanes are isolated). Nothing was
+    fabricated to fill the gap.

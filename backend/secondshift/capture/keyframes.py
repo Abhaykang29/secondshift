@@ -91,8 +91,27 @@ def select_keyframes(
                     sharpness=sharpness,
                     brightness=brightness,
                     usable=True,
+                    low_sharpness=True,
                 )
             )
+    # NOTE (2026-11-03): a timeline-coverage guarantee (every ~2s
+    # window contributes its sharpest frame) was built and verified
+    # on 92d - it turned that clip from 3 keyframes (t=31-32.5s
+    # only) into 20 across 0-38s and both problems items confirmed.
+    # The ordered no-regression check on test_1 then scored family
+    # recall 5/8 against the 6/8 bar, so per the user's standing
+    # rule the coverage fill was REVERTED before ever being
+    # committed. The regression set differed by only 1 of 80
+    # keyframes, so the drop reads as run-to-run variance rather
+    # than selector dilution - recorded in LIVE_VERIFICATION.md
+    # (entry regression_test1_cold_coverage). The zero-keyframe
+    # fallback above stays; the coverage code lives in git's
+    # working-tree history of that day only.
+    kept.sort(key=lambda k: k.t)
+    kept = [
+        k.model_copy(update={"id": f"{capture_id}-kf-{i:03d}"})
+        for i, k in enumerate(kept)
+    ]
     if len(kept) > max_keyframes:
         step = len(kept) / max_keyframes
         kept = [kept[int(i * step)] for i in range(max_keyframes)]

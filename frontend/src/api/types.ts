@@ -159,6 +159,7 @@ export interface Keyframe {
   sharpness: number;
   brightness: number;
   usable: boolean;
+  low_sharpness?: boolean;
   room_guess?: string | null;
   room_confidence?: number | null;
 }

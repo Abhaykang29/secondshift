@@ -63,6 +63,7 @@ class Keyframe(BaseModel):
     sharpness: float
     brightness: float
     usable: bool
+    low_sharpness: bool = False
     room_guess: str | None = None
     room_confidence: float | None = None
 
