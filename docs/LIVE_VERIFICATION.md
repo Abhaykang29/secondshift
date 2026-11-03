@@ -278,3 +278,29 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
     scoring, the 21a re-film instruction post, and this log's
     per-clip entries happen when the footage lands - the hook is
     live and mapped for exactly these names.
+
+## Partner clips 15-17 mapping completed (2026-11-02, later)
+
+- entry_id: partner_mapping_15_17
+  - The 15/16/17 names from the user's first mapping message
+    (initially dropped when the follow-up message redirected to
+    clips 18-21) were applied on the user's explicit re-ask:
+    15_stove -> live_check with the stove rule (compiled above,
+    entry partner_rules_compile); 17_tap -> live_check with the
+    tap rule (also compiled above); 16a_table_before ->
+    custom_check; 16b_table_after -> recheck vs 16a.
+  - The 16a checklist differs from 18a's: it adds "Nothing on the
+    floor around the table." Compiled live (frozen compiler):
+    pack custom-c8f5be9a, 3 items, NO refusals - CUSTOM-01 "No
+    dishes or cups on table", CUSTOM-02 "Chairs pushed in",
+    CUSTOM-03 "Clear floor around table" (presence; SAM: item on
+    floor, bag on floor, box on floor; severity 2).
+  - backend/secondshift/inbox_map.py + tests updated (50 mapping
+    tests; the explicit entries beat the numbered-14+ default).
+    The inbox hook instructions now carry the full 01-21 map, a
+    generalized live_check route (rule/stem/filename from the
+    plan), and NN_notes alert-timing scoring for live checks
+    (an ALERT within +/-15s of the notes' expected time = hit).
+  - Still outstanding (inputs, not code): every partner clip and
+    NN_notes.txt - data/inbox/ holds only test_1.mp4 as of this
+    entry.

@@ -51,12 +51,20 @@ CAR_SEAT = "car_seat_check"
 MOSQUITO = "mosquito_breeding"
 
 DOOR_RULE = "Tell me if the door is open for more than 30 seconds"
+STOVE_RULE = "Tell me if the stove is on and nobody is in the kitchen for 1 minute."
+TAP_RULE = "Tell me if the kitchen tap is running for more than 1 minute."
 
 #: Custom checklists for the before/after pairs (compiled live on
 #: 2026-11-02; see docs/LIVE_VERIFICATION.md for items and refusals).
 TABLE_CHECKLIST_LINES = [
     "Table has no dishes or cups.",
     "All chairs are pushed in.",
+]
+#: The 16a table variant adds a floor line (3 items, no refusals).
+TABLE_FLOOR_CHECKLIST_LINES = [
+    "Table has no dishes or cups.",
+    "All chairs are pushed in.",
+    "Nothing on the floor around the table.",
 ]
 KITCHEN_OFF_CHECKLIST_LINES = [
     "Stove burners are off.",
@@ -112,6 +120,21 @@ _KNOWN: dict[str, ClipPlan] = {
     "11_door": ClipPlan(action="live_check", pack_ids=[], stem="11_door", rule=DOOR_RULE),
     "12_carseat": _scan("12_carseat", [CAR_SEAT]),
     "13_workplace": _scan("13_workplace", [WORKPLACE]),
+    "15_stove": ClipPlan(action="live_check", pack_ids=[], stem="15_stove", rule=STOVE_RULE),
+    "16a_table_before": ClipPlan(
+        action="custom_check",
+        pack_ids=[],
+        stem="16a_table_before",
+        checklist_lines=TABLE_FLOOR_CHECKLIST_LINES,
+    ),
+    "16b_table_after": ClipPlan(
+        action="recheck",
+        pack_ids=[],
+        stem="16b_table_after",
+        base_stem="16a_table_before",
+        checklist_lines=TABLE_FLOOR_CHECKLIST_LINES,
+    ),
+    "17_tap": ClipPlan(action="live_check", pack_ids=[], stem="17_tap", rule=TAP_RULE),
     "18a_before": ClipPlan(
         action="custom_check",
         pack_ids=[],

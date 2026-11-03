@@ -212,3 +212,46 @@ def test_21b_is_the_refilm_of_21a() -> None:
 def test_new_partner_names_are_case_insensitive(name: str) -> None:
     assert plan_for_filename(name).action == plan_for_filename(name.lower()).action
     assert plan_for_filename(name).action != "unmapped"
+
+
+from secondshift.inbox_map import (  # noqa: E402
+    STOVE_RULE,
+    TABLE_FLOOR_CHECKLIST_LINES,
+    TAP_RULE,
+)
+
+
+def test_15_stove_is_a_live_check_with_the_stove_rule() -> None:
+    plan = plan_for_filename("15_stove.mp4")
+    assert plan.action == "live_check"  # beats the numbered-14+ default scan
+    assert plan.rule == STOVE_RULE
+    assert plan.rule == (
+        "Tell me if the stove is on and nobody is in the kitchen for 1 minute."
+    )
+
+
+def test_17_tap_is_a_live_check_with_the_tap_rule() -> None:
+    plan = plan_for_filename("17_tap.mov")
+    assert plan.action == "live_check"
+    assert plan.rule == TAP_RULE
+    assert plan.rule == "Tell me if the kitchen tap is running for more than 1 minute."
+
+
+def test_16a_is_a_custom_check_with_the_three_line_table_checklist() -> None:
+    plan = plan_for_filename("16a_table_before.mp4")
+    assert plan.action == "custom_check"
+    assert plan.checklist_lines == [
+        "Table has no dishes or cups.",
+        "All chairs are pushed in.",
+        "Nothing on the floor around the table.",
+    ]
+    assert plan.checklist_lines == TABLE_FLOOR_CHECKLIST_LINES
+    # the 16a variant has one more line than the 18a table checklist
+    assert len(plan.checklist_lines) == len(TABLE_CHECKLIST_LINES) + 1
+
+
+def test_16b_is_a_recheck_against_16a_with_the_same_lines() -> None:
+    plan = plan_for_filename("16b_table_after.mp4")
+    assert plan.action == "recheck"
+    assert plan.base_stem == "16a_table_before"
+    assert plan.checklist_lines == TABLE_FLOOR_CHECKLIST_LINES
