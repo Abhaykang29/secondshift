@@ -304,3 +304,80 @@ pass/fail vs the acceptance criterion, cost (ledger), duration.
   - Still outstanding (inputs, not code): every partner clip and
     NN_notes.txt - data/inbox/ holds only test_1.mp4 as of this
     entry.
+
+## Inbox triage of 4 unnamed uploaded clips (2026-11-03)
+
+Method: the user uploaded 4 unnamed .mov clips (all vertical) and
+ordered a triage step only (freeze intact). scripts/triage_inbox.py
+samples 8 evenly spaced keyframes per clip, blurs people with the
+pipeline's own blur, and asks Muse Spark (reasoning_effort low)
+to choose ONLY from the existing packs + the two saved checklists
+(ROBOT_TABLE, LEAVING_HOME) + action scan | before_after_pair |
+live_check; a second Spark call compares keyframes across clips
+for before/after pairs. Decisions + one-line reasons are in
+data/inbox/triage.json (local data, not committed). Triage cost
+$0.178 (37 calls, tag triage). The clips were marked seen in the
+inbox hook state - processed in the main chat on the user's direct
+order, not by the hook worker.
+
+- entry_id: triage_6c40efdc (before_after_pair, "before")
+  - Decision: scan home_safety_inspection; pair partner c8dd8a20.
+  - Result: checkup 24ce9b72, scan 112s. 0 hazards - nothing
+    proposed survived; the knife/dishwasher details in Spark's
+    triage reason map to no item in this pack. Cannot-assess 8
+    (all not_filmed: smoke alarm, CO alarm, extinguisher, stairs
+    rail, stairs objects, window guards, tall furniture, exit).
+    8 re-film instructions generated.
+- entry_id: triage_c8dd8a20 (before_after_pair, "after")
+  - Decision: paired with 6c40efdc ("same sink, identical soap
+    dispensers, backsplash, outlet and induction layout; dirty
+    plates/pan cleared in after"); ran the before clip's target
+    (home_safety_inspection) as the re-check scan.
+  - FIRST ATTEMPT CRASHED - see bug_zero_keyframes_120fps below.
+    Re-scan (checkup d5a064ff, 270s): needs_human
+    HOME-EXTINGUISHER-ABSENT kitchen, evidence t=54.5s ("Not
+    visible, may be stored out of sight."); rejected
+    HOME-CHEMICALS-LOW (t=26.5s, counter soap only) and
+    HOME-EXPOSED-WIRING (t=23.5s, cover plate intact).
+    Cannot-assess 11 (all not_filmed); 11 re-film instructions.
+  - Pair comparison: the before report had ZERO open findings, so
+    nothing could resolve. The after scan's extinguisher
+    needs-human is a coverage difference (in "before" the same
+    item was cannot-assess not_filmed), not a change in the home.
+- entry_id: triage_4896a976 (scan fire_safety)
+  - Checkup 8054aa16, scan 146s. CONFIRMED FIRE-STOVE-COMBUSTIBLES
+    kitchen, evidence t=21.5s (Found by SAM (box)); needs_human
+    FIRE-EXTINGUISHER-ABSENT t=21.5s. Cannot-assess 2 (smoke and
+    CO alarms not filmed); 2 re-film instructions.
+- entry_id: triage_92d1c1d0 (scan, LEAVING_HOME custom-677970a4)
+  - Checkup 7d2bffc5, scan 33s. The checklist's only compilable
+    item (CUSTOM-01, windows closed) came back cannot-assess
+    not_filmed - no keyframe framed a window clearly. 1 re-film
+    instruction ("pan to windows above sink"). The other three
+    lines remain compiler-refused by design (see
+    partner_checklists_compile).
+  - Spark judged all 4 clips handheld, so no live_check ran -
+    including this stove clip, where a person turns a burner on
+    and leaves it lit. Whether that call was right is for the
+    user's answer key; scoring + honesty re-run are pending it.
+- entry_id: bug_zero_keyframes_120fps (freeze-allowed bug fix)
+  - Symptom: c8dd8a20's first scan job crashed with
+    "IsADirectoryError: [Errno 21] Is a directory: '.'".
+  - Root cause: the clip is 120fps; all 122 sampled frames scored
+    sharpness 24-75 against the selection floor of 100, so
+    select_keyframes stored ZERO keyframes and the scan ran on an
+    empty list. 30fps clips are unaffected (test_1: 80 keyframes).
+  - Fix: capture/keyframes.py falls back to the sharpest
+    decodable frames (<= max_keyframes, timestamp order) when the
+    quality gates reject everything - verified on the real
+    frames: 122 -> 80 keyframes spanning t=1.0-60.5s. api/scan.py
+    returns 422 ("no usable frames") for a stored capture whose
+    keyframe record is empty instead of crashing in the pipeline.
+    Two regression tests in tests/test_capture.py; full suite
+    192 passed, ruff + mypy clean.
+  - The failed checkup (and one early non-hermetic test record)
+    were removed from data/store.json; the failure stays
+    documented here.
+  - Costs: processing tag team-footage $1.071 total (first run
+    $0.231 including the crashed attempt; c8 re-scan about $0.57;
+    4896 about $0.23; 92d about $0.03). All-time ledger $17.09.

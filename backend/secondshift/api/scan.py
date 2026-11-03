@@ -40,6 +40,14 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         stored = store.get("keyframes", body.capture_id)
         if stored:
             keyframes = [Keyframe.model_validate(k) for k in stored["keyframes"]]
+        if stored is not None and not keyframes:
+            # The capture exists but frame selection produced nothing
+            # (e.g. every sampled frame failed the quality gates).
+            # Fail honestly here instead of crashing inside the scan.
+            raise HTTPException(
+                status_code=422,
+                detail="This capture produced no usable frames, so it cannot be scanned.",
+            )
     scenario = body.scenario
     if not keyframes:
         # Demo path: no real capture yet - keyframes at 5s intervals.

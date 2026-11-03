@@ -84,3 +84,58 @@ def test_narration_facts_keep_space_facts_and_drop_health() -> None:
     facts = extract_facts(segments)
     assert len(facts) == 1
     assert "night_path" in facts[0].affects
+
+
+
+def test_select_keyframes_falls_back_when_every_frame_is_soft(tmp_path: Path) -> None:
+    """Regression (2026-11-03): a real 120fps phone clip scored
+    sharpness 24-75 on every sampled frame against the 100 floor, so
+    selection stored ZERO keyframes and the scan crashed on the
+    empty list. When frames are decodable but all fail the quality
+    gates, the selector must admit the sharpest ones instead of
+    returning nothing."""
+    import cv2
+    import numpy as np
+
+    rng = np.random.default_rng(7)
+    paths: list[Path] = []
+    for i in range(6):
+        image = rng.integers(0, 255, (240, 320, 3), dtype=np.uint8)
+        soft = cv2.GaussianBlur(image, (0, 0), sigmaX=6)  # very soft
+        path = tmp_path / f"frame_{i:05d}.jpg"
+        cv2.imwrite(str(path), soft)
+        paths.append(path)
+    kept = select_keyframes(paths, "cap-soft", 2.0)
+    assert kept, "fallback must never return zero keyframes for decodable frames"
+    assert all(k.image_path in {str(p) for p in paths} for k in kept)
+    assert [k.t for k in kept] == sorted(k.t for k in kept)
+
+
+def test_scan_rejects_a_capture_with_an_empty_keyframe_record(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A stored capture whose keyframe list is empty must 422 with a
+    plain message instead of crashing inside the scan pipeline."""
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("PROVIDER", "mock")
+    from fastapi.testclient import TestClient
+    from secondshift.main import create_app
+
+    app = create_app()
+    client = TestClient(app, raise_server_exceptions=False)
+    created = client.post(
+        "/api/checkups",
+        json={
+            "pack_ids": ["falls_older_adults"],
+            "resident_label": "Empty capture test",
+            "consent": {"resident_informed": True, "no_private_moments": True},
+        },
+    )
+    assert created.status_code in (200, 201)
+    checkup_id = created.json()["id"]
+    app.state.store.put("keyframes", "cap-empty", {"keyframes": []})
+    resp = client.post(
+        f"/api/checkups/{checkup_id}/scan", json={"capture_id": "cap-empty"}
+    )
+    assert resp.status_code == 422
+    assert "no usable frames" in resp.json()["detail"]

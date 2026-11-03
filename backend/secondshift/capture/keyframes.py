@@ -42,6 +42,7 @@ def select_keyframes(
 ) -> list[Keyframe]:
     """Select keyframes from extracted frame files (in timestamp order)."""
     kept: list[Keyframe] = []
+    candidates: list[tuple[float, int, Path, float]] = []
     last_descr: np.ndarray | None = None
     last_kept_t = -1e9
     for idx, path in enumerate(frame_paths):
@@ -50,6 +51,7 @@ def select_keyframes(
         if image is None:
             continue
         sharpness, brightness = frame_metrics(image)
+        candidates.append((sharpness, idx, path, brightness))
         usable = is_usable(sharpness, brightness, sharpness_min, brightness_min, brightness_max)
         descr = frame_descriptor(image)
         changed = last_descr is None or change_score(descr, last_descr) > change_min
@@ -68,6 +70,29 @@ def select_keyframes(
             )
             last_descr = descr
             last_kept_t = t
+    if not kept and candidates:
+        # Fallback: never return zero keyframes when frames were
+        # decodable. High-frame-rate phone footage scores
+        # systematically lower on the sharpness metric, so the hard
+        # gate can reject every frame of a perfectly viewable clip
+        # (2026-11-03: a 120fps clip scored 24-75 against the 100
+        # floor, stored zero keyframes, and the scan crashed on the
+        # empty list). Admit the sharpest frames instead - the scan
+        # stages abstain per item when a frame is genuinely
+        # unreadable, which beats a total failure.
+        sharpest = sorted(candidates, key=lambda c: (-c[0], c[1]))[:max_keyframes]
+        for sharpness, idx, path, brightness in sorted(sharpest, key=lambda c: c[1]):
+            kept.append(
+                Keyframe(
+                    id=f"{capture_id}-kf-{len(kept):03d}",
+                    capture_id=capture_id,
+                    t=idx / sample_fps,
+                    image_path=str(path),
+                    sharpness=sharpness,
+                    brightness=brightness,
+                    usable=True,
+                )
+            )
     if len(kept) > max_keyframes:
         step = len(kept) / max_keyframes
         kept = [kept[int(i * step)] for i in range(max_keyframes)]
