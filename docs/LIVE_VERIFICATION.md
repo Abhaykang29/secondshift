@@ -381,3 +381,63 @@ order, not by the hook worker.
   - Costs: processing tag team-footage $1.071 total (first run
     $0.231 including the crashed attempt; c8 re-scan about $0.57;
     4896 about $0.23; 92d about $0.03). All-time ledger $17.09.
+
+## Re-runs with reworded checklists (2026-11-03, wording only)
+
+The user re-ran three triage clips with problem-worded custom
+checklists (no code or prompt changes; new checkups - the original
+reports are untouched). Compiles (frozen compiler):
+- "problems" checklist -> pack custom-c8738b58: CUSTOM-01 "Stove
+  burner left on" and CUSTOM-02 "Burnable item on or next to
+  cooktop" compiled; "Water is running from a tap." REFUSED -
+  "Video cannot reliably tell if water is actually running from
+  a tap, so check the tap in person to look and listen for flow."
+- "robot-task" checklist -> pack custom-e574bc2e: all 3 lines
+  compiled (dishes in sink / dishes on counter / knife on counter).
+
+- entry_id: rerun_problems_92d (checkup 4279ee15, scan 48s)
+  - CUSTOM-01 burner: cannot-assess not_filmed. CUSTOM-02
+    burnables: rejected at t=32.5s ("No cooktop visible; frame
+    shows only sink area"). The scan never saw the stove segment
+    - see coverage_92d_keyframe_gap below.
+- entry_id: rerun_problems_4896 (checkup b1d17dcf, scan 61s)
+  - BOTH items CONFIRMED at t=21.5s (Found by SAM (box)): stove
+    burner left on; burnable item on or next to cooktop. Evidence
+    frame data/b1d17dcfd7e542608d32eea01458bca3/
+    ea0709d3b25a4649accfc59d9bb43933/frames/frame_00044.jpg.
+    Zero cannot-assess. The problems wording caught, as checkable
+    items, what the LEAVING_HOME wording structurally refused.
+- entry_id: rerun_robot_pair (before 4ed31c5d 58s; after c8ebde55 84s)
+  - Before (6c40efdc): CUSTOM-01 dishes-in-sink REJECTED t=17.0s
+    ("Image shows dishwasher, no sink basin visible"); CUSTOM-02
+    dishes-on-counter REJECTED t=17.0s ("Dishes are in dishwasher
+    rack, not on counter"); CUSTOM-03 knife cannot-assess.
+    Nothing was found in "before", so the found->fixed table is
+    empty by construction.
+  - After (c8dd8a20): CUSTOM-02 dishes-on-counter CONFIRMED
+    t=60.5s (evidence frame data/c8ebde55781a4a288ac43c696b59eb93/
+    b6dfe47450174e51837e8acaed5dbc04/frames/frame_00122.jpg);
+    CUSTOM-01 dishes-in-sink needs_human t=24.5/25.0/28.0s ("Dark
+    shape partly visible in sink but SAM found no mask");
+    CUSTOM-03 knife cannot-assess.
+  - HONEST READ: on this checklist the pair runs BACKWARDS
+    against the triage pairing - the clip Spark labeled "after"
+    (cleaned) is where the dirty dishes were found, while the
+    "before" clip shows dishes being loaded into a dishwasher.
+    Either the pairing direction was misjudged or the clips are
+    not a clean before/after. The user's answer key adjudicates;
+    nothing was re-labeled here.
+- entry_id: coverage_92d_keyframe_gap (observed limitation)
+  - Both 92d scans (LEAVING_HOME and problems rounds) stored
+    exactly 3 keyframes: t=31.0, 32.0, 32.5s. The clip's other
+    sampled frames score sharpness 12-34 against the 100 floor
+    (soft, dim kitchen - the same failure family as the 120fps
+    bug, but partial: a few late frames passed, so the new
+    zero-keyframe fallback did not fire), and the change/gap
+    rules only admit usable frames. The stove segment (t=0-25s,
+    burner visibly lit) never reached the model in either round.
+    NOT fixed in this round - the user's order was wording-only.
+    A timeline-coverage floor in keyframe selection is the
+    candidate fix if he authorizes it.
+  - Costs: this round $0.842 (210 calls, tag team-footage);
+    all-time ledger $17.93.
