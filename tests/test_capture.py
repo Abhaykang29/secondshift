@@ -139,3 +139,37 @@ def test_scan_rejects_a_capture_with_an_empty_keyframe_record(
     )
     assert resp.status_code == 422
     assert "no usable frames" in resp.json()["detail"]
+
+
+def test_select_keyframes_guarantees_timeline_coverage(tmp_path: Path) -> None:
+    """Regression (2026-11-03): 92d's real sharpness profile - most
+    frames score 12-34 (below the 100 floor), a few late frames pass.
+    The old selector returned only t=31-32.5s keyframes, so the
+    clip's first 25 seconds never reached the model. Every ~2s
+    window must now contribute its sharpest frame, marked
+    low_sharpness when below the floor."""
+    import cv2
+    import numpy as np
+
+    rng = np.random.default_rng(11)
+    paths: list[Path] = []
+    for i in range(76):  # 38s at 2fps, like the real clip
+        image = rng.integers(0, 255, (240, 320, 3), dtype=np.uint8)
+        if 62 <= i <= 66:
+            frame = image  # the sharp late segment (t=31-33s)
+        else:
+            frame = cv2.GaussianBlur(image, (0, 0), sigmaX=12)  # very soft
+        path = tmp_path / f"frame_{i:05d}.jpg"
+        cv2.imwrite(str(path), frame)
+        paths.append(path)
+    kept = select_keyframes(paths, "cap-coverage", 2.0)
+    assert kept, "coverage must return keyframes"
+    assert kept[0].t <= 2.0, f"clip start uncovered: first t={kept[0].t}"
+    assert kept[-1].t >= 36.0, f"clip end uncovered: last t={kept[-1].t}"
+    windows = {int(k.t // 2.0) for k in kept}
+    assert windows == set(range(19)), f"uncovered windows: {set(range(19)) - windows}"
+    early = [k for k in kept if k.t < 30.0]
+    assert early and all(k.low_sharpness for k in early), (
+        "below-floor coverage frames must be marked low_sharpness"
+    )
+    assert len(kept) <= 80

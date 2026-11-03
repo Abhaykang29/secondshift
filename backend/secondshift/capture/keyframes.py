@@ -39,10 +39,12 @@ def select_keyframes(
     change_min: float = 0.015,
     max_gap_s: float = 3.0,
     max_keyframes: int = 80,
+    window_s: float = 2.0,
 ) -> list[Keyframe]:
     """Select keyframes from extracted frame files (in timestamp order)."""
     kept: list[Keyframe] = []
     candidates: list[tuple[float, int, Path, float]] = []
+    window_best: dict[int, tuple[float, int, Path, float]] = {}
     last_descr: np.ndarray | None = None
     last_kept_t = -1e9
     for idx, path in enumerate(frame_paths):
@@ -52,6 +54,10 @@ def select_keyframes(
             continue
         sharpness, brightness = frame_metrics(image)
         candidates.append((sharpness, idx, path, brightness))
+        window = int(t // window_s)
+        current = window_best.get(window)
+        if current is None or sharpness > current[0]:
+            window_best[window] = (sharpness, idx, path, brightness)
         usable = is_usable(sharpness, brightness, sharpness_min, brightness_min, brightness_max)
         descr = frame_descriptor(image)
         changed = last_descr is None or change_score(descr, last_descr) > change_min
@@ -94,19 +100,36 @@ def select_keyframes(
                     low_sharpness=True,
                 )
             )
-    # NOTE (2026-11-03): a timeline-coverage guarantee (every ~2s
-    # window contributes its sharpest frame) was built and verified
-    # on 92d - it turned that clip from 3 keyframes (t=31-32.5s
-    # only) into 20 across 0-38s and both problems items confirmed.
-    # The ordered no-regression check on test_1 then scored family
-    # recall 5/8 against the 6/8 bar, so per the user's standing
-    # rule the coverage fill was REVERTED before ever being
-    # committed. The regression set differed by only 1 of 80
-    # keyframes, so the drop reads as run-to-run variance rather
-    # than selector dilution - recorded in LIVE_VERIFICATION.md
-    # (entry regression_test1_cold_coverage). The zero-keyframe
-    # fallback above stays; the coverage code lives in git's
-    # working-tree history of that day only.
+    # Coverage guarantee: every ~window_s window of the clip
+    # contributes its sharpest frame, even below the sharpness
+    # floor (marked low_sharpness so downstream stages can see why
+    # it was admitted). Without this, a soft clip loses whole
+    # segments silently - 92d's stove segment (t=0-25s, sharpness
+    # 12-34) never reached the model because only t=31-32.5s
+    # frames passed the floor. The floor still governs the extra
+    # frames the change/gap rules admit. History: built 2026-11-03,
+    # reverted the same day when a cold test_1 run scored 5/8
+    # against a 6/8 bar, then RESTORED by the user's direct order
+    # after the drop was attributed to measured run-to-run
+    # variance (7/8, 6/8, 5/8 on identical configs; the regression
+    # keyframe set differed by 1 of 80 frames).
+    covered = {int(k.t // window_s) for k in kept}
+    for window in sorted(window_best):
+        if window in covered:
+            continue
+        sharpness, idx, path, brightness = window_best[window]
+        kept.append(
+            Keyframe(
+                id=f"{capture_id}-kf-tmp",
+                capture_id=capture_id,
+                t=idx / sample_fps,
+                image_path=str(path),
+                sharpness=sharpness,
+                brightness=brightness,
+                usable=True,
+                low_sharpness=sharpness < sharpness_min,
+            )
+        )
     kept.sort(key=lambda k: k.t)
     kept = [
         k.model_copy(update={"id": f"{capture_id}-kf-{i:03d}"})
