@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Type } from "lucide-react";
 import Footer from "./components/Footer";
 import TabBar from "./components/TabBar";
 import AskPage from "./pages/AskPage";
@@ -23,9 +24,9 @@ import WatchLive from "./pages/WatchLive";
 import WatchSetup from "./pages/WatchSetup";
 
 /**
- * App shell (Pass 3 spec 4.1-4.2): installable PWA, phone-first column,
- * bottom tab bar (Check / Live / Homes / Learn). Every pre-PWA route
- * stays reachable - the tab pages link into the same flows.
+ * App shell (redesign spec 4): 56px surface header with the wordmark,
+ * content column (max 1120px on desktop), bottom tab bar. Every
+ * pre-PWA route stays reachable - the tab pages link into the flows.
  */
 
 const LARGE_TEXT_KEY = "secondshift_large_text";
@@ -49,16 +50,22 @@ function AppHeader() {
   }, [largeText]);
 
   return (
-    <header className="bg-[#1f3d2b] text-white">
-      <div className="mx-auto flex max-w-md items-center justify-between gap-3 px-4 py-3">
-        <span className="text-xl font-semibold tracking-tight">SecondShift</span>
+    <header className="sticky top-0 z-40 border-b border-border bg-surface">
+      <div className="mx-auto flex h-14 w-full max-w-[1120px] items-center justify-between px-4">
+        <span className="flex items-center gap-2">
+          <span className="h-2.5 w-2.5 rounded-[3px] bg-accent" aria-hidden />
+          <span className="text-[17px] font-[650] tracking-[-0.01em] text-text">SecondShift</span>
+        </span>
         <button
           type="button"
+          aria-label="Large text"
           aria-pressed={largeText}
           onClick={() => setLargeText((v) => !v)}
-          className="rounded border border-white/50 px-3 text-sm text-white"
+          className={`inline-flex h-11 w-11 items-center justify-center rounded-btn transition-colors duration-[120ms] hover:bg-accent-bg ${
+            largeText ? "text-accent" : "text-text-2"
+          }`}
         >
-          Aa · Large text {largeText ? "on" : "off"}
+          <Type size={20} strokeWidth={1.75} aria-hidden />
         </button>
       </div>
     </header>
@@ -69,7 +76,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AppHeader />
-      <div className="mx-auto w-full max-w-md pb-24">
+      <div className="mx-auto w-full max-w-[1120px] px-4 pb-24 pt-5">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/live" element={<LivePage />} />
