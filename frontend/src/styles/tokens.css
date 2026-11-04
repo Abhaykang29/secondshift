@@ -1,0 +1,66 @@
+/* Design tokens (visual redesign spec section 1). The ONLY place
+   colors, radii and shadows are defined; components consume them via
+   Tailwind's mapped classes (bg-surface, text-text-2, ...) or var(). */
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --surface-3: #e3e8ef;
+  --border: #dde2e8;
+  --border-strong: #c5cdd8;
+
+  --text: #0e1116;
+  --text-2: #4a5361;
+  --text-3: #6b7482;
+  --text-inverse: #ffffff;
+
+  --accent: #2f5bff;
+  --accent-hover: #2149e0;
+  --accent-bg: #ebf0ff;
+
+  /* Verdict colors: reserved for verdicts and status only. */
+  --ok: #12805c;
+  --ok-bg: #e6f4ee;
+  --warn: #9a5b00;
+  --warn-bg: #fff3dc;
+  --bad: #c4312b;
+  --bad-bg: #fdecea;
+  --unk: #5b6472;
+  --unk-bg: #eef0f3;
+
+  --overlay: rgba(14, 17, 22, 0.72);
+  --focus: 0 0 0 3px rgba(47, 91, 255, 0.35);
+
+  --r-card: 12px;
+  --r-btn: 10px;
+  --r-chip: 999px;
+  --r-tile: 10px;
+
+  --shadow-menu: 0 8px 24px rgba(14, 17, 22, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0e13;
+    --surface: #131821;
+    --surface-2: #1a2030;
+    --surface-3: #222a3b;
+    --border: #252c38;
+    --border-strong: #36404f;
+    --text: #e8ecf2;
+    --text-2: #a9b2c0;
+    --text-3: #8a94a3;
+    --accent: #5b7cff;
+    --accent-hover: #7a95ff;
+    --accent-bg: #1a2550;
+    --ok: #3cc08f;
+    --ok-bg: #0f2a21;
+    --warn: #f0b44c;
+    --warn-bg: #2e2210;
+    --bad: #ff6b63;
+    --bad-bg: #33171a;
+    --unk: #a3acba;
+    --unk-bg: #1e2430;
+  }
+}
