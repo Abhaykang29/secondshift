@@ -43,7 +43,7 @@ def main() -> int:
     env = dict(os.environ)
     env.setdefault("PROVIDER", "mock")
     env["SERVE_FRONTEND"] = "1"
-    print("Open http://localhost:8000")
+    print("Open http://localhost:8000", flush=True)
     proc = subprocess.run(
         [
             sys.executable, "-m", "uvicorn", "secondshift.main:app",
