@@ -44,12 +44,15 @@ export default function HonestyCard() {
   return (
     <section aria-label="Honesty numbers" className="mt-6 rounded border-2 border-[#1f3d2b] bg-white p-4">
       <h2 className="text-xl font-semibold">Our honesty numbers</h2>
-      {data.small_sample && (
-        <p className="mt-1 font-medium text-amber-800">
-          Based on {data.clips} clip{data.clips === 1 ? "" : "s"} - fewer than 10, so treat
-          every number here as a small sample.
-        </p>
-      )}
+      <p className="mt-1 font-medium">
+        Based on {data.clips} clip{data.clips === 1 ? "" : "s"} scored so far.
+        {data.small_sample && (
+          <span className="text-amber-800">
+            {" "}
+            Fewer than 10, so treat every number here as a small sample.
+          </span>
+        )}
+      </p>
       <ul className="mt-2 list-disc pl-6">
         <li>
           Items scored: {data.items} ({data.answered_items} answered, {data.abstained_items}{" "}
