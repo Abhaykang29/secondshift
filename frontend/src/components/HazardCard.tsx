@@ -58,7 +58,7 @@ export default function HazardCard({
   const chain = chainFor(hazard);
   return (
     <article
-      className={`mt-3 overflow-hidden rounded-card border border-border bg-surface${flash ? " refilm-flash" : ""}`}
+      className={`mt-3 overflow-hidden rounded-card bg-surface shadow-card${flash ? " refilm-flash" : ""}`}
       aria-label={hazard.title}
     >
       <EvidenceFrame
@@ -69,6 +69,7 @@ export default function HazardCard({
         t={evidenceT}
         blurry={blurry}
         topCornersOnly
+        maxHeight={460}
       />
       <div className="p-4">
         <div className="flex flex-wrap items-center gap-1.5">
@@ -85,9 +86,13 @@ export default function HazardCard({
           {SEVERITY_LABEL[hazard.severity] && <Chip>{SEVERITY_LABEL[hazard.severity]}</Chip>}
           {hazard.origin === "follow_up" && <Chip variant="accent">From follow-up clip</Chip>}
         </div>
-        <h3 className="mt-2 text-[16px] font-semibold leading-[22px]">
-          {hazard.rank ? `#${hazard.rank} ` : ""}
-          {hazard.title}
+        <h3 className="mt-2.5 flex items-start gap-2 text-[17px] font-bold leading-[23px]">
+          {hazard.rank ? (
+            <span className="mt-[1px] inline-flex h-[22px] min-w-[22px] shrink-0 items-center justify-center rounded-full bg-text px-1.5 font-mono text-[12px] font-bold text-surface">
+              {hazard.rank}
+            </span>
+          ) : null}
+          <span>{hazard.title}</span>
         </h3>
         <p className="mt-0.5 text-[13px] capitalize text-text-3">
           {hazard.room}
@@ -100,8 +105,7 @@ export default function HazardCard({
         <p className="mt-1 text-[14px] leading-[20px] text-text-2">{hazard.verification_reason}</p>
         {chain && (
           <>
-            <div className="mt-3 border-t border-border" />
-            <p className="mt-3 flex items-start gap-1.5 font-mono text-[12.5px] tabular-nums text-text-3">
+                        <p className="mt-3 flex items-start gap-1.5 rounded-btn bg-surface-2 px-3 py-2 text-[13px] font-medium text-text-2">
               <GitBranch size={14} strokeWidth={1.75} className="mt-0.5 shrink-0" aria-hidden />
               <span>{chain}</span>
             </p>

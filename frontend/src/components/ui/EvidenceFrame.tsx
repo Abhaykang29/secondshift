@@ -17,6 +17,11 @@ interface EvidenceFrameProps {
   /** Can't-tell treatment: dimmed, grayscale, centered EyeOff. */
   dimmed?: boolean;
   topCornersOnly?: boolean;
+  /** Edge-to-edge inside a card: no rounding. */
+  flush?: boolean;
+  /** Cap the photo height; tall (vertical) frames are letterboxed on a dark
+   * band instead of cropped, so the SAM overlay stays aligned. */
+  maxHeight?: number;
 }
 
 /**
@@ -34,6 +39,8 @@ export default function EvidenceFrame({
   blurry,
   dimmed,
   topCornersOnly,
+  flush,
+  maxHeight,
 }: EvidenceFrameProps) {
   const bbox = mask?.bbox ?? null;
   const polygon = mask?.polygon ?? null;
@@ -52,10 +59,11 @@ export default function EvidenceFrame({
   // The frame renders at its natural aspect (not a cropped 16:9
   // cover): the SAM overlay uses normalized coordinates, and a cover
   // crop would misalign the box on vertical footage.
-  return (
+  const rounding = flush ? "" : topCornersOnly ? "rounded-t-card" : "rounded-card";
+  const frame = (
     <div
-      className={`relative w-full overflow-hidden bg-surface-3 ${
-        topCornersOnly ? "rounded-t-card" : "rounded-card"
+      className={`relative overflow-hidden bg-surface-3 ${
+        maxHeight ? "inline-block align-top" : `w-full ${rounding}`
       }`}
     >
       {src ? (
@@ -63,7 +71,8 @@ export default function EvidenceFrame({
           src={src}
           alt={alt}
           loading="lazy"
-          className={`block h-auto w-full ${dimmed ? "opacity-45 grayscale-[0.6]" : ""}`}
+          className={`block ${maxHeight ? "h-auto w-auto max-w-full" : "h-auto w-full"} ${dimmed ? "opacity-45 grayscale-[0.6]" : ""}`}
+          style={maxHeight ? { maxHeight } : undefined}
         />
       ) : (
         <div className="aspect-video w-full" />
@@ -78,7 +87,7 @@ export default function EvidenceFrame({
           {points ? (
             <polygon
               points={points}
-              style={{ fill: "rgba(47,91,255,0.12)", stroke: "var(--accent)", strokeWidth: 2 }}
+              style={{ fill: "rgba(8,102,255,0.14)", stroke: "var(--accent)", strokeWidth: 2.5 }}
               vectorEffect="non-scaling-stroke"
             />
           ) : (
@@ -87,7 +96,7 @@ export default function EvidenceFrame({
               y={bbox[1] * 100}
               width={(bbox[2] - bbox[0]) * 100}
               height={(bbox[3] - bbox[1]) * 100}
-              style={{ fill: "rgba(47,91,255,0.12)", stroke: "var(--accent)", strokeWidth: 2 }}
+              style={{ fill: "rgba(8,102,255,0.14)", stroke: "var(--accent)", strokeWidth: 2.5 }}
               vectorEffect="non-scaling-stroke"
             />
           )}
@@ -102,10 +111,12 @@ export default function EvidenceFrame({
       )}
       {!dimmed && (mask?.prompt || absenceAnchor) && boxStyle && (
         <span
-          className="absolute z-10 max-w-[85%] truncate rounded-[4px] bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white"
+          className="absolute z-10 max-w-[85%] truncate rounded-[6px] bg-accent px-2 py-0.5 text-[11.5px] font-semibold text-white shadow-raised"
           style={{
-            left: `min(${bbox![0] * 100}%, calc(100% - 90px))`,
-            top: `max(0%, calc(${bbox![1] * 100}% - 22px))`,
+            ...(bbox![0] > 0.5
+              ? { right: `max(8px, ${(1 - bbox![2]) * 100}%)` }
+              : { left: `max(8px, ${bbox![0] * 100}%)` }),
+            top: `max(8px, calc(${bbox![1] * 100}% - 26px))`,
           }}
         >
           {absenceAnchor ? `SAM · ${absenceAnchor} · missing` : `SAM · ${mask?.prompt}`}
@@ -123,7 +134,7 @@ export default function EvidenceFrame({
       )}
       {typeof t === "number" && (
         <span
-          className="absolute bottom-2 left-2 rounded-chip px-2 py-0.5 font-mono text-[12px] tabular-nums text-white"
+          className="absolute bottom-2.5 left-2.5 rounded-chip px-2.5 py-1 font-mono text-[12px] font-semibold tabular-nums text-white backdrop-blur-sm"
           style={{ backgroundColor: "var(--overlay)" }}
         >
           t={t}s
@@ -137,6 +148,12 @@ export default function EvidenceFrame({
           blurry frame
         </span>
       )}
+    </div>
+  );
+  if (!maxHeight) return frame;
+  return (
+    <div className={`flex w-full justify-center overflow-hidden bg-letterbox ${rounding}`}>
+      {frame}
     </div>
   );
 }

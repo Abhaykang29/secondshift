@@ -45,7 +45,7 @@ const ROADMAP = [
 ];
 
 const linkBtn =
-  "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-btn border border-border-strong bg-surface px-4 text-[15px] font-semibold text-text transition-all duration-[120ms] hover:bg-surface-2 active:scale-[0.98]";
+  "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-btn bg-surface-3 px-4 text-[15px] font-semibold text-text transition-all duration-[120ms] hover:bg-surface-3-hover active:scale-[0.98]";
 
 export default function LearnPage() {
   return (

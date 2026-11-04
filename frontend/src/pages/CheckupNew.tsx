@@ -79,7 +79,7 @@ export default function CheckupNew() {
 
   if (step === "consent") {
     return (
-      <main className="p-4">
+      <main className="pt-1">
         <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
           Before you film
         </h1>
@@ -147,7 +147,7 @@ export default function CheckupNew() {
   }
 
   return (
-    <main className="p-4">
+    <main className="pt-1">
       <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
         Film the walkthrough
       </h1>
@@ -156,7 +156,7 @@ export default function CheckupNew() {
         {GUIDE.map((panel) => {
           const Icon = panel.icon;
           return (
-            <div key={panel.title} className="rounded-card border border-border bg-surface p-3">
+            <div key={panel.title} className="rounded-card bg-surface shadow-card p-3">
               <span className="inline-flex rounded-tile bg-accent-bg p-2" aria-hidden>
                 <Icon size={20} strokeWidth={1.75} className="text-accent" />
               </span>

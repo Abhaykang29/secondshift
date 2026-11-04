@@ -133,7 +133,7 @@ export default function RefilmCard({
 
   if (instructions.length === 0) return null;
   return (
-    <section aria-label="I couldn't see these" className="rounded-card border border-border bg-surface p-4">
+    <section aria-label="I couldn't see these" className="rounded-card bg-surface shadow-card p-4">
       <div className="flex items-center gap-2">
         <h2 className="text-[17px] font-semibold leading-[24px]">I couldn&rsquo;t see these</h2>
         <Chip>

@@ -1,66 +1,73 @@
-/* Design tokens (visual redesign spec section 1). The ONLY place
-   colors, radii and shadows are defined; components consume them via
-   Tailwind's mapped classes (bg-surface, text-text-2, ...) or var(). */
+/* Design tokens - the ONLY place colors, radii and shadows live.
+   Direction: Facebook / Meta product design. Flat light-gray canvas,
+   white cards lifted by a soft shadow (no hard borders), Facebook blue
+   for every primary action, neutral gray secondary buttons, generous
+   whitespace, system font so it feels native on iPhone and Android.
+   Verdict colors stay reserved for verdicts and status only. */
 
 :root {
-  --bg: #f6f7f9;
-  --surface: #ffffff;
-  --surface-2: #eef1f5;
-  --surface-3: #e3e8ef;
-  --border: #dde2e8;
-  --border-strong: #c5cdd8;
+  --bg: #f0f2f5;            /* Facebook canvas gray */
+  --surface: #ffffff;       /* cards, header, tab bar */
+  --surface-2: #f0f2f5;     /* insets, hover */
+  --surface-3: #e4e6eb;     /* secondary buttons, skeletons */
+  --surface-3-hover: #d8dadf;
+  --border: #e4e6eb;        /* dividers inside cards */
+  --border-strong: #ced0d4; /* inputs, dashed can't-tell borders */
 
-  --text: #0e1116;
-  --text-2: #4a5361;
-  --text-3: #6b7482;
+  --text: #050505;
+  --text-2: #4b4f56;
+  --text-3: #65676b;        /* 5.7:1 on white */
   --text-inverse: #ffffff;
 
-  --accent: #2f5bff;
-  --accent-hover: #2149e0;
-  --accent-bg: #ebf0ff;
+  --accent: #0866ff;        /* Facebook blue (2023) */
+  --accent-hover: #0757d8;
+  --accent-bg: #ebf5ff;
+  --accent-bg-hover: #dbeafe;
 
-  /* Verdict colors: reserved for verdicts and status only. */
-  --ok: #12805c;
-  --ok-bg: #e6f4ee;
-  --warn: #9a5b00;
-  --warn-bg: #fff3dc;
-  --bad: #c4312b;
-  --bad-bg: #fdecea;
-  --unk: #5b6472;
-  --unk-bg: #eef0f3;
+  /* Verdicts */
+  --ok: #157f3c;    --ok-bg: #e7f6ec;
+  --warn: #9a5800;  --warn-bg: #fff4d6;
+  --bad: #d3122e;   --bad-bg: #ffebee;
+  --unk: #5b5f66;   --unk-bg: #eef0f3;
 
-  --overlay: rgba(14, 17, 22, 0.72);
-  --focus: 0 0 0 3px rgba(47, 91, 255, 0.35);
+  --overlay: rgba(0, 0, 0, 0.66);
+  --focus: 0 0 0 3px rgba(8, 102, 255, 0.35);
 
   --r-card: 12px;
-  --r-btn: 10px;
+  --r-btn: 8px;
   --r-chip: 999px;
-  --r-tile: 10px;
+  --r-tile: 12px;
 
-  --shadow-menu: 0 8px 24px rgba(14, 17, 22, 0.12);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  --shadow-raised: 0 2px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-menu: 0 12px 28px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-bar: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --letterbox: #0b0c0e;  /* dark band behind tall (vertical) evidence frames */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b0e13;
-    --surface: #131821;
-    --surface-2: #1a2030;
-    --surface-3: #222a3b;
-    --border: #252c38;
-    --border-strong: #36404f;
-    --text: #e8ecf2;
-    --text-2: #a9b2c0;
-    --text-3: #8a94a3;
-    --accent: #5b7cff;
-    --accent-hover: #7a95ff;
-    --accent-bg: #1a2550;
-    --ok: #3cc08f;
-    --ok-bg: #0f2a21;
-    --warn: #f0b44c;
-    --warn-bg: #2e2210;
-    --bad: #ff6b63;
-    --bad-bg: #33171a;
-    --unk: #a3acba;
-    --unk-bg: #1e2430;
+    --bg: #18191a;
+    --surface: #242526;
+    --surface-2: #2f3031;
+    --surface-3: #3a3b3c;
+    --surface-3-hover: #4e4f50;
+    --border: #3e4042;
+    --border-strong: #545658;
+    --text: #e4e6eb;
+    --text-2: #c7cad1;
+    --text-3: #b0b3b8;
+    --accent: #2d88ff;
+    --accent-hover: #4599ff;
+    --accent-bg: #1c2b41;
+    --accent-bg-hover: #233752;
+    --ok: #45bd62;  --ok-bg: #16301f;
+    --warn: #f7b928; --warn-bg: #33280f;
+    --bad: #ff5c6c; --bad-bg: #3a1a1e;
+    --unk: #b0b3b8; --unk-bg: #2f3031;
+    --overlay: rgba(0, 0, 0, 0.72);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-raised: 0 2px 12px rgba(0, 0, 0, 0.45);
+    --shadow-bar: 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 }

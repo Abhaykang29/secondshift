@@ -21,7 +21,7 @@ export default function TabBar() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-auto grid h-16 w-full max-w-[1120px] grid-cols-4">
+      <div className="mx-auto grid h-[60px] w-full max-w-[640px] grid-cols-4">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -30,17 +30,17 @@ export default function TabBar() {
               to={tab.to}
               end={tab.end}
               className={({ isActive }) =>
-                `relative flex flex-col items-center justify-center gap-0.5 px-2 text-[13px] ${
-                  isActive ? "font-semibold text-accent" : "text-text-3"
+                `relative mx-1 flex flex-col items-center justify-center gap-1 px-2 text-[11.5px] font-semibold transition-colors duration-[120ms] ${
+                  isActive ? "text-accent" : "text-text-3 hover:text-text-2"
                 }`
               }
             >
               {({ isActive }) => (
                 <>
                   {isActive && (
-                    <span className="absolute top-0 h-[2px] w-6 rounded-full bg-accent" aria-hidden />
+                    <span className="absolute inset-x-3 top-0 h-[3px] rounded-b-full bg-accent" aria-hidden />
                   )}
-                  <Icon size={20} strokeWidth={1.75} aria-hidden />
+                  <Icon size={23} strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
                   {tab.label}
                 </>
               )}

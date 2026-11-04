@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Type } from "lucide-react";
+import { ScanEye, Type } from "lucide-react";
 import Footer from "./components/Footer";
 import TabBar from "./components/TabBar";
 import AskPage from "./pages/AskPage";
@@ -50,22 +50,31 @@ function AppHeader() {
   }, [largeText]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface">
+    <header className="sticky top-0 z-40 bg-surface shadow-bar">
       <div className="mx-auto flex h-14 w-full max-w-[1120px] items-center justify-between px-4">
-        <span className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-[3px] bg-accent" aria-hidden />
-          <span className="text-[17px] font-[650] tracking-[-0.01em] text-text">SecondShift</span>
+        <span className="flex items-center gap-2.5">
+          <span
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-text-inverse"
+            aria-hidden
+          >
+            <ScanEye size={18} strokeWidth={2.25} />
+          </span>
+          <span className="text-[22px] font-extrabold leading-none tracking-[-0.035em] text-accent">
+            SecondShift
+          </span>
         </span>
         <button
           type="button"
           aria-label="Large text"
           aria-pressed={largeText}
           onClick={() => setLargeText((v) => !v)}
-          className={`inline-flex h-11 w-11 items-center justify-center rounded-btn transition-colors duration-[120ms] hover:bg-accent-bg ${
-            largeText ? "text-accent" : "text-text-2"
+          className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-[120ms] ${
+            largeText
+              ? "bg-accent-bg text-accent hover:bg-accent-bg-hover"
+              : "bg-surface-3 text-text hover:bg-surface-3-hover"
           }`}
         >
-          <Type size={20} strokeWidth={1.75} aria-hidden />
+          <Type size={19} strokeWidth={2} aria-hidden />
         </button>
       </div>
     </header>
@@ -76,7 +85,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AppHeader />
-      <div className="mx-auto w-full max-w-[1120px] px-4 pb-24 pt-5">
+      <div className="mx-auto w-full max-w-[1120px] px-3 pb-28 pt-4 sm:px-4">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/live" element={<LivePage />} />

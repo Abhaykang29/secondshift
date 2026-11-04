@@ -83,7 +83,7 @@ export default function CustomPage() {
           <h2 className="text-[17px] font-semibold">What will be checked</h2>
           <ul className="mt-2 space-y-2">
             {result.items.map((item) => (
-              <li key={item.id} className="rounded-card border border-border bg-surface p-3">
+              <li key={item.id} className="rounded-card bg-surface shadow-card p-3">
                 <span className="font-medium">{item.title}</span>
                 <span className="block text-[14px] text-text-2">
                   looks for: {item.sam_prompts.join(", ")}

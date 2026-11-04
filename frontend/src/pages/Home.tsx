@@ -6,7 +6,7 @@
  * (same key as before).
  */
 import { useEffect, useState } from "react";
-import { Check, ChevronRight, Info } from "lucide-react";
+import { BadgeCheck, Check, ChevronRight, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { plural } from "../plural";
@@ -76,31 +76,43 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="p-4">
-      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
+    <main className="pt-1">
+      <h1 className="px-1 text-[26px] font-extrabold leading-[32px]">
         Check a place
       </h1>
-      <p className="mt-1 text-text-2">
+      <p className="mt-1 px-1 text-[15px] text-text-3">
         Film a walkthrough, get the hazards with proof — and an honest
         &ldquo;can&rsquo;t tell&rdquo; when a camera can&rsquo;t know.
       </p>
 
       {homes.length > 0 && (
-        <section aria-label="Your places" className="mt-5">
-          <h2 className="text-[17px] font-semibold leading-[24px]">Your places</h2>
-          <div className="mt-2 grid gap-2">
-            {homes.map((home) => (
+        <section aria-label="Recent checks" className="mt-5">
+          <div className="flex items-baseline justify-between px-1">
+            <h2 className="text-[19px] font-bold leading-[24px]">Recent checks</h2>
+            <Link to="/homes" className="rounded-btn px-2 py-1 text-[15px] font-semibold text-accent hover:bg-accent-bg">
+              See all
+            </Link>
+          </div>
+          <div className="mt-2 overflow-hidden rounded-card bg-surface shadow-card">
+            {homes.slice(0, 3).map((home, i) => (
               <Link
                 key={home.label}
                 to={`/checkup/${home.last_checkup_id}/report`}
-                className="flex items-center justify-between rounded-card border border-border bg-surface p-3 transition-colors duration-[120ms] hover:border-border-strong"
+                className={`flex min-h-[60px] items-center gap-3 px-3 py-2.5 transition-colors duration-[120ms] hover:bg-surface-2 ${
+                  i > 0 ? "border-t border-border" : ""
+                }`}
               >
-                <span>
-                  <span className="font-semibold">{home.label}</span>
+                <PackIcon packId={home.pack_ids[0] ?? "custom"} size={36} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1 font-semibold">
+                    <span className="truncate">{home.label.replace(/\s*\(recorded\)\s*$/i, "")}</span>
+                    {/\(recorded\)\s*$/i.test(home.label) && (
+                      <BadgeCheck size={15} strokeWidth={2.25} className="shrink-0 text-accent" aria-label="Recorded real result" />
+                    )}
+                  </span>
                   <span className="block text-[13px] text-text-3">
-                    Last check{" "}
                     {home.last_check_at
-                      ? new Date(home.last_check_at).toLocaleDateString()
+                      ? new Date(home.last_check_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })
                       : "—"}
                     {" · "}
                     {plural(home.open_findings, "open finding")}
@@ -114,13 +126,13 @@ export default function Home() {
       )}
 
       <section aria-label="Choose what to check" className="mt-6">
-        <div className="flex items-baseline justify-between gap-2">
-          <h2 className="text-[17px] font-semibold leading-[24px]">Choose what to check</h2>
+        <div className="flex items-baseline justify-between gap-2 px-1">
+          <h2 className="text-[19px] font-bold leading-[24px]">Choose what to check</h2>
           <span className="font-mono text-[12.5px] tabular-nums text-text-3">
             {selected.length} / 3
           </span>
         </div>
-        <p className="mt-1 text-[14px] leading-[20px] text-text-2">
+        <p className="mt-1 px-1 text-[14px] leading-[20px] text-text-3">
           Pick up to 3. One walkthrough is checked against all of them.
         </p>
         {packs.length === 0 ? (

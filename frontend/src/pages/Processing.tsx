@@ -137,7 +137,7 @@ export default function Processing() {
   const ss = String(elapsed % 60).padStart(2, "0");
 
   return (
-    <main className="p-4">
+    <main className="pt-1">
       <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
         Checking the home
       </h1>

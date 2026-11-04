@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "secondary" | "soft" | "ghost" | "danger";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -13,8 +13,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-accent text-text-inverse hover:bg-accent-hover",
-  secondary: "bg-surface text-text border border-border-strong hover:bg-surface-2",
+  secondary: "bg-surface-3 text-text hover:bg-surface-3-hover",
   ghost: "text-accent hover:bg-accent-bg",
+  soft: "bg-accent-bg text-accent hover:bg-accent-bg-hover",
   danger: "text-bad hover:bg-bad-bg",
 };
 
@@ -30,8 +31,8 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-btn px-4 text-[15px] font-semibold transition-all duration-[120ms] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45 ${
-        size === "lg" ? "min-h-[52px]" : "min-h-[44px]"
+      className={`inline-flex items-center justify-center gap-2 rounded-btn px-4 text-[15px] font-semibold transition-[background-color,transform] duration-[120ms] active:scale-[0.97] disabled:pointer-events-none disabled:opacity-45 ${
+        size === "lg" ? "min-h-[48px]" : "min-h-[40px]"
       } ${VARIANTS[variant]} ${fullWidth ? "w-full" : ""} ${className}`}
       {...rest}
     >

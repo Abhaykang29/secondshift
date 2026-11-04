@@ -45,7 +45,7 @@ export default function SettingsPage() {
           </dl>
         </Card>
       )}
-      <section className="mt-8 rounded-card border border-border bg-surface p-4" aria-label="Privacy controls">
+      <section className="mt-8 rounded-card bg-surface shadow-card p-4" aria-label="Privacy controls">
         <h2 className="text-[17px] font-semibold">Privacy</h2>
         <p className="mt-1">Raw video is never kept unless you ask. Deleting is one tap and total.</p>
         {message && <p role="status" className="mt-2">{message}</p>}

@@ -21,15 +21,28 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 
 
+def _frontend_is_stale(dist: Path) -> bool:
+    """True when any frontend source file is newer than the built app,
+    so a `git pull` never serves an old UI."""
+    index = dist / "index.html"
+    if not index.exists():
+        return True
+    built = index.stat().st_mtime
+    front = ROOT / "frontend"
+    sources = [*(front / "src").rglob("*"), front / "index.html", front / "tailwind.config.js",
+               front / "package.json"]
+    return any(p.is_file() and p.stat().st_mtime > built for p in sources)
+
+
 def main() -> int:
     dist = ROOT / "frontend" / "dist"
-    if not dist.exists():
+    if not dist.exists() or _frontend_is_stale(dist):
         npm = shutil.which("npm")
         if npm is None:
-            print("demo: frontend/dist is missing and npm was not found.")
+            print("demo: the frontend build is missing or out of date and npm was not found.")
             print("Install Node.js 20+, then run: cd frontend && npm install && npm run build")
             return 1
-        print("demo: building the frontend (first run only)...")
+        print("demo: building the frontend (missing or older than the source)...")
         subprocess.run([npm, "install"], cwd=ROOT / "frontend", check=True)
         subprocess.run([npm, "run", "build"], cwd=ROOT / "frontend", check=True)
 

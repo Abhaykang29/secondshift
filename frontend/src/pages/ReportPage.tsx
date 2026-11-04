@@ -19,7 +19,7 @@ import en from "../i18n/en.json";
 const linkBtnPrimary =
   "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-btn bg-accent px-4 text-[15px] font-semibold text-text-inverse transition-all duration-[120ms] hover:bg-accent-hover active:scale-[0.98]";
 const linkBtnSecondary =
-  "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-btn border border-border-strong bg-surface px-4 text-[15px] font-semibold text-text transition-all duration-[120ms] hover:bg-surface-2 active:scale-[0.98]";
+  "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-btn bg-surface-3 px-4 text-[15px] font-semibold text-text transition-all duration-[120ms] hover:bg-surface-3-hover active:scale-[0.98]";
 
 /**
  * The report page (Pass 3 spec 4.3 step 5 + 4.6) - the money screen:
@@ -204,23 +204,30 @@ export default function ReportPage() {
   return (
     <main>
       <ResultBanner recorded={report.recorded} />
-      <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-text-3">Report</p>
-      <h1 className="mt-1 text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
+      <p className="px-1 text-[13px] font-semibold text-accent">Verification report</p>
+      <h1 className="mt-0.5 px-1 text-[26px] font-extrabold leading-[32px]">
         Home check-up report
       </h1>
-      <p className="mt-1 font-mono text-[12.5px] tabular-nums text-text-3">
-        {reportDate} · {plural(report.pack_ids.length, "pack")}
-        {kfById.size > 0 ? ` · ${plural(kfById.size, "frame")}` : ""}
+      <p className="mt-1 px-1 text-[14px] text-text-3">
+        {reportDate} · {plural(report.pack_ids.length, "checklist")}
+        {kfById.size > 0 ? ` · ${plural(kfById.size, "frame")} checked` : ""}
       </p>
-      <div className="mt-2 flex flex-wrap gap-1.5">
+      <div className="mt-2.5 flex flex-wrap gap-1.5 px-1">
         {report.pack_ids.map((pid) => (
           <PackChip key={pid} packId={pid} />
         ))}
       </div>
 
+      <div className="mt-4 grid grid-cols-4 gap-2" role="list" aria-label="Results at a glance">
+        <BigStat n={confirmed.length} label="Problems" color="var(--bad)" bg="var(--bad-bg)" />
+        <BigStat n={needsHuman.length} label="Need a look" color="var(--warn)" bg="var(--warn-bg)" />
+        <BigStat n={report.cannot_assess.length} label="Can't tell" color="var(--unk)" bg="var(--unk-bg)" dashed />
+        <BigStat n={rejected.length} label="No problem" color="var(--ok)" bg="var(--ok-bg)" />
+      </div>
+
       <section
         aria-label="Summary"
-        className="mt-4 rounded-card border border-border bg-surface p-4"
+        className="mt-3 rounded-card bg-surface p-4 shadow-card"
       >
         <p className="text-[15px] leading-[22px]">{report.summary}</p>
         <div className="mt-3">
@@ -245,8 +252,8 @@ export default function ReportPage() {
         </p>
       </section>
 
-      <section aria-label="Fix these first" className="mt-8 rounded-card border border-border bg-surface p-4">
-        <h2 className="text-[17px] font-semibold leading-[24px]">{report.fix_first.length === 1 ? "Fix this one first" : `Fix these ${report.fix_first.length} first`}</h2>
+      <section aria-label="Fix these first" className="mt-3 rounded-card bg-surface p-4 shadow-card">
+        <h2 className="text-[19px] font-bold leading-[24px]">{report.fix_first.length === 1 ? "Fix this one first" : `Fix these ${report.fix_first.length} first`}</h2>
         <ol className="mt-2 list-decimal pl-6">
           {report.fix_first.map((hid) => (
             <li key={hid}>{byId.get(hid)?.title ?? hid}</li>
@@ -267,7 +274,7 @@ export default function ReportPage() {
           <div key={h.id}>
             {(report.pack_ids.length > 1 &&
               (i === 0 || confirmed[i - 1].pack_id !== h.pack_id)) && (
-              <h3 className="mt-6 text-[17px] font-semibold leading-[24px]">
+              <h3 className="mt-7 px-1 text-[19px] font-bold leading-[24px]">
                 Checklist: {packTitles[h.pack_id] ?? h.pack_id}
               </h3>
             )}
@@ -309,7 +316,7 @@ export default function ReportPage() {
       <section aria-label="Fix plan" className="mt-8">
         <h2 className="text-[17px] font-semibold leading-[24px]">Fix plan</h2>
         {report.fixes.map((card) => (
-          <article key={card.id} className="mt-3 rounded-card border border-border bg-surface p-4">
+          <article key={card.id} className="mt-3 rounded-card bg-surface shadow-card p-4">
             <h3 className="text-[16px] font-semibold leading-[22px]">{card.chosen.title}</h3>
             <p className="text-[14px] text-text-2">
               {card.chosen.difficulty} - cost estimate: {card.chosen.cost_estimate}
@@ -350,7 +357,7 @@ export default function ReportPage() {
 
       {rejected.length > 0 && (
         <section aria-label="Checked, no problem" className="mt-8">
-          <details className="rounded-card border border-border bg-surface">
+          <details className="rounded-card bg-surface shadow-card">
             <summary className="flex min-h-[44px] cursor-pointer items-center px-4 text-[15px] font-semibold">
               Show {plural(rejected.length, "checked item")}
             </summary>
@@ -438,7 +445,7 @@ export default function ReportPage() {
         </section>
       )}
 
-      <section aria-label="Something it missed" className="mt-8 rounded-card border border-border bg-surface p-4">
+      <section aria-label="Something it missed" className="mt-3 rounded-card bg-surface p-4 shadow-card">
         <h2 className="text-[17px] font-semibold leading-[24px]">Something it missed?</h2>
         <p className="mt-1 text-[14px] leading-[20px] text-text-2">
           Tell us what the check should have caught. Your notes become
@@ -526,5 +533,32 @@ export default function ReportPage() {
       </div>
       <p className="mt-4 text-[13px] text-text-3">{report.disclaimer}</p>
     </main>
+  );
+}
+
+function BigStat({
+  n,
+  label,
+  color,
+  bg,
+  dashed,
+}: {
+  n: number;
+  label: string;
+  color: string;
+  bg: string;
+  dashed?: boolean;
+}) {
+  return (
+    <div
+      role="listitem"
+      className={`flex flex-col items-start rounded-tile px-3 py-2.5 ${dashed ? "border border-dashed border-border-strong" : ""}`}
+      style={{ backgroundColor: bg }}
+    >
+      <span className="font-mono text-[26px] font-extrabold leading-[30px]" style={{ color }}>
+        {n}
+      </span>
+      <span className="mt-0.5 text-[12px] font-semibold leading-[15px] text-text-2">{label}</span>
+    </div>
   );
 }

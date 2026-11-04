@@ -48,7 +48,7 @@ export default function Fixes() {
         />
       </div>
       {report.fixes.map((card) => (
-        <div key={card.id} className="mt-3 rounded-card border border-border bg-surface p-4">
+        <div key={card.id} className="mt-3 rounded-card bg-surface shadow-card p-4">
           <label className="flex items-start gap-3">
             <input type="checkbox" checked={card.status === "done"} className="mt-1 h-6 w-6"
               onChange={() => void toggle(card.id, card.status ?? "todo")} />

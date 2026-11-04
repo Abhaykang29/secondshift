@@ -47,7 +47,7 @@ export default function AskPage() {
         Ask
       </Button>
       {answer && (
-        <section className="mt-5 rounded-card border border-border bg-surface p-4" aria-label="Answer">
+        <section className="mt-5 rounded-card bg-surface shadow-card p-4" aria-label="Answer">
           <p>{answer.answer}</p>
           {answer.follow_up && <p className="mt-2 text-[14px] text-text-2">{answer.follow_up}</p>}
         </section>
