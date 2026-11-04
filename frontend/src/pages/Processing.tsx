@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
+import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 
 /**
@@ -31,6 +32,17 @@ const PIPELINE_STEPS = [
   "Fix plans",
   "After photos",
 ];
+
+// The only failure text this screen may show when the server did not
+// send a plain message of its own - never raw request/error text.
+const GENERIC_SCAN_ERROR =
+  "The check stopped partway through. Tap Try again. Your video is saved - if it keeps failing, try a shorter video.";
+
+function plainJobError(text: string | null | undefined): string {
+  if (!text) return GENERIC_SCAN_ERROR;
+  if (/failed:|\b500\b|POST |GET |HTTP Error/i.test(text)) return GENERIC_SCAN_ERROR;
+  return text;
+}
 
 export default function Processing() {
   const { id = "" } = useParams();
@@ -80,7 +92,7 @@ export default function Processing() {
           navigate(`/checkup/${id}/report`);
         } else if (job.status === "failed") {
           setPhase("failed");
-          setError(job.error ?? "The check failed.");
+          setError(plainJobError(job.error));
         }
       } catch {
         if (!stop) setError("Could not read job status.");
@@ -94,21 +106,40 @@ export default function Processing() {
     };
   }, [jobId, id, navigate]);
 
-  // Start the scan when we arrived from the capture step.
-  useEffect(() => {
-    if (jobId || startedRef.current) return;
-    startedRef.current = true;
+  // Start the scan when we arrived from the capture step. A failed
+  // scan returns job_status "failed" with a plain message from the
+  // server; a thrown error (network, unexpected status) shows only
+  // the generic plain message - never raw request text.
+  const runScan = useCallback(() => {
     api
       .scan(id, undefined, captureId ?? undefined)
-      .then(() => {
+      .then((res) => {
+        if (res.job_status === "failed") {
+          setPhase("failed");
+          setError(res.error ?? GENERIC_SCAN_ERROR);
+          return;
+        }
         setPhase("done");
         navigate(`/checkup/${id}/report`);
       })
-      .catch((e: unknown) => {
+      .catch(() => {
         setPhase("failed");
-        setError(e instanceof Error ? e.message : "The check failed to start.");
+        setError(GENERIC_SCAN_ERROR);
       });
-  }, [jobId, id, captureId, navigate]);
+  }, [id, captureId, navigate]);
+
+  useEffect(() => {
+    if (jobId || startedRef.current) return;
+    startedRef.current = true;
+    runScan();
+  }, [jobId, runScan]);
+
+  const tryAgain = () => {
+    setError("");
+    setElapsed(0);
+    setPhase("running");
+    runScan();
+  };
 
   const scanStepDone = jobDone.includes("scan") || phase === "done";
   const steps: StepView[] = [
@@ -192,14 +223,23 @@ export default function Processing() {
           {error}
         </p>
       )}
-      <div className="mt-5">
-        <Card>
-          <p className="text-[14px] text-text-2">
-            You can leave this screen — the check keeps running, and the home
-            card will show the report when it is ready.
-          </p>
-        </Card>
-      </div>
+      {phase === "failed" && (
+        <div className="mt-4">
+          <Button variant="primary" onClick={tryAgain}>
+            Try again
+          </Button>
+        </div>
+      )}
+      {phase !== "failed" && (
+        <div className="mt-5">
+          <Card>
+            <p className="text-[14px] text-text-2">
+              You can leave this screen — the check keeps running, and the home
+              card will show the report when it is ready.
+            </p>
+          </Card>
+        </div>
+      )}
     </main>
   );
 }

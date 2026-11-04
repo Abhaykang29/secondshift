@@ -115,8 +115,10 @@ def build_v1_app(settings: Settings, providers: Providers, store: Repository) ->
                     status="done", report=report.model_dump(mode="json")
                 )
         except Exception as exc:  # surfaced to the poller, never hidden
+            from secondshift.api.scan import plain_scan_error
+
             with lock:
-                jobs[job_id].update(status="error", error=str(exc))
+                jobs[job_id].update(status="error", error=plain_scan_error(exc))
 
     @app.post("/checks")
     async def create_check(

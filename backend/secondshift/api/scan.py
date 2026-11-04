@@ -24,6 +24,64 @@ class ScanRequest(BaseModel):
     scenario: str | None = None
 
 
+def plain_scan_error(exc: BaseException | str) -> str:
+    """Map any scan failure to a plain sentence: what happened and
+    what to do. Raw provider/transport text never reaches the user."""
+    text = str(exc).lower()
+    if "429" in text or "rate limit" in text or "too many requests" in text:
+        return (
+            "Meta's AI service is busy right now (rate limit). Wait a minute "
+            "or two, then tap Try again. Your video is saved - you don't "
+            "need to film again."
+        )
+    if "timed out" in text or "timeout" in text:
+        return (
+            "The check took too long and stopped. Tap Try again. Your "
+            "video is saved - you don't need to film again."
+        )
+    if (
+        "http error 5" in text
+        or "internal server error" in text
+        or "bad gateway" in text
+        or "service unavailable" in text
+    ):
+        return (
+            "Meta's AI service had a problem while running this check. "
+            "Wait a moment, then tap Try again. Your video is saved."
+        )
+    return (
+        "The check stopped partway through. Tap Try again. Your video "
+        "is saved - if it keeps failing, try a shorter video."
+    )
+
+
+def _failed_scan_response(store: Any, exc: BaseException) -> dict[str, Any]:
+    """Persist a failed scan job and return the plain failure body.
+
+    A scan must never surface as a raw 500 (2026-11-04: a transient
+    provider error right after frame extraction did exactly that);
+    the processing screen renders job_status/error and offers Try
+    again against the same capture.
+    """
+    import uuid as _uuid
+
+    job_id = _uuid.uuid4().hex
+    message = plain_scan_error(exc)
+    store.put(
+        "job",
+        job_id,
+        {
+            "id": job_id,
+            "kind": "scan",
+            "steps": ["scan", "fixes", "visualize", "assemble"],
+            "completed_steps": [],
+            "status": "failed",
+            "error": message,
+        },
+    )
+    return {"job_id": job_id, "job_status": "failed", "error": message, "report": None}
+
+
 @router.post("/checkups/{checkup_id}/scan")
 def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str, Any]:
     """Run the scan pipeline for a checkup and return its report."""
@@ -74,10 +132,13 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
     if keyframes and keyframes[0].image_path:
         from secondshift.privacy.blur import blur_keyframes
 
-        blur_keyframes(
-            [kf.image_path for kf in keyframes if kf.image_path],
-            request.app.state.providers.segmenter,
-        )
+        try:
+            blur_keyframes(
+                [kf.image_path for kf in keyframes if kf.image_path],
+                request.app.state.providers.segmenter,
+            )
+        except Exception as exc:
+            return _failed_scan_response(store, exc)
     if (
         scenario is not None
         and not body.capture_id
@@ -173,24 +234,30 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         sweep=scenario is None,
         stable_propose=request.app.state.settings.stable_propose,
     )
-    job, report = run_scan_job(
-        store,
-        request.app.state.providers,
-        scan_input,
-        data_dir=request.app.state.settings.data_dir,
-    )
+    try:
+        job, report = run_scan_job(
+            store,
+            request.app.state.providers,
+            scan_input,
+            data_dir=request.app.state.settings.data_dir,
+        )
+    except Exception as exc:
+        return _failed_scan_response(store, exc)
     if cache_key:
         from secondshift.engine_version import ENGINE_VERSION
 
-        store.put(
-            "result_cache",
-            cache_key,
-            {
-                "report": report.model_dump(mode="json"),
-                "checkup_id": checkup_id,
-                "engine_version": ENGINE_VERSION,
-            },
-        )
+        try:
+            store.put(
+                "result_cache",
+                cache_key,
+                {
+                    "report": report.model_dump(mode="json"),
+                    "checkup_id": checkup_id,
+                    "engine_version": ENGINE_VERSION,
+                },
+            )
+        except Exception:
+            pass  # the scan succeeded; a cache write must not fail it
     return {"job_id": job.id, "job_status": job.status, "report": report.model_dump(mode="json")}
 
 
@@ -209,4 +276,8 @@ def get_job(job_id: str, request: Request) -> dict[str, Any]:
     found: dict[str, Any] | None = request.app.state.store.get("job", job_id)
     if found is None:
         raise HTTPException(status_code=404, detail=f"Unknown job {job_id}")
+    if found.get("status") == "failed" and found.get("error"):
+        # Jobs persisted before the plain-message fix carry raw
+        # provider text; never hand that to the processing screen.
+        return {**found, "error": plain_scan_error(str(found["error"]))}
     return found

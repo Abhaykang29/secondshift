@@ -6,6 +6,7 @@ import en from "../i18n/en.json";
 import Banner from "../components/ui/Banner";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
+import { packIdentity } from "../components/ui/packs";
 
 /**
  * Check flow (Pass 3 spec 4.3 steps 2-3): one short consent screen,
@@ -88,8 +89,9 @@ export default function CheckupNew() {
         <fieldset className="mt-5">
           <legend className="font-semibold">Checklists for this walkthrough</legend>
           <p className="mt-1 text-text-2">
-            {packIds.join(", ")} — chosen on the Check tab (up to 3). One
-            walkthrough is checked against all of them.
+            {packIds.map((pid) => packIdentity(pid).name).join(", ")}{" "}
+            — chosen on the Check tab (up to 3). One walkthrough is checked
+            against all of them.
           </p>
         </fieldset>
 

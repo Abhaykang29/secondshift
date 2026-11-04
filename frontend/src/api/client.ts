@@ -93,7 +93,13 @@ export const api = {
     getJson<{ text: string; whatsapp_url: string }>(`/reports/${checkupId}/share`),
   createCheckup: (body: unknown) => sendJson<Checkup>("/checkups", "POST", body),
   scan: (checkupId: string, scenario?: string, captureId?: string, dev?: boolean) =>
-    sendJson<{ job_id: string; job_status: string; report: Report; cached?: boolean }>(
+    sendJson<{
+      job_id: string;
+      job_status: string;
+      report: Report | null;
+      cached?: boolean;
+      error?: string;
+    }>(
       `/checkups/${checkupId}/scan${dev ? "?dev=1" : ""}`,
       "POST",
       {
