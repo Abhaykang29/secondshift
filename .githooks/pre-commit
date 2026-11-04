@@ -6,6 +6,7 @@ fail=0
 for f in $(git diff --cached --name-only); do
   case "$f" in
     fixtures/recordings/demo-cache/*) continue ;;
+    fixtures/sample_videos/*) continue ;;
     docs/screenshots/*.png) continue ;;
     .env.example) continue ;;
     .env|.env.*) echo "BLOCKED: $f (secrets file)"; fail=1 ;;
