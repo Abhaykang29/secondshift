@@ -84,13 +84,15 @@ Good test video: walk slowly through a room, phone held sideways, lights on,
 pause 2 seconds on floors, shelves, outlets and the stove. No faces, papers or
 screens. If `fixtures/sample_videos/` exists, any clip there works too.
 
-Quickest test: upload fixtures/sample_videos/kitchen_stove.mp4 with the Fire safety
-checklist. To check the stove itself, use 'Your own checklist' with these lines:
+Quickest test: upload fixtures/sample_videos/kitchen_stove.mp4 with 'Your own checklist'
+and these lines:
   A stove burner or cooktop zone is left on (lit indicator, glow or flame).
   Something that can burn is on or next to the cooktop.
   Dirty dishes or pans left on the counter.
-In our recorded runs this clip came back with the burner left on and something burnable
-next to it, both confirmed with SAM boxes; a fresh run can differ slightly.
+The Fire safety checklist checks other things (e.g. a towel near the stove, extinguisher,
+alarms) and has no 'burner left on' item. Fresh runs vary: in our runs the custom list has
+found the burner on, and Fire safety has found the dish towel by the oven; any line it
+can't settle comes back as 'can't tell'.
 
 **B. Live Check (a camera watching one spot)**
 1. **Live** tab → type a rule in plain English, e.g.
