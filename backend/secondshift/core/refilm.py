@@ -20,7 +20,7 @@ from secondshift.domain.enums import CaptureKind
 from secondshift.domain.hazards import Report
 from secondshift.pipeline import refilm as refilm_mod
 from secondshift.pipeline.scan import ScanInput, run_scan
-from secondshift.privacy.blur import blur_keyframes
+from secondshift.privacy.blur import blur_and_drop_failed
 from secondshift.providers.registry import Providers
 from secondshift.storage.repository import Repository
 
@@ -60,7 +60,7 @@ def refilm(
     capture, keyframes = _prepare_keyframes(video_path, settings, work, capture_id)
     capture.checkup_id = previous.checkup_id
     capture.kind = CaptureKind.REFILM
-    blur_keyframes([kf.image_path for kf in keyframes if kf.image_path], providers.segmenter)
+    keyframes = blur_and_drop_failed(keyframes, providers.segmenter)
     transient = Checkup(
         id=previous.checkup_id,
         created_at=previous.generated_at,

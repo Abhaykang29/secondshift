@@ -22,7 +22,7 @@ from secondshift.domain.checkup import Capture, Checkup, Consent
 from secondshift.domain.enums import CaptureKind
 from secondshift.domain.hazards import Recheck, Report
 from secondshift.pipeline.scan import ScanInput, run_scan, run_scan_job
-from secondshift.privacy.blur import blur_keyframes
+from secondshift.privacy.blur import blur_and_drop_failed
 from secondshift.providers.registry import Providers
 from secondshift.recheck.diff import diff_scans
 from secondshift.storage.repository import Repository
@@ -77,8 +77,9 @@ def check(
     capture, keyframes = _prepare_keyframes(video_path, settings, work, capture_id)
     capture.checkup_id = checkup_id
     # Privacy first: blur people in every keyframe before any model
-    # or report step reads them (same order as the app path).
-    blur_keyframes([kf.image_path for kf in keyframes if kf.image_path], providers.segmenter)
+    # or report step reads them (same order as the app path). Frames
+    # whose blur fails are dropped - never sent to a model.
+    keyframes = blur_and_drop_failed(keyframes, providers.segmenter)
     checkup = Checkup(
         id=checkup_id,
         created_at=datetime.now(UTC),
@@ -114,7 +115,7 @@ def recheck(
     checkup_id = uuid.uuid4().hex
     capture_id = uuid.uuid4().hex
     _capture, keyframes = _prepare_keyframes(video_path, settings, work, capture_id)
-    blur_keyframes([kf.image_path for kf in keyframes if kf.image_path], providers.segmenter)
+    keyframes = blur_and_drop_failed(keyframes, providers.segmenter)
     checkup = Checkup(
         id=checkup_id,
         created_at=datetime.now(UTC),

@@ -19,6 +19,7 @@ import threading
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import Protocol, TypeVar
 
 import cv2
 import numpy as np
@@ -130,8 +131,8 @@ def blur_persons(image_path: str, segmenter: Segmenter) -> int:
         ref = ImageRef(path=str(path), keyframe_id=path.stem)
         try:
             masks = segmenter.segment(ref, ["person"])
-        except Exception:
-            logger.warning("person segmentation failed for %s", path.name)
+        except Exception as exc:
+            logger.warning("person segmentation failed for %s: %s", path.name, exc)
             return -1
         boxes = [tuple(m.bbox) for m in masks]
         _store_boxes(frame_sha, segmenter, [list(b) for b in boxes])
@@ -153,8 +154,45 @@ def blur_keyframes(image_paths: list[str], segmenter: Segmenter, max_workers: in
     """
     if not image_paths:
         return []
+
+    def _safe(p: str) -> int:
+        try:
+            return blur_persons(p, segmenter)
+        except Exception:
+            # Fail closed: any unexpected blur error marks the frame
+            # failed (-1) so callers drop it; it must never reach a
+            # model unblurred.
+            logger.warning("person blur failed for %s", Path(p).name, exc_info=True)
+            return -1
+
     with ThreadPoolExecutor(max_workers=min(max_workers, len(image_paths))) as pool:
-        return list(pool.map(lambda p: blur_persons(p, segmenter), image_paths))
+        return list(pool.map(_safe, image_paths))
+
+
+class _HasImagePath(Protocol):
+    image_path: str
+
+
+_T = TypeVar("_T", bound=_HasImagePath)
+
+
+def blur_and_drop_failed(
+    keyframes: list[_T], segmenter: Segmenter
+) -> list[_T]:
+    """Blur every keyframe and return only the frames whose blur
+    succeeded. Fail closed (privacy): a frame that could not be
+    blurred is dropped, so it is never sent to any model."""
+    paths = [kf.image_path for kf in keyframes if kf.image_path]
+    if not paths:
+        return keyframes
+    results = blur_keyframes(paths, segmenter)
+    failed = {p for p, r in zip(paths, results, strict=True) if r == -1}
+    if not failed:
+        return keyframes
+    logger.warning(
+        "dropped %d of %d frames whose person-blur failed", len(failed), len(paths)
+    )
+    return [kf for kf in keyframes if kf.image_path not in failed]
 
 
 def blur_all_but(image_path: str, keep_bbox: tuple[float, ...] | None) -> bool:

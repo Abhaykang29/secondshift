@@ -6,6 +6,7 @@ from the mock scenario's timestamps so the demo flow works with no video.
 Depends on: pipeline.scan, checklists.loader, storage.
 """
 
+import logging
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
@@ -14,7 +15,14 @@ from pydantic import BaseModel
 from secondshift.domain.checkup import Checkup, Keyframe
 from secondshift.pipeline.scan import ScanInput, run_scan_job
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(tags=["scan"])
+
+BLUR_FAILED_MESSAGE = (
+    "We couldn't blur people in this video, so nothing was sent to Meta. "
+    "Try again in a minute."
+)
 
 
 class ScanRequest(BaseModel):
@@ -28,6 +36,8 @@ def plain_scan_error(exc: BaseException | str) -> str:
     """Map any scan failure to a plain sentence: what happened and
     what to do. Raw provider/transport text never reaches the user."""
     text = str(exc).lower()
+    if "couldn't blur people" in text:
+        return BLUR_FAILED_MESSAGE
     if "429" in text or "rate limit" in text or "too many requests" in text:
         return (
             "Meta's AI service is busy right now (rate limit). Wait a minute "
@@ -126,19 +136,32 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         ]
     # Pass 2 Phase E.4: person-blur every real keyframe BEFORE the scan
     # reads it (spec 14.3). Demo keyframes have no files and are skipped.
-    # A segmentation failure returns -1: the frame still scans (the scan
-    # itself is not the privacy surface), but visualize.py must then use
-    # the blur-all-but fallback for any image it writes.
+    # Fail closed (privacy, final fix pass 2026-11-04): a frame whose
+    # blur failed (-1) is dropped from the scan - it must never be sent
+    # to any Meta model. If every frame fails, the scan stops here
+    # with a plain message, before any provider sees a frame.
     if keyframes and keyframes[0].image_path:
         from secondshift.privacy.blur import blur_keyframes
 
+        real = [kf for kf in keyframes if kf.image_path]
         try:
-            blur_keyframes(
-                [kf.image_path for kf in keyframes if kf.image_path],
+            results = blur_keyframes(
+                [kf.image_path for kf in real],
                 request.app.state.providers.segmenter,
             )
         except Exception as exc:
             return _failed_scan_response(store, exc)
+        failed_ids = {kf.id for kf, r in zip(real, results, strict=True) if r == -1}
+        if failed_ids:
+            logger.warning(
+                "scan of checkup %s: dropped %d of %d frames whose person-blur failed",
+                checkup_id,
+                len(failed_ids),
+                len(real),
+            )
+            keyframes = [kf for kf in keyframes if kf.id not in failed_ids]
+            if not keyframes:
+                return _failed_scan_response(store, RuntimeError(BLUR_FAILED_MESSAGE))
     if (
         scenario is not None
         and not body.capture_id
