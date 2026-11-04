@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { Hazard, Keyframe, Report } from "../api/types";
+import ResultBanner from "../components/ResultBanner";
 
 /**
  * Re-check view (evidence-first, 2026-11-03): two stored reports of
@@ -183,6 +184,9 @@ export default function ComparePage() {
 
   return (
     <main className="mx-auto max-w-3xl p-4">
+      <ResultBanner
+        recorded={before.recorded && after.recorded ? before.recorded : null}
+      />
       <h1 className="text-2xl font-semibold">Re-check: before and after</h1>
       <p className="mt-1 text-sm opacity-80">
         The same checklist, two scans. Each item shows its before and after

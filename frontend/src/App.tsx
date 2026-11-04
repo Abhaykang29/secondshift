@@ -28,22 +28,6 @@ import WatchSetup from "./pages/WatchSetup";
  * stays reachable - the tab pages link into the same flows.
  */
 
-function MockBanner() {
-  const [mode, setMode] = useState<string>("");
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d: { provider_mode?: string }) => setMode(d.provider_mode ?? ""))
-      .catch(() => setMode(""));
-  }, []);
-  if (mode !== "mock") return null;
-  return (
-    <div role="alert" className="bg-red-700 px-4 py-2 text-center font-semibold text-white">
-      MOCK MODE — not real results
-    </div>
-  );
-}
-
 const LARGE_TEXT_KEY = "secondshift_large_text";
 
 function AppHeader() {
@@ -84,7 +68,6 @@ function AppHeader() {
 export default function App() {
   return (
     <BrowserRouter>
-      <MockBanner />
       <AppHeader />
       <div className="mx-auto w-full max-w-md pb-24">
         <Routes>

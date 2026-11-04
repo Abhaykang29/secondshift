@@ -239,6 +239,7 @@ export interface Report {
   refilm_instructions?: RefilmInstruction[];
   stats: Record<string, number>;
   disclaimer: string;
+  recorded?: string | null;
 }
 
 export interface RoutineInsight {

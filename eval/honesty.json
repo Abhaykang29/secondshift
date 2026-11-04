@@ -1,9 +1,9 @@
 {
-  "clips": 1,
-  "items": 25,
-  "answered_items": 11,
-  "abstained_items": 14,
-  "abstain_rate_pct": 56.0,
+  "clips": 31,
+  "items": 333,
+  "answered_items": 108,
+  "abstained_items": 225,
+  "abstain_rate_pct": 67.6,
   "review_labels": {
     "right": 0,
     "wrong": 0
@@ -30,6 +30,6 @@
     "follow_up_hazards": 0
   },
   "partner_notes_found": false,
-  "small_sample": true,
-  "skipped_store_records": 74
+  "small_sample": false,
+  "skipped_store_records": 76
 }

@@ -1,5 +1,5 @@
 {
-  "footer_disclaimer": "SecondShift is a screening tool, not a medical device or an emergency alarm. It can miss things. For a full assessment, ask an occupational therapist or a certified professional.",
+  "footer_disclaimer": "SecondShift is a screening tool, not a medical device or an emergency alarm, and it can miss things.",
   "consent_intro": "Before you film: the person who lives here should know and agree. Please don't film anyone in the bathroom or while undressing.",
   "cannot_tell": "I couldn't check this - <reason>. That's on purpose: I'd rather say 'I don't know' than guess.",
   "refusal_lead_in": "A camera can't see that. Here's what I can check instead:",
@@ -8,6 +8,5 @@
   "watch_banner": "Watching: <spot>. Only this area is checked. No video is saved.",
   "check_a_home": "Check a home",
   "watch_one_spot": "Watch one spot",
-  "confirmed_by_sam": "Found by SAM (box)",
-  "screening_footer": "Screening tool - not a medical device. It can miss things."
+  "confirmed_by_sam": "Found by SAM (box)"
 }

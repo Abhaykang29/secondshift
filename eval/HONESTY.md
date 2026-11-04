@@ -3,9 +3,9 @@
 Computed by `scripts/honesty_report.py` from stored results - never typed by hand.
 Command: `.venv/bin/python scripts/honesty_report.py`
 
-- Clips scored (stored reports from real footage): **1** - fewer than 10 clips, so treat every rate below as a small sample.
-- Items scored: **25** (11 answered, 14 cannot-tell).
-- Abstain rate (answered CANNOT_TELL): **56.0%**
+- Clips scored (stored reports from real footage): **31**
+- Items scored: **333** (108 answered, 225 cannot-tell).
+- Abstain rate (answered CANNOT_TELL): **67.6%**
 - Answered accuracy (app Right/Wrong labels): **no data** from 0 labels (0 right, 0 wrong).
 - Owner ground truth on test_1.mp4: recall 6/8 (strict item ids 5/8); reported findings outside the owner's list: 1 - FALL-PET-PATH (kitchen, confirmed).
 - Wrong-and-confident (confirmed findings labeled Wrong): **0**.

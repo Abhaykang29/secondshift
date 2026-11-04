@@ -169,6 +169,10 @@ class Report(BaseModel):
     refilm_instructions: list[RefilmInstruction] = Field(default_factory=list)
     stats: dict[str, float]
     disclaimer: str
+    recorded: str | None = None
+    """ISO date (YYYY-MM-DD) when set: this report is a recorded real
+    result, replayed from fixtures/demo_store - the UI labels it as
+    recorded instead of showing the mock-mode banner."""
 
 
 class RecheckItem(BaseModel):

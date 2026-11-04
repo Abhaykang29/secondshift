@@ -1,7 +1,7 @@
 version: 1
 status: approved
 pack_id: fire_safety
-title: Fire safety (stretch)
+title: Fire safety
 audience: Any home
 high_risk_zones:
 - bedroom

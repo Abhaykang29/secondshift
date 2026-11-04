@@ -1,0 +1,2126 @@
+{
+ "checkup:2b6f5c78b7cd4446b93bad45a17d0581": {
+  "id": "2b6f5c78b7cd4446b93bad45a17d0581",
+  "created_at": "2026-11-04T00:25:13.311908Z",
+  "pack_ids": [
+   "falls_older_adults",
+   "fire_safety",
+   "pet_safety"
+  ],
+  "home_label": "Apartment walkthrough (recorded)",
+  "resident_label": "Apartment walkthrough (recorded)",
+  "language": "en",
+  "consent": {
+   "resident_informed": true,
+   "no_private_moments": true,
+   "retention_days": 30,
+   "keep_raw_video": false
+  }
+ },
+ "capture:c8b0419defee45228840cb2c1982b27d": {
+  "id": "c8b0419defee45228840cb2c1982b27d",
+  "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+  "kind": "walkthrough",
+  "file_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/capture.mp4",
+  "video_sha256": "b38f596d794f8e3bfb0c43a0f1c96760a475f7fbedb15b3ae8a6565e06bf0fc5",
+  "duration_s": 55.363333,
+  "width": 1920,
+  "height": 1080,
+  "fps": 29.98374375338672,
+  "source": "phone_upload"
+ },
+ "keyframes:c8b0419defee45228840cb2c1982b27d": {
+  "keyframes": [
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-007",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 3.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00008.jpg",
+    "sharpness": 243.6235439939283,
+    "brightness": 150.31405381944444,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-012",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 6.0,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00013.jpg",
+    "sharpness": 635.7201406141493,
+    "brightness": 148.10125868055556,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-024",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 12.0,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00025.jpg",
+    "sharpness": 279.97128338039676,
+    "brightness": 149.40988233024692,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-025",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 12.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00026.jpg",
+    "sharpness": 272.874066338195,
+    "brightness": 141.55080729166667,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-027",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 13.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00028.jpg",
+    "sharpness": 527.8522206292128,
+    "brightness": 139.92868007330247,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-045",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 23.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00048.jpg",
+    "sharpness": 277.3482193590641,
+    "brightness": 152.77186873070988,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-049",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 25.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00052.jpg",
+    "sharpness": 201.9204439938913,
+    "brightness": 141.09524546682098,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-057",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 29.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00060.jpg",
+    "sharpness": 169.14300386593922,
+    "brightness": 159.13591531635802,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-066",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 36.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00074.jpg",
+    "sharpness": 375.41407237334477,
+    "brightness": 141.78116753472221,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "c8b0419defee45228840cb2c1982b27d-kf-080",
+    "capture_id": "c8b0419defee45228840cb2c1982b27d",
+    "t": 46.5,
+    "image_path": "data/2b6f5c78b7cd4446b93bad45a17d0581/c8b0419defee45228840cb2c1982b27d/frames/frame_00094.jpg",
+    "sharpness": 106.29747046957809,
+    "brightness": 174.0057957175926,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   }
+  ]
+ },
+ "report:2b6f5c78b7cd4446b93bad45a17d0581": {
+  "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+  "generated_at": "2026-11-04T00:32:42.715948Z",
+  "pack_ids": [
+   "falls_older_adults",
+   "fire_safety",
+   "pet_safety"
+  ],
+  "summary": "Fix first: Plant within a pet's reach that may be toxic, then Loose cords at floor level a pet can chew - the full ranked list is below. Couldn't check 8 items, including Missing handrail on stairs and No grab bar in bath / by toilet.",
+  "fix_first": [
+   "hz-004-pet-toxic-plant",
+   "hz-000-pet-cords-chewable",
+   "hz-005-fall-bed-light-reach",
+   "hz-003-pet-cords-chewable",
+   "hz-009-fall-pet-path"
+  ],
+  "hazards": [
+   {
+    "id": "hz-004-pet-toxic-plant",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "pet_safety",
+    "pack_tags": [
+     "pet_safety"
+    ],
+    "item_id": "PET-TOXIC-PLANT",
+    "kind": "presence",
+    "room": "living",
+    "title": "Plant within a pet's reach that may be toxic",
+    "description": "Small potted plant on low TV stand",
+    "why_it_matters": "A pet can easily reach the plant on the low stand and may get sick from nibbling leaves.",
+    "severity": 3,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-066"
+     ],
+     "timestamps": [
+      36.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-066",
+       "polygon": [
+        [
+         0.7192708333333333,
+         0.44351851851851853
+        ],
+        [
+         0.746875,
+         0.44351851851851853
+        ],
+        [
+         0.746875,
+         0.5092592592592593
+        ],
+        [
+         0.7192708333333333,
+         0.5092592592592593
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.7192708333333333,
+        0.44351851851851853,
+        0.746875,
+        0.5092592592592593
+       ],
+       "score": 0.9,
+       "prompt": "potted plant"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 3.705,
+    "rank": 1
+   },
+   {
+    "id": "hz-000-pet-cords-chewable",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "pet_safety",
+    "pack_tags": [
+     "falls_older_adults",
+     "fire_safety",
+     "pet_safety"
+    ],
+    "item_id": "PET-CORDS-CHEWABLE",
+    "kind": "presence",
+    "room": "living",
+    "title": "Loose cords at floor level a pet can chew",
+    "description": "Loose white power cord lying on floor beside TV stand",
+    "why_it_matters": "A pet could chew the loose cord on the floor and get shocked or burned.",
+    "severity": 2,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-007"
+     ],
+     "timestamps": [
+      3.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-007",
+       "polygon": [
+        [
+         0.8072916666666666,
+         0.7944444444444444
+        ],
+        [
+         0.8875,
+         0.7944444444444444
+        ],
+        [
+         0.8875,
+         0.862037037037037
+        ],
+        [
+         0.8072916666666666,
+         0.862037037037037
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.8072916666666666,
+        0.7944444444444444,
+        0.8875,
+        0.862037037037037
+       ],
+       "score": 0.9,
+       "prompt": "white power cord"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 2.47,
+    "rank": 2
+   },
+   {
+    "id": "hz-005-fall-bed-light-reach",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "falls_older_adults",
+    "pack_tags": [
+     "falls_older_adults"
+    ],
+    "item_id": "FALL-BED-LIGHT-REACH",
+    "kind": "absence",
+    "room": "bedroom",
+    "title": "No light within reach of the bed",
+    "description": "Bed with small glass side tables and no lamp or switch within reach of the bed",
+    "why_it_matters": "Getting up at night with no light in reach makes a trip or fall more likely.",
+    "severity": 2,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Anchor visible and no safety object found where it should be.",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-080"
+     ],
+     "timestamps": [
+      46.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-080",
+       "polygon": [
+        [
+         0.14375,
+         0.3453703703703704
+        ],
+        [
+         0.8182291666666667,
+         0.3453703703703704
+        ],
+        [
+         0.8182291666666667,
+         0.9990740740740741
+        ],
+        [
+         0.14375,
+         0.9990740740740741
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.14375,
+        0.3453703703703704,
+        0.8182291666666667,
+        0.9990740740740741
+       ],
+       "score": 0.9,
+       "prompt": "bed"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 1.9,
+    "rank": 3
+   },
+   {
+    "id": "hz-003-pet-cords-chewable",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "pet_safety",
+    "pack_tags": [
+     "falls_older_adults",
+     "fire_safety",
+     "pet_safety"
+    ],
+    "item_id": "PET-CORDS-CHEWABLE",
+    "kind": "presence",
+    "room": "bedroom",
+    "title": "Loose cords at floor level a pet can chew",
+    "description": "Loose electrical cords on the floor under the desk",
+    "why_it_matters": "A pet could chew the live cords lying on the floor under the desk and get shocked.",
+    "severity": 2,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-057"
+     ],
+     "timestamps": [
+      29.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-057",
+       "polygon": [
+        [
+         0.3640625,
+         0.6046296296296296
+        ],
+        [
+         0.42552083333333335,
+         0.6046296296296296
+        ],
+        [
+         0.42552083333333335,
+         0.7833333333333333
+        ],
+        [
+         0.3640625,
+         0.7833333333333333
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.3640625,
+        0.6046296296296296,
+        0.42552083333333335,
+        0.7833333333333333
+       ],
+       "score": 0.9,
+       "prompt": "electrical cord"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 1.9,
+    "rank": 4
+   },
+   {
+    "id": "hz-002-fire-extinguisher-absent",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "fire_safety",
+    "pack_tags": [
+     "fire_safety"
+    ],
+    "item_id": "FIRE-EXTINGUISHER-ABSENT",
+    "kind": "absence",
+    "room": "kitchen",
+    "title": "No fire extinguisher visible in the kitchen",
+    "description": "Kitchen with stove and counters visible and no fire extinguisher in sight",
+    "why_it_matters": "Without an extinguisher in the kitchen a small cooking fire could spread quickly.",
+    "severity": 2,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "needs_human",
+    "verification_reason": "Not visible, may be stored out of sight.",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-049"
+     ],
+     "timestamps": [
+      25.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-049",
+       "polygon": [
+        [
+         0.325,
+         0.22685185185185186
+        ],
+        [
+         0.7375,
+         0.22685185185185186
+        ],
+        [
+         0.7375,
+         0.2814814814814815
+        ],
+        [
+         0.325,
+         0.2814814814814815
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.325,
+        0.22685185185185186,
+        0.7375,
+        0.2814814814814815
+       ],
+       "score": 0.9,
+       "prompt": "kitchen counter"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 1.482,
+    "rank": 5
+   },
+   {
+    "id": "hz-001-fire-stove-combustibles",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "fire_safety",
+    "pack_tags": [
+     "fire_safety"
+    ],
+    "item_id": "FIRE-STOVE-COMBUSTIBLES",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Things that can burn on or next to the stovetop",
+    "description": "Striped towels hanging on oven handle next to stovetop",
+    "why_it_matters": "Towels hanging on the oven handle can catch fire from stovetop or oven heat.",
+    "severity": 2,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "needs_human",
+    "verification_reason": "Towels visible in background but SAM missed, needs review",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-024",
+      "c8b0419defee45228840cb2c1982b27d-kf-025"
+     ],
+     "timestamps": [
+      12.0,
+      12.5
+     ],
+     "masks": [],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 1.443,
+    "rank": 6
+   },
+   {
+    "id": "hz-009-fall-pet-path",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "falls_older_adults",
+    "pack_tags": [
+     "falls_older_adults"
+    ],
+    "item_id": "FALL-PET-PATH",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Pet bowls or toys on a walking path",
+    "description": "Pet bowls or toys on a walking path",
+    "why_it_matters": "Pet bowls or toys on a walking path",
+    "severity": 1,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box) on a room sweep. Pet bowls visible on floor near walkway and seating area",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-045"
+     ],
+     "timestamps": [
+      23.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-045",
+       "polygon": [
+        [
+         0.7135416666666666,
+         0.8925925925925926
+        ],
+        [
+         0.7885416666666667,
+         0.8925925925925926
+        ],
+        [
+         0.7885416666666667,
+         0.9990740740740741
+        ],
+        [
+         0.7135416666666666,
+         0.9990740740740741
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.7135416666666666,
+        0.8925925925925926,
+        0.7885416666666667,
+        0.9990740740740741
+       ],
+       "score": 0.9,
+       "prompt": "pet bowl"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 0.95,
+    "rank": 7
+   },
+   {
+    "id": "hz-007-fall-floor-rug",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "falls_older_adults",
+    "pack_tags": [
+     "falls_older_adults"
+    ],
+    "item_id": "FALL-FLOOR-RUG",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Loose rug or mat on the floor",
+    "description": "Small, loose throw rug or mat on a walking area. A large area rug held down by furniture is NOT a finding unless its edges are visibly curled.",
+    "why_it_matters": "Small, loose throw rug or mat on a walking area. A large area rug held down by furniture is NOT a finding unless its edges are visibly curled.",
+    "severity": 3,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "rejected",
+    "verification_reason": "Large area rug under furniture without curled edges, not throw rug.",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-027"
+     ],
+     "timestamps": [
+      13.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-027",
+       "polygon": [
+        [
+         0.0265625,
+         0.3277777777777778
+        ],
+        [
+         0.7359375,
+         0.3277777777777778
+        ],
+        [
+         0.7359375,
+         0.9990740740740741
+        ],
+        [
+         0.0265625,
+         0.9990740740740741
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.0265625,
+        0.3277777777777778,
+        0.7359375,
+        0.9990740740740741
+       ],
+       "score": 0.9,
+       "prompt": "area rug"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 0.0,
+    "rank": null
+   },
+   {
+    "id": "hz-008-fall-floor-rug",
+    "checkup_id": "2b6f5c78b7cd4446b93bad45a17d0581",
+    "pack_id": "falls_older_adults",
+    "pack_tags": [
+     "falls_older_adults"
+    ],
+    "item_id": "FALL-FLOOR-RUG",
+    "kind": "presence",
+    "room": "living",
+    "title": "Loose rug or mat on the floor",
+    "description": "Small, loose throw rug or mat on a walking area. A large area rug held down by furniture is NOT a finding unless its edges are visibly curled.",
+    "why_it_matters": "Small, loose throw rug or mat on a walking area. A large area rug held down by furniture is NOT a finding unless its edges are visibly curled.",
+    "severity": 3,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "rejected",
+    "verification_reason": "Large area rug under furniture, no curled edges, not a hazard.",
+    "evidence": {
+     "keyframe_ids": [
+      "c8b0419defee45228840cb2c1982b27d-kf-012"
+     ],
+     "timestamps": [
+      6.0
+     ],
+     "masks": [
+      {
+       "keyframe_id": "c8b0419defee45228840cb2c1982b27d-kf-012",
+       "polygon": [
+        [
+         0.2296875,
+         0.6777777777777778
+        ],
+        [
+         0.9994791666666667,
+         0.6777777777777778
+        ],
+        [
+         0.9994791666666667,
+         0.9990740740740741
+        ],
+        [
+         0.2296875,
+         0.9990740740740741
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.2296875,
+        0.6777777777777778,
+        0.9994791666666667,
+        0.9990740740740741
+       ],
+       "score": 0.9,
+       "prompt": "area rug"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 0.0,
+    "rank": null
+   }
+  ],
+  "fixes": [
+   {
+    "id": "fix-hz-004-pet-toxic-plant",
+    "hazard_id": "hz-004-pet-toxic-plant",
+    "chosen": {
+     "id": "pet-plant-move",
+     "title": "Move it out of reach or remove it",
+     "how": "Move the plant somewhere the pet cannot reach, or rehome the plant if it is on a toxic list.",
+     "difficulty": "easy",
+     "cost_estimate": "free",
+     "visualization_prompt": "Show the plant moved to a high shelf the pet cannot reach."
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Pick up the plant from the low TV stand.",
+     "Put it up high where your pet cannot reach.",
+     "If it can make pets sick, give it a new home.",
+     "Pick up any fallen leaves off the floor."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-000-pet-cords-chewable",
+    "hazard_id": "hz-000-pet-cords-chewable",
+    "chosen": {
+     "id": "pet-cord-cover",
+     "title": "Cord covers or route cords up",
+     "how": "Fit cord covers, or route the cords up and along the wall out of chewing range.",
+     "difficulty": "easy",
+     "cost_estimate": "~$10-20 (estimate)",
+     "visualization_prompt": "Show the cords inside a cord cover running along the wall, off the floor."
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Unplug the white cord by the TV stand.",
+     "Lift the cord up off the floor.",
+     "Put a cord cover over the cord.",
+     "Run the cord up along the wall out of reach."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-005-fall-bed-light-reach",
+    "hazard_id": "hz-005-fall-bed-light-reach",
+    "chosen": {
+     "id": "bed-lamp",
+     "title": "Bedside lamp or touch lamp",
+     "how": "Put a lamp that is easy to reach and switch on from the bed.",
+     "difficulty": "easy",
+     "cost_estimate": "~$15-30",
+     "visualization_prompt": "Add a bedside lamp on the nightstand next to the bed."
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Put a small lamp on the table next to the bed.",
+     "Move it so you can reach it from the bed.",
+     "Plug it in and turn it on to test.",
+     "Practice turning it on and off in the dark."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-003-pet-cords-chewable",
+    "hazard_id": "hz-003-pet-cords-chewable",
+    "chosen": {
+     "id": "pet-cord-cover",
+     "title": "Cord covers or route cords up",
+     "how": "Fit cord covers, or route the cords up and along the wall out of chewing range.",
+     "difficulty": "easy",
+     "cost_estimate": "~$10-20 (estimate)",
+     "visualization_prompt": "Show the cords inside a cord cover running along the wall, off the floor."
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Unplug the cords under the desk.",
+     "Lift the cords off the floor.",
+     "Put covers over the cords.",
+     "Run cords up along the wall out of reach."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-002-fire-extinguisher-absent",
+    "hazard_id": "hz-002-fire-extinguisher-absent",
+    "chosen": {
+     "id": "extinguisher-mount",
+     "title": "Mount an extinguisher near the kitchen exit",
+     "how": "Place a home fire extinguisher where you can grab it on the way out, not over the stove.",
+     "difficulty": "easy",
+     "cost_estimate": "~$25-40 (estimate)",
+     "visualization_prompt": "Add a red fire extinguisher mounted on the wall beside the kitchen doorway."
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Pick a spot by the kitchen exit door.",
+     "Get a home fire extinguisher.",
+     "Hang it on the wall where you can reach it.",
+     "Keep it clear and easy to grab.",
+     "Do not put it over the stove."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-001-fire-stove-combustibles",
+    "hazard_id": "hz-001-fire-stove-combustibles",
+    "chosen": {
+     "id": "stove-clear",
+     "title": "Keep the stovetop clear",
+     "how": "Move towels and paper away from the stovetop.",
+     "difficulty": "easy",
+     "cost_estimate": "free",
+     "visualization_prompt": "Show the stovetop completely clear of towels, paper and packaging."
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Turn off the stove.",
+     "Take the towels off the oven handle.",
+     "Move the towels far from the stove.",
+     "Keep cloth and paper off the stovetop."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-009-fall-pet-path",
+    "hazard_id": "hz-009-fall-pet-path",
+    "chosen": {
+     "id": "pet-move",
+     "title": "Move bowls out of walkways",
+     "how": "Move pet bowls and toys out of walking paths.",
+     "difficulty": "easy",
+     "cost_estimate": "free",
+     "visualization_prompt": "Show the pet bowls and toys moved out of the walking path."
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Pick up pet bowls from the walking path.",
+     "Pick up pet toys from the walking path.",
+     "Put bowls and toys in a corner out of the way.",
+     "Check the path each day and keep it clear."
+    ],
+    "status": "todo",
+    "note": null
+   }
+  ],
+  "visualizations": [],
+  "routine_insights": [],
+  "cannot_assess": [
+   {
+    "area": "FALL-STAIRS-RAIL-MISSING",
+    "reason": "not_filmed",
+    "detail": "no stairs filmed"
+   },
+   {
+    "area": "FALL-BATH-GRAB-MISSING",
+    "reason": "not_filmed",
+    "detail": "no bathroom filmed"
+   },
+   {
+    "area": "FALL-BATH-NONSLIP-MISSING",
+    "reason": "not_filmed",
+    "detail": "no bathroom filmed"
+   },
+   {
+    "area": "FALL-PATH-NIGHT-LIGHT",
+    "reason": "not_filmed",
+    "detail": "no hallway bedroom-to-bathroom path filmed"
+   },
+   {
+    "area": "FALL-ENTRY-STEP-RAIL",
+    "reason": "not_filmed",
+    "detail": "no entry step filmed"
+   },
+   {
+    "area": "FIRE-SMOKE-ALARM-ABSENT",
+    "reason": "not_filmed",
+    "detail": "no bedroom or hallway ceiling visible"
+   },
+   {
+    "area": "FIRE-CO-ALARM-ABSENT",
+    "reason": "not_filmed",
+    "detail": "no hallway or bedroom area visible"
+   },
+   {
+    "area": "unknown area",
+    "reason": "not_filmed",
+    "detail": "no bathroom filmed, cannot check grab bars or non-slip mats"
+   }
+  ],
+  "refilm_instructions": [
+   {
+    "item_id": "FALL-BATH-GRAB-MISSING",
+    "room": "bathroom",
+    "instruction": "In the bathroom, slowly show toilet walls and bath edges for 3 seconds.",
+    "what_to_show": "toilet walls and bath edges"
+   },
+   {
+    "item_id": "FALL-BATH-NONSLIP-MISSING",
+    "room": "bathroom",
+    "instruction": "In the bathroom, point camera at tub or shower floor for 3 seconds.",
+    "what_to_show": "tub or shower floor"
+   },
+   {
+    "item_id": "FIRE-SMOKE-ALARM-ABSENT",
+    "room": "bedroom",
+    "instruction": "In the bedroom, slowly pan bedroom ceiling then hallway ceiling for 3 seconds.",
+    "what_to_show": "bedroom and hallway ceilings"
+   },
+   {
+    "item_id": "FALL-PATH-NIGHT-LIGHT",
+    "room": "hallway",
+    "instruction": "In the hallway, point camera down the bedroom-to-bathroom path for 3 seconds.",
+    "what_to_show": "bedroom-to-bathroom path floor"
+   },
+   {
+    "item_id": "FIRE-CO-ALARM-ABSENT",
+    "room": "hallway",
+    "instruction": "In the hallway, slowly pan ceiling and high walls for 3 seconds.",
+    "what_to_show": "hallway ceiling and high walls"
+   },
+   {
+    "item_id": "FALL-STAIRS-RAIL-MISSING",
+    "room": "stairs",
+    "instruction": "In the stairway, slowly film both walls along stairs for 3 seconds.",
+    "what_to_show": "both stair walls"
+   },
+   {
+    "item_id": "FALL-ENTRY-STEP-RAIL",
+    "room": "entry",
+    "instruction": "In the entry, slowly show steps and both side walls for 3 seconds.",
+    "what_to_show": "entry steps and side walls"
+   }
+  ],
+  "stats": {
+   "hazards": 9.0,
+   "confirmed": 5.0,
+   "cost_usd": 0.0
+  },
+  "disclaimer": "SecondShift is a screening tool, not a medical device or an emergency alarm. It can miss things. For a full assessment, ask an occupational therapist or a certified professional.",
+  "recorded": "2026-11-03"
+ },
+ "checkup:7cc8f1c4d8fc4b35b9499b40f5bcd5a8": {
+  "id": "7cc8f1c4d8fc4b35b9499b40f5bcd5a8",
+  "created_at": "2026-11-04T00:43:11.707738Z",
+  "pack_ids": [
+   "custom-c8738b58"
+  ],
+  "home_label": "Kitchen - stove and burnables (recorded)",
+  "resident_label": "Kitchen - stove and burnables (recorded)",
+  "language": "en",
+  "consent": {
+   "resident_informed": true,
+   "no_private_moments": true,
+   "retention_days": 30,
+   "keep_raw_video": false
+  }
+ },
+ "capture:e68fa88444b04ae9a9f04564a5dc43e5": {
+  "id": "e68fa88444b04ae9a9f04564a5dc43e5",
+  "checkup_id": "7cc8f1c4d8fc4b35b9499b40f5bcd5a8",
+  "kind": "walkthrough",
+  "file_path": "data/7cc8f1c4d8fc4b35b9499b40f5bcd5a8/e68fa88444b04ae9a9f04564a5dc43e5/capture.mov",
+  "video_sha256": "4896a9763646186b3225500b02c7f168d9b9b493cc402bfdbb29a25bf38d482b",
+  "duration_s": 24.296667,
+  "width": 1552,
+  "height": 2064,
+  "fps": 30.004115790917822,
+  "source": "phone_upload"
+ },
+ "keyframes:e68fa88444b04ae9a9f04564a5dc43e5": {
+  "keyframes": [
+   {
+    "id": "e68fa88444b04ae9a9f04564a5dc43e5-kf-002",
+    "capture_id": "e68fa88444b04ae9a9f04564a5dc43e5",
+    "t": 5.5,
+    "image_path": "data/7cc8f1c4d8fc4b35b9499b40f5bcd5a8/e68fa88444b04ae9a9f04564a5dc43e5/frames/frame_00012.jpg",
+    "sharpness": 102.05434972501816,
+    "brightness": 94.61537001518421,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "e68fa88444b04ae9a9f04564a5dc43e5-kf-014",
+    "capture_id": "e68fa88444b04ae9a9f04564a5dc43e5",
+    "t": 21.5,
+    "image_path": "data/7cc8f1c4d8fc4b35b9499b40f5bcd5a8/e68fa88444b04ae9a9f04564a5dc43e5/frames/frame_00044.jpg",
+    "sharpness": 132.73617262264582,
+    "brightness": 112.90881264734676,
+    "usable": true,
+    "low_sharpness": false,
+    "room_guess": null,
+    "room_confidence": null
+   }
+  ]
+ },
+ "report:7cc8f1c4d8fc4b35b9499b40f5bcd5a8": {
+  "checkup_id": "f1918b3ef91f432c87ef9e48f8559406",
+  "generated_at": "2026-11-04T00:40:01.706456Z",
+  "pack_ids": [
+   "custom-c8738b58"
+  ],
+  "summary": "Fix first: Stove burner left on, then Burnable item on or next to cooktop. Everything on the checklist could be checked from this video.",
+  "fix_first": [
+   "hz-000-custom-01",
+   "hz-001-custom-02"
+  ],
+  "hazards": [
+   {
+    "id": "hz-000-custom-01",
+    "checkup_id": "f1918b3ef91f432c87ef9e48f8559406",
+    "pack_id": "custom-c8738b58",
+    "pack_tags": [
+     "custom-c8738b58"
+    ],
+    "item_id": "CUSTOM-01",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Stove burner left on",
+    "description": "Electric cooktop shows lit red heat indicator with a pot on the burner.",
+    "why_it_matters": "An active hot burner can cause a serious burn or start a fire if touched or left unattended.",
+    "severity": 3,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "e68fa88444b04ae9a9f04564a5dc43e5-kf-002"
+     ],
+     "timestamps": [
+      5.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "e68fa88444b04ae9a9f04564a5dc43e5-kf-002",
+       "polygon": [
+        [
+         0.2609536082474227,
+         0.4064922480620155
+        ],
+        [
+         0.9806701030927835,
+         0.4064922480620155
+        ],
+        [
+         0.9806701030927835,
+         0.8246124031007752
+        ],
+        [
+         0.2609536082474227,
+         0.8246124031007752
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.2609536082474227,
+        0.4064922480620155,
+        0.9806701030927835,
+        0.8246124031007752
+       ],
+       "score": 0.9,
+       "prompt": "cooktop"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 2.925,
+    "rank": 1
+   },
+   {
+    "id": "hz-001-custom-02",
+    "checkup_id": "f1918b3ef91f432c87ef9e48f8559406",
+    "pack_id": "custom-c8738b58",
+    "pack_tags": [
+     "custom-c8738b58"
+    ],
+    "item_id": "CUSTOM-02",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Burnable item on or next to cooktop",
+    "description": "Paper towel roll sitting on counter immediately beside the cooktop",
+    "why_it_matters": "A paper towel roll that close to a hot cooktop could easily catch fire.",
+    "severity": 3,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "e68fa88444b04ae9a9f04564a5dc43e5-kf-014"
+     ],
+     "timestamps": [
+      21.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "e68fa88444b04ae9a9f04564a5dc43e5-kf-014",
+       "polygon": [
+        [
+         0.6797680412371134,
+         0.3483527131782946
+        ],
+        [
+         0.9735824742268041,
+         0.3483527131782946
+        ],
+        [
+         0.9735824742268041,
+         0.5387596899224806
+        ],
+        [
+         0.6797680412371134,
+         0.5387596899224806
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.6797680412371134,
+        0.3483527131782946,
+        0.9735824742268041,
+        0.5387596899224806
+       ],
+       "score": 0.9,
+       "prompt": "paper towel roll near stove"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 2.85,
+    "rank": 2
+   }
+  ],
+  "fixes": [
+   {
+    "id": "fix-hz-000-custom-01",
+    "hazard_id": "hz-000-custom-01",
+    "chosen": {
+     "id": "custom-01-fix",
+     "title": "Fix it",
+     "how": "Follow the finding's description and make the area safe.",
+     "difficulty": "easy",
+     "cost_estimate": "varies",
+     "visualization_prompt": null
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Do not touch the hot pot or burner.",
+     "Turn the burner knob to off.",
+     "Keep people away until the red light goes off.",
+     "Let the stove cool down fully."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-001-custom-02",
+    "hazard_id": "hz-001-custom-02",
+    "chosen": {
+     "id": "custom-02-fix",
+     "title": "Fix it",
+     "how": "Follow the finding's description and make the area safe.",
+     "difficulty": "easy",
+     "cost_estimate": "varies",
+     "visualization_prompt": null
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Turn off the cooktop if it is on.",
+     "Let the cooktop cool down.",
+     "Pick up the paper towel roll.",
+     "Put it far away from the stove.",
+     "Keep the space by the stove clear."
+    ],
+    "status": "todo",
+    "note": null
+   }
+  ],
+  "visualizations": [],
+  "routine_insights": [],
+  "cannot_assess": [],
+  "refilm_instructions": [],
+  "stats": {
+   "hazards": 2.0,
+   "confirmed": 2.0,
+   "cost_usd": 0.0
+  },
+  "disclaimer": "SecondShift is a screening tool, not a medical device or an emergency alarm. It can miss things. For a full assessment, ask an occupational therapist or a certified professional.",
+  "recorded": "2026-11-03"
+ },
+ "custom_pack:custom-c8738b58": {
+  "version": 1,
+  "status": "draft",
+  "demo": true,
+  "pack_id": "custom-c8738b58",
+  "title": "Custom checklist",
+  "audience": "Custom checklist - not reviewed by an expert",
+  "high_risk_zones": [],
+  "severity_weights": {
+   "1": 1.0,
+   "2": 2.0,
+   "3": 3.0
+  },
+  "items": [
+   {
+    "id": "CUSTOM-01",
+    "title": "Stove burner left on",
+    "kind": "presence",
+    "rooms": [
+     "kitchen"
+    ],
+    "severity": 3,
+    "observable_evidence": "A stove burner or cooktop zone shows a lit indicator light, orange glow, or visible flame.",
+    "sam_prompts": [
+     "stove burner",
+     "cooktop",
+     "stove indicator light"
+    ],
+    "safety_prompts": [],
+    "cannot_see_note": null,
+    "fixes": [
+     {
+      "id": "custom-01-fix",
+      "title": "Fix it",
+      "how": "Follow the finding's description and make the area safe.",
+      "difficulty": "easy",
+      "cost_estimate": "varies",
+      "visualization_prompt": null
+     }
+    ],
+    "sources": [],
+    "measurement_threshold": null,
+    "dedupe_key": null,
+    "needs_human_unless": null,
+    "always_cannot_assess": null,
+    "thin_object": false,
+    "sweep_anchor_prompts": []
+   },
+   {
+    "id": "CUSTOM-02",
+    "title": "Burnable item on or next to cooktop",
+    "kind": "presence",
+    "rooms": [
+     "any"
+    ],
+    "severity": 3,
+    "observable_evidence": "A paper towel, cloth towel, wooden board, cardboard or plastic item sits on or right next to the cooktop.",
+    "sam_prompts": [
+     "paper towel roll near stove",
+     "dish towel on stove",
+     "wooden board on stove",
+     "cardboard box near stove"
+    ],
+    "safety_prompts": [],
+    "cannot_see_note": null,
+    "fixes": [
+     {
+      "id": "custom-02-fix",
+      "title": "Fix it",
+      "how": "Follow the finding's description and make the area safe.",
+      "difficulty": "easy",
+      "cost_estimate": "varies",
+      "visualization_prompt": null
+     }
+    ],
+    "sources": [],
+    "measurement_threshold": null,
+    "dedupe_key": null,
+    "needs_human_unless": null,
+    "always_cannot_assess": null,
+    "thin_object": true,
+    "sweep_anchor_prompts": []
+   }
+  ]
+ },
+ "checkup:84064bd128774d73b5358d8577b6c149": {
+  "id": "84064bd128774d73b5358d8577b6c149",
+  "created_at": "2026-11-04T00:44:13.403330Z",
+  "pack_ids": [
+   "custom-c8738b58"
+  ],
+  "home_label": "Kitchen - stove and burnables 2 (recorded)",
+  "resident_label": "Kitchen - stove and burnables 2 (recorded)",
+  "language": "en",
+  "consent": {
+   "resident_informed": true,
+   "no_private_moments": true,
+   "retention_days": 30,
+   "keep_raw_video": false
+  }
+ },
+ "capture:30e5df7840c7425db20cf6dac58b9647": {
+  "id": "30e5df7840c7425db20cf6dac58b9647",
+  "checkup_id": "84064bd128774d73b5358d8577b6c149",
+  "kind": "walkthrough",
+  "file_path": "data/84064bd128774d73b5358d8577b6c149/30e5df7840c7425db20cf6dac58b9647/capture.mov",
+  "video_sha256": "92d1c1d0e7c5b4778490cb2ed194f33243b0fb4c1076a2eb2b57002a6e210882",
+  "duration_s": 38.1272,
+  "width": 1536,
+  "height": 2048,
+  "fps": 30.004825951027087,
+  "source": "phone_upload"
+ },
+ "keyframes:30e5df7840c7425db20cf6dac58b9647": {
+  "keyframes": [
+   {
+    "id": "30e5df7840c7425db20cf6dac58b9647-kf-006",
+    "capture_id": "30e5df7840c7425db20cf6dac58b9647",
+    "t": 12.5,
+    "image_path": "data/84064bd128774d73b5358d8577b6c149/30e5df7840c7425db20cf6dac58b9647/frames/frame_00026.jpg",
+    "sharpness": 31.49880501948701,
+    "brightness": 105.55376084645589,
+    "usable": true,
+    "low_sharpness": true,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "30e5df7840c7425db20cf6dac58b9647-kf-019",
+    "capture_id": "30e5df7840c7425db20cf6dac58b9647",
+    "t": 36.0,
+    "image_path": "data/84064bd128774d73b5358d8577b6c149/30e5df7840c7425db20cf6dac58b9647/frames/frame_00073.jpg",
+    "sharpness": 44.88909719346299,
+    "brightness": 107.2449935277303,
+    "usable": true,
+    "low_sharpness": true,
+    "room_guess": null,
+    "room_confidence": null
+   }
+  ]
+ },
+ "report:84064bd128774d73b5358d8577b6c149": {
+  "checkup_id": "84064bd128774d73b5358d8577b6c149",
+  "generated_at": "2026-11-04T00:46:50.372493Z",
+  "pack_ids": [
+   "custom-c8738b58"
+  ],
+  "summary": "Fix first: Stove burner left on, then Burnable item on or next to cooktop. Everything on the checklist could be checked from this video.",
+  "fix_first": [
+   "hz-000-custom-01",
+   "hz-001-custom-02"
+  ],
+  "hazards": [
+   {
+    "id": "hz-000-custom-01",
+    "checkup_id": "84064bd128774d73b5358d8577b6c149",
+    "pack_id": "custom-c8738b58",
+    "pack_tags": [
+     "custom-c8738b58"
+    ],
+    "item_id": "CUSTOM-01",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Stove burner left on",
+    "description": "Cooktop display shows red heat level 7 with pan on burner",
+    "why_it_matters": "A burner left on can overheat the pan and start a fire.",
+    "severity": 3,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "30e5df7840c7425db20cf6dac58b9647-kf-006"
+     ],
+     "timestamps": [
+      12.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "30e5df7840c7425db20cf6dac58b9647-kf-006",
+       "polygon": [
+        [
+         0.216796875,
+         0.4052734375
+        ],
+        [
+         0.9733072916666666,
+         0.4052734375
+        ],
+        [
+         0.9733072916666666,
+         0.75341796875
+        ],
+        [
+         0.216796875,
+         0.75341796875
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.216796875,
+        0.4052734375,
+        0.9733072916666666,
+        0.75341796875
+       ],
+       "score": 0.9,
+       "prompt": "cooktop"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 2.925,
+    "rank": 1
+   },
+   {
+    "id": "hz-001-custom-02",
+    "checkup_id": "84064bd128774d73b5358d8577b6c149",
+    "pack_id": "custom-c8738b58",
+    "pack_tags": [
+     "custom-c8738b58"
+    ],
+    "item_id": "CUSTOM-02",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Burnable item on or next to cooktop",
+    "description": "Paper towel roll and power cord with tag sit right next to cooktop",
+    "why_it_matters": "Paper and plastic next to a hot cooktop can catch fire easily.",
+    "severity": 3,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "30e5df7840c7425db20cf6dac58b9647-kf-019"
+     ],
+     "timestamps": [
+      36.0
+     ],
+     "masks": [
+      {
+       "keyframe_id": "30e5df7840c7425db20cf6dac58b9647-kf-019",
+       "polygon": [
+        [
+         0.3958333333333333,
+         0.3837890625
+        ],
+        [
+         0.68359375,
+         0.3837890625
+        ],
+        [
+         0.68359375,
+         0.43896484375
+        ],
+        [
+         0.3958333333333333,
+         0.43896484375
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.3958333333333333,
+        0.3837890625,
+        0.68359375,
+        0.43896484375
+       ],
+       "score": 0.9,
+       "prompt": "power cord"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 2.85,
+    "rank": 2
+   }
+  ],
+  "fixes": [
+   {
+    "id": "fix-hz-000-custom-01",
+    "hazard_id": "hz-000-custom-01",
+    "chosen": {
+     "id": "custom-01-fix",
+     "title": "Fix it",
+     "how": "Follow the finding's description and make the area safe.",
+     "difficulty": "easy",
+     "cost_estimate": "varies",
+     "visualization_prompt": null
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Do not touch the hot pan or burner.",
+     "Turn the burner knob to Off.",
+     "Check the red heat light is off.",
+     "Let the pan and stove cool down.",
+     "Keep kids away until it is cool."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-001-custom-02",
+    "hazard_id": "hz-001-custom-02",
+    "chosen": {
+     "id": "custom-02-fix",
+     "title": "Fix it",
+     "how": "Follow the finding's description and make the area safe.",
+     "difficulty": "easy",
+     "cost_estimate": "varies",
+     "visualization_prompt": null
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Turn off the cooktop and let it cool.",
+     "Move the paper towel roll far from the stove.",
+     "Move the power cord and tag away from heat.",
+     "Keep the cooktop area clear before you cook."
+    ],
+    "status": "todo",
+    "note": null
+   }
+  ],
+  "visualizations": [],
+  "routine_insights": [],
+  "cannot_assess": [],
+  "refilm_instructions": [],
+  "stats": {
+   "hazards": 2.0,
+   "confirmed": 2.0,
+   "cost_usd": 0.0
+  },
+  "disclaimer": "SecondShift is a screening tool, not a medical device or an emergency alarm. It can miss things. For a full assessment, ask an occupational therapist or a certified professional.",
+  "recorded": "2026-11-03"
+ },
+ "checkup:4ed31c5db6eb477285eb8523b569433a": {
+  "id": "4ed31c5db6eb477285eb8523b569433a",
+  "created_at": "2026-11-03T23:10:22.029119Z",
+  "pack_ids": [
+   "custom-e574bc2e"
+  ],
+  "home_label": "Kitchen counter - before (recorded)",
+  "resident_label": "Kitchen counter - before (recorded)",
+  "language": "en",
+  "consent": {
+   "resident_informed": true,
+   "no_private_moments": true,
+   "retention_days": 30,
+   "keep_raw_video": false
+  }
+ },
+ "capture:4afd1f8324fe4babaa267e156420425d": {
+  "id": "4afd1f8324fe4babaa267e156420425d",
+  "checkup_id": "4ed31c5db6eb477285eb8523b569433a",
+  "kind": "walkthrough",
+  "file_path": "data/4ed31c5db6eb477285eb8523b569433a/4afd1f8324fe4babaa267e156420425d/capture.mov",
+  "duration_s": 34.9612,
+  "width": 1536,
+  "height": 2048,
+  "fps": 30.004690914499502,
+  "source": "phone_upload"
+ },
+ "keyframes:4afd1f8324fe4babaa267e156420425d": {
+  "keyframes": [
+   {
+    "id": "4afd1f8324fe4babaa267e156420425d-kf-014",
+    "capture_id": "4afd1f8324fe4babaa267e156420425d",
+    "t": 17.0,
+    "image_path": "data/4ed31c5db6eb477285eb8523b569433a/4afd1f8324fe4babaa267e156420425d/frames/frame_00035.jpg",
+    "sharpness": 188.6032431917531,
+    "brightness": 82.2448746363322,
+    "usable": true,
+    "room_guess": null,
+    "room_confidence": null
+   }
+  ]
+ },
+ "report:4ed31c5db6eb477285eb8523b569433a": {
+  "checkup_id": "4ed31c5db6eb477285eb8523b569433a",
+  "generated_at": "2026-11-03T23:11:33.390822Z",
+  "pack_ids": [
+   "custom-e574bc2e"
+  ],
+  "summary": "No hazards were confirmed in this check. Couldn't check 1 item - some areas were not filmed.",
+  "fix_first": [],
+  "hazards": [
+   {
+    "id": "hz-000-custom-01",
+    "checkup_id": "4ed31c5db6eb477285eb8523b569433a",
+    "pack_id": "custom-e574bc2e",
+    "pack_tags": [
+     "custom-e574bc2e"
+    ],
+    "item_id": "CUSTOM-01",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Dirty dishes in sink",
+    "description": "Dishes, pans or cutlery sitting inside a sink basin.",
+    "why_it_matters": "Dishes, pans or cutlery sitting inside a sink basin.",
+    "severity": 1,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "rejected",
+    "verification_reason": "Image shows dishwasher, no sink basin visible.",
+    "evidence": {
+     "keyframe_ids": [
+      "4afd1f8324fe4babaa267e156420425d-kf-014"
+     ],
+     "timestamps": [
+      17.0
+     ],
+     "masks": [
+      {
+       "keyframe_id": "4afd1f8324fe4babaa267e156420425d-kf-014",
+       "polygon": [
+        [
+         0.3619791666666667,
+         0.44873046875
+        ],
+        [
+         0.5709635416666666,
+         0.44873046875
+        ],
+        [
+         0.5709635416666666,
+         0.5068359375
+        ],
+        [
+         0.3619791666666667,
+         0.5068359375
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.3619791666666667,
+        0.44873046875,
+        0.5709635416666666,
+        0.5068359375
+       ],
+       "score": 0.9,
+       "prompt": "dishes in sink"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 0.0,
+    "rank": null
+   },
+   {
+    "id": "hz-001-custom-02",
+    "checkup_id": "4ed31c5db6eb477285eb8523b569433a",
+    "pack_id": "custom-e574bc2e",
+    "pack_tags": [
+     "custom-e574bc2e"
+    ],
+    "item_id": "CUSTOM-02",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Dirty dishes left on counter",
+    "description": "Dishes or cooking pans left sitting on a kitchen counter.",
+    "why_it_matters": "Dishes or cooking pans left sitting on a kitchen counter.",
+    "severity": 1,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "rejected",
+    "verification_reason": "Dishes are in dishwasher rack, not on counter.",
+    "evidence": {
+     "keyframe_ids": [
+      "4afd1f8324fe4babaa267e156420425d-kf-014"
+     ],
+     "timestamps": [
+      17.0
+     ],
+     "masks": [
+      {
+       "keyframe_id": "4afd1f8324fe4babaa267e156420425d-kf-014",
+       "polygon": [
+        [
+         0.3385416666666667,
+         0.44921875
+        ],
+        [
+         0.5703125,
+         0.44921875
+        ],
+        [
+         0.5703125,
+         0.55859375
+        ],
+        [
+         0.3385416666666667,
+         0.55859375
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.3385416666666667,
+        0.44921875,
+        0.5703125,
+        0.55859375
+       ],
+       "score": 0.9,
+       "prompt": "dishes on counter"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 0.0,
+    "rank": null
+   }
+  ],
+  "fixes": [],
+  "visualizations": [],
+  "routine_insights": [],
+  "cannot_assess": [
+   {
+    "area": "CUSTOM-03",
+    "reason": "not_filmed",
+    "detail": "countertop not visible in any frame, cannot tell if knife on counter"
+   }
+  ],
+  "refilm_instructions": [
+   {
+    "item_id": "CUSTOM-03",
+    "room": "any",
+    "instruction": "In the kitchen, point camera at countertop for 3 seconds.",
+    "what_to_show": "kitchen countertop surface"
+   }
+  ],
+  "stats": {
+   "hazards": 2.0,
+   "confirmed": 0.0,
+   "cost_usd": 0.0
+  },
+  "disclaimer": "SecondShift is a screening tool, not a medical device or an emergency alarm. It can miss things. For a full assessment, ask an occupational therapist or a certified professional.",
+  "recorded": "2026-11-03"
+ },
+ "custom_pack:custom-e574bc2e": {
+  "version": 1,
+  "status": "draft",
+  "demo": true,
+  "pack_id": "custom-e574bc2e",
+  "title": "Custom checklist",
+  "audience": "Custom checklist - not reviewed by an expert",
+  "high_risk_zones": [],
+  "severity_weights": {
+   "1": 1.0,
+   "2": 2.0,
+   "3": 3.0
+  },
+  "items": [
+   {
+    "id": "CUSTOM-01",
+    "title": "Dirty dishes in sink",
+    "kind": "presence",
+    "rooms": [
+     "any"
+    ],
+    "severity": 1,
+    "observable_evidence": "Dishes, pans or cutlery sitting inside a sink basin.",
+    "sam_prompts": [
+     "dishes in sink",
+     "pan in sink",
+     "cutlery in sink"
+    ],
+    "safety_prompts": [],
+    "cannot_see_note": null,
+    "fixes": [
+     {
+      "id": "custom-01-fix",
+      "title": "Fix it",
+      "how": "Follow the finding's description and make the area safe.",
+      "difficulty": "easy",
+      "cost_estimate": "varies",
+      "visualization_prompt": null
+     }
+    ],
+    "sources": [],
+    "measurement_threshold": null,
+    "dedupe_key": null,
+    "needs_human_unless": null,
+    "always_cannot_assess": null,
+    "thin_object": false,
+    "sweep_anchor_prompts": []
+   },
+   {
+    "id": "CUSTOM-02",
+    "title": "Dirty dishes left on counter",
+    "kind": "presence",
+    "rooms": [
+     "kitchen"
+    ],
+    "severity": 1,
+    "observable_evidence": "Dishes or cooking pans left sitting on a kitchen counter.",
+    "sam_prompts": [
+     "dishes on counter",
+     "pan on counter",
+     "bowl on counter"
+    ],
+    "safety_prompts": [],
+    "cannot_see_note": null,
+    "fixes": [
+     {
+      "id": "custom-02-fix",
+      "title": "Fix it",
+      "how": "Follow the finding's description and make the area safe.",
+      "difficulty": "easy",
+      "cost_estimate": "varies",
+      "visualization_prompt": null
+     }
+    ],
+    "sources": [],
+    "measurement_threshold": null,
+    "dedupe_key": null,
+    "needs_human_unless": null,
+    "always_cannot_assess": null,
+    "thin_object": false,
+    "sweep_anchor_prompts": []
+   },
+   {
+    "id": "CUSTOM-03",
+    "title": "Knife left on counter",
+    "kind": "presence",
+    "rooms": [
+     "any"
+    ],
+    "severity": 2,
+    "observable_evidence": "A knife with exposed blade lying out in the open on a countertop.",
+    "sam_prompts": [
+     "kitchen knife",
+     "knife on countertop"
+    ],
+    "safety_prompts": [],
+    "cannot_see_note": null,
+    "fixes": [
+     {
+      "id": "custom-03-fix",
+      "title": "Fix it",
+      "how": "Follow the finding's description and make the area safe.",
+      "difficulty": "easy",
+      "cost_estimate": "varies",
+      "visualization_prompt": null
+     }
+    ],
+    "sources": [],
+    "measurement_threshold": null,
+    "dedupe_key": null,
+    "needs_human_unless": null,
+    "always_cannot_assess": null,
+    "thin_object": false,
+    "sweep_anchor_prompts": []
+   }
+  ]
+ },
+ "checkup:c8ebde55781a4a288ac43c696b59eb93": {
+  "id": "c8ebde55781a4a288ac43c696b59eb93",
+  "created_at": "2026-11-03T23:11:40.545668Z",
+  "pack_ids": [
+   "custom-e574bc2e"
+  ],
+  "home_label": "Kitchen counter - after (recorded)",
+  "resident_label": "Kitchen counter - after (recorded)",
+  "language": "en",
+  "consent": {
+   "resident_informed": true,
+   "no_private_moments": true,
+   "retention_days": 30,
+   "keep_raw_video": false
+  }
+ },
+ "capture:b6dfe47450174e51837e8acaed5dbc04": {
+  "id": "b6dfe47450174e51837e8acaed5dbc04",
+  "checkup_id": "c8ebde55781a4a288ac43c696b59eb93",
+  "kind": "walkthrough",
+  "file_path": "data/c8ebde55781a4a288ac43c696b59eb93/b6dfe47450174e51837e8acaed5dbc04/capture.mov",
+  "duration_s": 60.9401,
+  "width": 1536,
+  "height": 2048,
+  "fps": 29.996641513878643,
+  "source": "phone_upload"
+ },
+ "keyframes:b6dfe47450174e51837e8acaed5dbc04": {
+  "keyframes": [
+   {
+    "id": "b6dfe47450174e51837e8acaed5dbc04-kf-028",
+    "capture_id": "b6dfe47450174e51837e8acaed5dbc04",
+    "t": 24.5,
+    "image_path": "data/c8ebde55781a4a288ac43c696b59eb93/b6dfe47450174e51837e8acaed5dbc04/frames/frame_00050.jpg",
+    "sharpness": 87.39810625690693,
+    "brightness": 130.65012232462564,
+    "usable": true,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "b6dfe47450174e51837e8acaed5dbc04-kf-029",
+    "capture_id": "b6dfe47450174e51837e8acaed5dbc04",
+    "t": 25.0,
+    "image_path": "data/c8ebde55781a4a288ac43c696b59eb93/b6dfe47450174e51837e8acaed5dbc04/frames/frame_00051.jpg",
+    "sharpness": 71.64667379211784,
+    "brightness": 124.48896344502766,
+    "usable": true,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "b6dfe47450174e51837e8acaed5dbc04-kf-035",
+    "capture_id": "b6dfe47450174e51837e8acaed5dbc04",
+    "t": 28.0,
+    "image_path": "data/c8ebde55781a4a288ac43c696b59eb93/b6dfe47450174e51837e8acaed5dbc04/frames/frame_00057.jpg",
+    "sharpness": 75.99984990796172,
+    "brightness": 125.36451943715413,
+    "usable": true,
+    "room_guess": null,
+    "room_confidence": null
+   },
+   {
+    "id": "b6dfe47450174e51837e8acaed5dbc04-kf-079",
+    "capture_id": "b6dfe47450174e51837e8acaed5dbc04",
+    "t": 60.5,
+    "image_path": "data/c8ebde55781a4a288ac43c696b59eb93/b6dfe47450174e51837e8acaed5dbc04/frames/frame_00122.jpg",
+    "sharpness": 77.69584814376371,
+    "brightness": 106.50142701466878,
+    "usable": true,
+    "room_guess": null,
+    "room_confidence": null
+   }
+  ]
+ },
+ "report:c8ebde55781a4a288ac43c696b59eb93": {
+  "checkup_id": "c8ebde55781a4a288ac43c696b59eb93",
+  "generated_at": "2026-11-03T23:13:33.210026Z",
+  "pack_ids": [
+   "custom-e574bc2e"
+  ],
+  "summary": "Fix first: Dirty dishes left on counter, then Dirty dishes in sink. Couldn't check 2 items - some areas were not filmed.",
+  "fix_first": [
+   "hz-001-custom-02",
+   "hz-000-custom-01"
+  ],
+  "hazards": [
+   {
+    "id": "hz-001-custom-02",
+    "checkup_id": "c8ebde55781a4a288ac43c696b59eb93",
+    "pack_id": "custom-e574bc2e",
+    "pack_tags": [
+     "custom-e574bc2e"
+    ],
+    "item_id": "CUSTOM-02",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Dirty dishes left on counter",
+    "description": "White bowl left sitting on kitchen counter",
+    "why_it_matters": "Dishes left out on the counter can harbor bacteria and attract pests.",
+    "severity": 1,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "confirmed",
+    "verification_reason": "Found by SAM (box).",
+    "evidence": {
+     "keyframe_ids": [
+      "b6dfe47450174e51837e8acaed5dbc04-kf-079"
+     ],
+     "timestamps": [
+      60.5
+     ],
+     "masks": [
+      {
+       "keyframe_id": "b6dfe47450174e51837e8acaed5dbc04-kf-079",
+       "polygon": [
+        [
+         0.0,
+         0.20166015625
+        ],
+        [
+         0.171875,
+         0.20166015625
+        ],
+        [
+         0.171875,
+         0.2998046875
+        ],
+        [
+         0.0,
+         0.2998046875
+        ]
+       ],
+       "rle": null,
+       "bbox": [
+        0.0,
+        0.20166015625,
+        0.171875,
+        0.2998046875
+       ],
+       "score": 0.9,
+       "prompt": "white bowl on counter"
+      }
+     ],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 0.95,
+    "rank": 1
+   },
+   {
+    "id": "hz-000-custom-01",
+    "checkup_id": "c8ebde55781a4a288ac43c696b59eb93",
+    "pack_id": "custom-e574bc2e",
+    "pack_tags": [
+     "custom-e574bc2e"
+    ],
+    "item_id": "CUSTOM-01",
+    "kind": "presence",
+    "room": "kitchen",
+    "title": "Dirty dishes in sink",
+    "description": "Dark pan sitting inside kitchen sink basin",
+    "why_it_matters": "A pan left sitting in the sink can harbor germs and attract pests.",
+    "severity": 1,
+    "on_routine_path": false,
+    "origin": "walkthrough",
+    "verification": "needs_human",
+    "verification_reason": "Dark shape partly visible in sink but SAM found no mask",
+    "evidence": {
+     "keyframe_ids": [
+      "b6dfe47450174e51837e8acaed5dbc04-kf-028",
+      "b6dfe47450174e51837e8acaed5dbc04-kf-029",
+      "b6dfe47450174e51837e8acaed5dbc04-kf-035"
+     ],
+     "timestamps": [
+      24.5,
+      25.0,
+      28.0
+     ],
+     "masks": [],
+     "narration_notes": [],
+     "measurement_ids": []
+    },
+    "risk_score": 0.51,
+    "rank": 2
+   }
+  ],
+  "fixes": [
+   {
+    "id": "fix-hz-001-custom-02",
+    "hazard_id": "hz-001-custom-02",
+    "chosen": {
+     "id": "custom-02-fix",
+     "title": "Fix it",
+     "how": "Follow the finding's description and make the area safe.",
+     "difficulty": "easy",
+     "cost_estimate": "varies",
+     "visualization_prompt": null
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Pick up the white bowl from the counter.",
+     "Wash it with hot water and soap.",
+     "Dry it well with a clean towel.",
+     "Put it away and wipe the counter clean."
+    ],
+    "status": "todo",
+    "note": null
+   },
+   {
+    "id": "fix-hz-000-custom-01",
+    "hazard_id": "hz-000-custom-01",
+    "chosen": {
+     "id": "custom-01-fix",
+     "title": "Fix it",
+     "how": "Follow the finding's description and make the area safe.",
+     "difficulty": "easy",
+     "cost_estimate": "varies",
+     "visualization_prompt": null
+    },
+    "alternatives": [],
+    "plain_language_steps": [
+     "Take the dark pan out of the sink.",
+     "Wash the pan with hot water and soap.",
+     "Rinse the pan and let it dry.",
+     "Wipe the sink clean."
+    ],
+    "status": "todo",
+    "note": null
+   }
+  ],
+  "visualizations": [],
+  "routine_insights": [],
+  "cannot_assess": [
+   {
+    "area": "unknown area",
+    "reason": "not_filmed",
+    "detail": "sink basin only partially visible at frame edge, cannot confirm if dishes are inside"
+   },
+   {
+    "area": "sink basin",
+    "reason": "not_filmed",
+    "detail": "sink basin only partially visible at left frame edge, cannot confirm contents"
+   }
+  ],
+  "refilm_instructions": [],
+  "stats": {
+   "hazards": 2.0,
+   "confirmed": 1.0,
+   "cost_usd": 0.0
+  },
+  "disclaimer": "SecondShift is a screening tool, not a medical device or an emergency alarm. It can miss things. For a full assessment, ask an occupational therapist or a certified professional.",
+  "recorded": "2026-11-03"
+ }
+}

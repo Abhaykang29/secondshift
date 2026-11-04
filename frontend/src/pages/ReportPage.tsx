@@ -6,6 +6,7 @@ import type { PackItemSummary } from "../api/extra";
 import type { Keyframe, Report } from "../api/types";
 import BeforeAfter from "../components/BeforeAfter";
 import HazardCard from "../components/HazardCard";
+import ResultBanner from "../components/ResultBanner";
 import RefilmCard from "../components/RefilmCard";
 import en from "../i18n/en.json";
 
@@ -189,6 +190,7 @@ export default function ReportPage() {
 
   return (
     <main className="p-4">
+      <ResultBanner recorded={report.recorded} />
       <h1 className="text-3xl font-semibold">Home check-up report</h1>
       <p className="mt-3 text-lg">{report.summary}</p>
 

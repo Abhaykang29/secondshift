@@ -43,7 +43,7 @@ test:
 	$(PY) -m pytest -q
 
 demo:
-	PROVIDER=mock $(PY) -m uvicorn secondshift.main:app --app-dir backend --port 8000
+	$(PY) scripts/demo.py
 
 demo-check:
 	$(PY) scripts/demo_check.py
