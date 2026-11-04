@@ -142,7 +142,7 @@ export default function Processing() {
         Checking the home
       </h1>
       <p className="mt-2" role="status">
-        {phase === "running" && `Working... ${mm}:${ss} so far. A 1-minute video usually takes 2-4 minutes.`}
+        {phase === "running" && `Working... ${mm}:${ss} so far. A 1-minute video usually takes 3-7 minutes.`}
         {phase === "done" && "Done - taking you to the report."}
         {phase === "failed" && "Something went wrong."}
       </p>

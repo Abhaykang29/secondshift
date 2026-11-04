@@ -33,11 +33,28 @@ def main() -> int:
     store_path = data_dir / "store.json"
     store = json.loads(store_path.read_text()) if store_path.exists() else {}
 
+    # Keep each report's original recorded date as the last-check
+    # date: the 2026-11-04 refresh re-stamped some checkups/reports
+    # with the refresh date, but the demo presents the 2026-11-03
+    # recordings, so checkup created_at / report generated_at are
+    # re-dated to the recorded date (time of day preserved).
+    recorded_by_id = {
+        key.split(":", 1)[1]: value.get("recorded")
+        for key, value in fragment.items()
+        if key.startswith("report:") and value.get("recorded")
+    }
+
     prefix = data_dir.as_posix()
     added = 0
     for key, value in fragment.items():
         if key in store:
             continue
+        if key.startswith(("checkup:", "report:")):
+            recorded = recorded_by_id.get(key.split(":", 1)[1])
+            field = "created_at" if key.startswith("checkup:") else "generated_at"
+            old = value.get(field)
+            if recorded and old:
+                value = {**value, field: recorded + str(old)[10:]}
         if key.startswith("keyframes:") and prefix != "data":
             for kf in value.get("keyframes", []):
                 if str(kf.get("image_path", "")).startswith("data/"):

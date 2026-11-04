@@ -34,9 +34,10 @@ def get_settings(request: Request) -> dict[str, Any]:
         "cache_mode": settings.cache_mode.value,
         "budget_usd": settings.budget_usd,
         "verify_mode": settings.verify_mode,
-        "languages": LANGUAGES,
-        "translation_status": "English complete; Hindi draft (needs native review); "
-        "other languages are TODO(TEAM).",
+        # Only languages that are actually translated are listed;
+        # untranslated entries (marked TODO(TEAM)) stay hidden.
+        "languages": [lang for lang in LANGUAGES if "TODO(TEAM)" not in lang["label"]],
+        "translation_status": "English complete; Hindi draft (needs native review).",
     }
 
 
