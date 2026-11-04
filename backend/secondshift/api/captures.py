@@ -14,7 +14,7 @@ from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from secondshift.capture.extract import extract_audio, extract_frames
 from secondshift.capture.keyframes import select_keyframes
-from secondshift.capture.probe import CaptureTooLong, probe_video
+from secondshift.capture.probe import CaptureTooLong, CaptureUnreadable, probe_video
 from secondshift.domain.checkup import Capture
 from secondshift.domain.enums import CaptureKind
 
@@ -45,7 +45,7 @@ async def upload_capture(
     video_sha256 = hashlib.sha256(video_bytes).hexdigest()
     try:
         probe = probe_video(str(video_path), max_minutes=settings.max_capture_minutes)
-    except CaptureTooLong as exc:
+    except (CaptureTooLong, CaptureUnreadable) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     capture = Capture(
         id=capture_id,

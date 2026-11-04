@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from secondshift.capture.keyframes import select_keyframes
 from secondshift.capture.narration import extract_facts
-from secondshift.capture.probe import CaptureTooLong, probe_video
+from secondshift.capture.probe import CaptureTooLong, CaptureUnreadable, probe_video
 from secondshift.capture.quality import frame_metrics
 from secondshift.domain.checkup import NarrationSegment
 
@@ -38,6 +38,53 @@ def test_probe_rejects_over_long_video(synthetic_video: str) -> None:
     """A video past the configured cap raises the friendly error."""
     with pytest.raises(CaptureTooLong):
         probe_video(synthetic_video, max_minutes=0.5)
+
+
+def test_probe_rejects_non_video_bytes(tmp_path: Path) -> None:
+    """Robustness regression (2026-11-03): a text file renamed .mp4
+    used to crash the upload with a 500; it must be CaptureUnreadable."""
+    bogus = tmp_path / "notavideo.mp4"
+    bogus.write_bytes(b"this is not a video file at all")
+    with pytest.raises(CaptureUnreadable):
+        probe_video(str(bogus))
+
+
+def test_probe_rejects_truncated_video(synthetic_video: str, tmp_path: Path) -> None:
+    """A video cut off mid-file (moov atom gone) is CaptureUnreadable."""
+    raw = Path(synthetic_video).read_bytes()
+    truncated = tmp_path / "truncated.mp4"
+    truncated.write_bytes(raw[: len(raw) // 3])
+    with pytest.raises(CaptureUnreadable):
+        probe_video(str(truncated))
+
+
+def test_upload_of_garbage_file_is_a_plain_422(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """End to end: uploading a non-video returns 422 with the plain
+    'couldn't read that file' message, never a 500."""
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("PROVIDER", "mock")
+    from fastapi.testclient import TestClient
+    from secondshift.main import create_app
+
+    client = TestClient(create_app(), raise_server_exceptions=False)
+    created = client.post(
+        "/api/checkups",
+        json={
+            "pack_ids": ["falls_older_adults"],
+            "resident_label": "Garbage upload test",
+            "consent": {"resident_informed": True, "no_private_moments": True},
+        },
+    )
+    assert created.status_code in (200, 201)
+    checkup_id = created.json()["id"]
+    resp = client.post(
+        f"/api/checkups/{checkup_id}/captures",
+        files={"file": ("clip.mp4", b"definitely not a video", "video/mp4")},
+    )
+    assert resp.status_code == 422
+    assert "couldn't read that file" in resp.json()["detail"]
 
 
 def test_synthetic_video_produces_40_to_80_keyframes(synthetic_video: str) -> None:
