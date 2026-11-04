@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { Camera, Video, Volume2 } from "lucide-react";
 import { api } from "../api/client";
 import type { RefilmInstruction, Report } from "../api/types";
+import Button from "./ui/Button";
+import Chip from "./ui/Chip";
 
 /**
  * Guided re-film card (final pass, item 1c): the report's cannot-tell
@@ -130,45 +133,45 @@ export default function RefilmCard({
 
   if (instructions.length === 0) return null;
   return (
-    <section aria-label="I couldn't see these" className="mt-8 rounded border-2 border-[#1f3d2b] bg-white p-4">
-      <h2 className="text-xl font-semibold">I couldn&rsquo;t see these</h2>
-      <p className="mt-1 text-sm opacity-80">
+    <section aria-label="I couldn't see these" className="rounded-card border border-border bg-surface p-4">
+      <div className="flex items-center gap-2">
+        <h2 className="text-[17px] font-semibold leading-[24px]">I couldn&rsquo;t see these</h2>
+        <Chip>
+          <span className="font-mono tabular-nums">{instructions.length}</span>
+        </Chip>
+      </div>
+      <p className="mt-1 text-[14px] leading-[20px] text-text-2">
         A short follow-up clip can settle {instructions.length === 1 ? "this one" : `these ${instructions.length}`}.
         Film one clip of up to 60 seconds, following the steps in order.
       </p>
       {[...byRoom.entries()].map(([room, items]) => (
-        <div key={room} className="mt-3">
-          <h3 className="font-medium capitalize">{room}</h3>
-          <ol className="mt-1 list-decimal pl-6">
+        <div key={room} className="mt-4">
+          <h3 className="text-[13px] font-semibold capitalize text-text-2">{room}</h3>
+          <ul className="mt-1.5 space-y-2">
             {items.map((ins) => (
-              <li key={ins.item_id} className="mt-1">
-                {ins.instruction}{" "}
-                <span className="rounded-full bg-[#e9f2ec] px-2 py-0.5 text-xs font-medium text-[#1f3d2b]">
-                  Show: {ins.what_to_show}
-                </span>
+              <li key={ins.item_id} className="flex items-start gap-2">
+                <Camera size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-accent" aria-hidden />
+                <span className="flex-1 text-[15px] leading-[22px]">{ins.instruction}</span>
+                <Chip className="shrink-0">Show: {ins.what_to_show}</Chip>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       ))}
       {instructions.length > shown.length && (
-        <p className="mt-2 text-sm opacity-75">
+        <p className="mt-2 text-[13px] text-text-3">
           +{instructions.length - shown.length} more - film the rooms above first, then this
           list updates.
         </p>
       )}
-      <div className="mt-4 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setShowRecorder((v) => !v)}
-          className="rounded bg-[#1f3d2b] px-4 py-3 font-medium text-white"
-        >
-          🎥 Film these now
-        </button>
+      <div className="mt-4 space-y-2">
+        <Button variant="primary" size="lg" fullWidth icon={Video} onClick={() => setShowRecorder((v) => !v)}>
+          Film these now
+        </Button>
         {canSpeak && (
-          <button type="button" onClick={readAloud} className="rounded border px-4 py-3">
-            🔊 Read aloud
-          </button>
+          <Button variant="secondary" icon={Volume2} onClick={readAloud}>
+            Read aloud
+          </Button>
         )}
       </div>
       {showRecorder && (
@@ -180,46 +183,42 @@ export default function RefilmCard({
                 autoPlay
                 muted
                 playsInline
-                className="aspect-video w-full rounded bg-neutral-800"
+                className="aspect-video w-full rounded-card bg-surface-3"
               />
               {clipUrl && !recording && (
-                <video src={clipUrl} controls className="mt-2 aspect-video w-full rounded" />
+                <video src={clipUrl} controls className="mt-2 aspect-video w-full rounded-card" />
               )}
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {!recording && !clip && (
-                  <button type="button" onClick={() => void startRecording()} className="rounded bg-red-700 px-4 py-2 text-white">
-                    ● Start (max 60s)
-                  </button>
+                  <Button variant="primary" onClick={() => void startRecording()}>
+                    Start (max 60s)
+                  </Button>
                 )}
                 {recording && (
-                  <button type="button" onClick={stopRecording} className="rounded bg-red-700 px-4 py-2 text-white">
-                    ■ Stop - {seconds}s / 60s
-                  </button>
+                  <Button variant="secondary" onClick={stopRecording}>
+                    Stop - {seconds}s / 60s
+                  </Button>
                 )}
                 {clip && !uploading && (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => void upload(clip, "refilm.mp4")}
-                      className="rounded bg-[#1f3d2b] px-4 py-2 text-white"
-                    >
+                    <Button variant="primary" onClick={() => void upload(clip, "refilm.mp4")}>
                       Use this clip
-                    </button>
-                    <button type="button" onClick={() => void startRecording()} className="rounded border px-4 py-2">
+                    </Button>
+                    <Button variant="secondary" onClick={() => void startRecording()}>
                       Retake
-                    </button>
+                    </Button>
                   </>
                 )}
               </div>
             </>
           ) : (
-            <label className="block">
+            <label className="block text-[14px] text-text-2">
               Pick or record a clip (up to 60 seconds)
               <input
                 type="file"
                 accept="video/*"
                 capture="environment"
-                className="mt-1 block w-full rounded border p-3"
+                className="mt-1 block w-full rounded-btn border border-border-strong bg-surface p-3 text-[15px] text-text"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) void upload(f, f.name);
@@ -228,12 +227,12 @@ export default function RefilmCard({
             </label>
           )}
           {canRecord && (
-            <label className="mt-3 block text-sm">
+            <label className="mt-3 block text-[14px] text-text-2">
               Or upload a clip you already filmed
               <input
                 type="file"
                 accept="video/*"
-                className="mt-1 block w-full rounded border p-3"
+                className="mt-1 block w-full rounded-btn border border-border-strong bg-surface p-3 text-[15px] text-text"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) void upload(f, f.name);
@@ -241,8 +240,8 @@ export default function RefilmCard({
               />
             </label>
           )}
-          {uploading && <p className="mt-2 text-sm">Uploading and checking...</p>}
-          {message && <p className="mt-2 text-sm" role="status">{message}</p>}
+          {uploading && <p className="mt-2 text-[14px] text-text-2">Uploading and checking...</p>}
+          {message && <p className="mt-2 text-[14px] text-text-2" role="status">{message}</p>}
         </div>
       )}
     </section>

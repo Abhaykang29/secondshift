@@ -9,8 +9,8 @@ export interface TallyCounts {
 
 interface TallyBarProps {
   counts: TallyCounts;
-  /** Segment captions, in bad/warn/unk/ok order, without the numbers. */
-  labels: [string, string, string, string];
+  /** Segment captions as [singular, plural] pairs, bad/warn/unk/ok order. */
+  labels: [[string, string], [string, string], [string, string], [string, string]];
   compact?: boolean;
 }
 
@@ -29,7 +29,7 @@ const SEGMENTS = [
 export default function TallyBar({ counts, labels, compact }: TallyBarProps) {
   const values = [counts.bad, counts.warn, counts.unk, counts.ok];
   const parts = values
-    .map((n, i) => (n > 0 ? plural(n, labels[i]) : null))
+    .map((n, i) => (n > 0 ? plural(n, labels[i][0], labels[i][1]) : null))
     .filter((p): p is string => p !== null);
   return (
     <div>

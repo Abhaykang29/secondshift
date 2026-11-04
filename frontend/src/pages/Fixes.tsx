@@ -3,6 +3,9 @@ import { plural } from "../plural";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { Report } from "../api/types";
+import Button from "../components/ui/Button";
+import TallyBar from "../components/ui/TallyBar";
+import VerdictChip from "../components/ui/VerdictChip";
 
 /**
  * Fix tracker (spec 5.1 step 7): check off fixes; progress bar; the
@@ -17,7 +20,7 @@ export default function Fixes() {
     api.report(id).then(setReport).catch(() => setReport(null));
   }, [id]);
 
-  if (!report) return <main className="p-4"><p>Loading fixes...</p></main>;
+  if (!report) return <main className="mx-auto w-full max-w-[720px] p-4"><p>Loading fixes...</p></main>;
   const done = report.fixes.filter((f) => f.status === "done").length;
 
   async function toggle(fixId: string, status: string) {
@@ -32,22 +35,29 @@ export default function Fixes() {
   }
 
   return (
-    <main className="p-4">
-      <h1 className="text-2xl font-semibold">Fix tracker</h1>
-      <p className="mt-2">{done} of {plural(report.fixes.length, "fix", "fixes")} done</p>
-      <div className="mt-2 h-3 w-full rounded bg-neutral-200" role="progressbar"
-        aria-valuenow={done} aria-valuemax={report.fixes.length}>
-        <div className="h-3 rounded bg-green-600"
-          style={{ width: `${report.fixes.length ? (done / report.fixes.length) * 100 : 0}%` }} />
+    <main className="mx-auto w-full max-w-[720px] p-4">
+      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Fix tracker</h1>
+      <p className="mt-2 font-mono text-[12.5px] tabular-nums text-text-2">
+        {done} of {plural(report.fixes.length, "fix", "fixes")} done
+      </p>
+      <div className="mt-2">
+        <TallyBar
+          compact
+          counts={{ bad: 0, warn: 0, unk: report.fixes.length - done, ok: done }}
+          labels={[["problem", "problems"], ["need a look", "need a look"], ["to-do", "to-dos"], ["done", "done"]]}
+        />
       </div>
       {report.fixes.map((card) => (
-        <div key={card.id} className="mt-3 rounded border bg-white p-4">
+        <div key={card.id} className="mt-3 rounded-card border border-border bg-surface p-4">
           <label className="flex items-start gap-3">
             <input type="checkbox" checked={card.status === "done"} className="mt-1 h-6 w-6"
               onChange={() => void toggle(card.id, card.status ?? "todo")} />
             <span>
-              <span className="font-medium">{card.chosen.title}</span>
-              <span className="block text-sm opacity-80">
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-[16px] font-semibold leading-[22px]">{card.chosen.title}</span>
+                {card.status === "done" && <VerdictChip kind="fixed" />}
+              </span>
+              <span className="block text-[14px] text-text-2">
                 {card.chosen.difficulty} - estimate: {card.chosen.cost_estimate}
               </span>
             </span>
@@ -59,15 +69,15 @@ export default function Fixes() {
               placeholder={card.note ? `Note: ${card.note}` : "Add a note (who, when, cost...)"}
               value={notes[card.id] ?? ""}
               onChange={(e) => setNotes((n) => ({ ...n, [card.id]: e.target.value }))}
-              className="min-h-[48px] flex-1 rounded border p-2"
+              className="min-h-[48px] flex-1 rounded-btn border border-border-strong bg-surface p-3 text-[15px]"
             />
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => void saveNote(card.id, card.status ?? "todo")}
-              className="rounded border px-3"
             >
               Save
-            </button>
+            </Button>
           </div>
         </div>
       ))}

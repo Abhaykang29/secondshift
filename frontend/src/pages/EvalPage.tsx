@@ -39,13 +39,13 @@ export default function EvalPage() {
   if (data.labels_source === "mock" && !showMock) {
     return (
       <main className="mx-auto max-w-2xl p-6">
-        <h1 className="text-2xl font-semibold">Evaluation</h1>
+        <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Evaluation</h1>
         <p className="mt-3" role="status">
           The latest eval run uses <strong>mock labels</strong>, so it is hidden by
           default — mock numbers validate the harness, not the product. Real
           numbers appear here once real footage is labeled.
         </p>
-        <p className="mt-2 text-sm opacity-80">
+        <p className="mt-2 text-[14px] text-text-2">
           To inspect the mock run anyway, open this page with ?show_mock=1.
         </p>
       </main>
@@ -57,31 +57,31 @@ export default function EvalPage() {
       {data.labels_source === "mock" && (
         <>
           <div aria-hidden className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-            <span className="-rotate-45 text-6xl font-bold tracking-widest text-red-600/15">MOCK DATA</span>
+            <span className="-rotate-45 text-6xl font-bold tracking-widest text-bad" style={{ opacity: 0.15 }}>MOCK DATA</span>
           </div>
-          <p className="inline-block rounded bg-red-700 px-3 py-1 font-semibold text-white">MOCK DATA</p>
+          <p className="inline-block rounded-chip bg-bad px-3 py-1 font-semibold text-text-inverse">MOCK DATA</p>
         </>
       )}
-      <h1 className="mt-2 text-2xl font-semibold">Evaluation</h1>
-      <p className="mt-2 text-sm opacity-80">
+      <h1 className="mt-2 text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Evaluation</h1>
+      <p className="mt-2 text-[14px] text-text-2">
         Run {data.run_dir} - {data.dataset}. These numbers validate the harness on mock
         scenarios; real accuracy needs human-labelled captures (TODO(TEAM)).
       </p>
       <table className="mt-4 w-full border-collapse">
         <thead>
           <tr>{["Config", "Precision", "Recall", "F1", "Est. cost", "Wall time"].map((h) => (
-            <th key={h} className="border p-2 text-left">{h}</th>
+            <th key={h} className="border border-border p-2 text-left">{h}</th>
           ))}</tr>
         </thead>
         <tbody>
           {data.runs.map((run) => (
             <tr key={run.config}>
-              <td className="border p-2">{run.config}</td>
-              <td className="border p-2">{run.totals.precision}</td>
-              <td className="border p-2">{run.totals.recall}</td>
-              <td className="border p-2">{run.totals.f1}</td>
-              <td className="border p-2">${run.estimated_cost_usd}</td>
-              <td className="border p-2">{run.wall_time_s}s</td>
+              <td className="border border-border p-2">{run.config}</td>
+              <td className="border border-border p-2 font-mono tabular-nums">{run.totals.precision}</td>
+              <td className="border border-border p-2 font-mono tabular-nums">{run.totals.recall}</td>
+              <td className="border border-border p-2 font-mono tabular-nums">{run.totals.f1}</td>
+              <td className="border border-border p-2 font-mono tabular-nums">${run.estimated_cost_usd}</td>
+              <td className="border border-border p-2 font-mono tabular-nums">{run.wall_time_s}s</td>
             </tr>
           ))}
         </tbody>

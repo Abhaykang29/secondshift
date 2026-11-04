@@ -3,6 +3,10 @@ import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { Hazard, Keyframe, Report } from "../api/types";
 import ResultBanner from "../components/ResultBanner";
+import Card from "../components/ui/Card";
+import EvidenceFrame from "../components/ui/EvidenceFrame";
+import TallyBar from "../components/ui/TallyBar";
+import VerdictChip from "../components/ui/VerdictChip";
 
 /**
  * Re-check view (evidence-first, 2026-11-03): two stored reports of
@@ -15,19 +19,6 @@ import ResultBanner from "../components/ResultBanner";
  */
 
 type Status = "fixed" | "still" | "new" | "not_filmed";
-
-const STATUS_LABEL: Record<Status, string> = {
-  fixed: "Found \u2192 Fixed",
-  still: "Still there",
-  new: "New",
-  not_filmed: "Not filmed",
-};
-const STATUS_CLASS: Record<Status, string> = {
-  fixed: "bg-green-100",
-  still: "bg-red-100",
-  new: "bg-amber-100",
-  not_filmed: "bg-neutral-200",
-};
 
 interface Side {
   hazard?: Hazard;
@@ -117,98 +108,99 @@ export default function ComparePage() {
 
   if (error) {
     return (
-      <main className="mx-auto max-w-2xl p-6">
-        <h1 className="text-2xl font-semibold">Re-check comparison</h1>
-        <p role="alert" className="mt-3 text-red-700">{error}</p>
+      <main className="mx-auto max-w-2xl p-4">
+        <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
+          Re-check comparison
+        </h1>
+        <p role="alert" className="mt-3 text-bad">{error}</p>
       </main>
     );
   }
   if (!before || !after) {
     return (
-      <main className="mx-auto max-w-2xl p-6">
-        <p>Loading both reports\u2026</p>
+      <main className="mx-auto max-w-2xl p-4">
+        <p className="text-text-2">Loading both reports\u2026</p>
       </main>
     );
   }
 
-  const frame = (checkupId: string, s: Side, label: string) => (
-    <figure className="min-w-0 flex-1">
-      <div className="relative overflow-hidden rounded bg-neutral-700">
+  const tally = {
+    bad: rows.filter((r) => r.status === "still" || r.status === "new").length,
+    warn: 0,
+    unk: rows.filter((r) => r.status === "not_filmed").length,
+    ok: rows.filter((r) => r.status === "fixed").length,
+  };
+
+  const frame = (checkupId: string, s: Side, label: "Before" | "After") => {
+    const t = s.hazard?.evidence?.timestamps?.[0];
+    const caption =
+      `${label.toUpperCase()}${t !== undefined ? ` \u00B7 t=${t}s` : ""}` +
+      (s.closest ? " \u00B7 closest frame" : "");
+    return (
+      <figure className="min-w-0">
+        <figcaption className="mb-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-text-3">
+          {caption}
+        </figcaption>
         {s.frameId ? (
-          <img
+          <EvidenceFrame
             src={api.frameUrl(checkupId, s.frameId)}
             alt={`${label} frame`}
-            className="mx-auto block max-h-[300px] w-auto max-w-full"
+            mask={!s.closest ? (s.hazard?.evidence?.masks?.[0] ?? null) : null}
           />
         ) : (
-          <div className="flex aspect-video items-center justify-center text-sm text-white">
+          <div className="flex aspect-video items-center justify-center rounded-card bg-surface-3 text-[14px] text-text-3">
             No frame
           </div>
         )}
-        <span className="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-sm text-white">
-          {label}
-          {s.closest ? " (closest frame)" : ""}
-        </span>
-        {s.hazard?.evidence?.masks?.[0] && s.frameId && (
-          <svg
-            className="pointer-events-none absolute inset-0 h-full w-full"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            aria-hidden
-          >
-            <rect
-              x={s.hazard.evidence.masks[0].bbox[0] * 100}
-              y={s.hazard.evidence.masks[0].bbox[1] * 100}
-              width={(s.hazard.evidence.masks[0].bbox[2] - s.hazard.evidence.masks[0].bbox[0]) * 100}
-              height={(s.hazard.evidence.masks[0].bbox[3] - s.hazard.evidence.masks[0].bbox[1]) * 100}
-              fill="#d33"
-              fillOpacity={0.35}
-              stroke="#d33"
-              strokeWidth={2}
-              vectorEffect="non-scaling-stroke"
-            />
-          </svg>
-        )}
-      </div>
-      <figcaption className="mt-1 text-sm opacity-80">
-        {s.hazard
-          ? `${s.hazard.verification === "confirmed" ? "Confirmed" : "Needs a human"} \u00B7 ${
-              s.hazard.evidence?.timestamps?.[0] !== undefined
-                ? `at ${s.hazard.evidence.timestamps[0]}s`
-                : "no timestamp"
-            }`
-          : "Not found in this scan"}
-      </figcaption>
-    </figure>
-  );
+        <p className="mt-1 text-[13px] leading-[18px] text-text-3">
+          {s.hazard
+            ? `${s.hazard.verification === "confirmed" ? "Confirmed" : "Needs a human"} \u00B7 ${
+                s.hazard.evidence?.timestamps?.[0] !== undefined
+                  ? `at ${s.hazard.evidence.timestamps[0]}s`
+                  : "no timestamp"
+              }`
+            : "Not found in this scan"}
+        </p>
+      </figure>
+    );
+  };
 
   return (
     <main className="mx-auto max-w-3xl p-4">
       <ResultBanner
         recorded={before.recorded && after.recorded ? before.recorded : null}
       />
-      <h1 className="text-2xl font-semibold">Re-check: before and after</h1>
-      <p className="mt-1 text-sm opacity-80">
+      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
+        Re-check: before and after
+      </h1>
+      <p className="mt-1 text-[14px] leading-[20px] text-text-2">
         The same checklist, two scans. Each item shows its before and after
         evidence frames side by side.
       </p>
+      {rows.length > 0 && (
+        <div className="mt-4">
+          <TallyBar compact counts={tally} labels={[["problem", "problems"], ["needs a look", "needs a look"], ["not filmed", "not filmed"], ["fixed", "fixed"]]} />
+        </div>
+      )}
       {rows.length === 0 && (
-        <p className="mt-4">Nothing was found in either scan, so there is nothing to compare.</p>
+        <p className="mt-4 text-text-2">
+          Nothing was found in either scan, so there is nothing to compare.
+        </p>
       )}
       {rows.map((row) => (
-        <article key={row.key} className="mt-4 rounded border bg-white p-4">
+        <Card key={row.key} className="mt-3">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="text-lg font-medium">{row.title}</h2>
-            <span className={`shrink-0 rounded px-2 py-1 text-sm ${STATUS_CLASS[row.status]}`}>
-              {STATUS_LABEL[row.status]}
-            </span>
+            <h2 className="text-[16px] font-semibold leading-[22px]">{row.title}</h2>
+            <VerdictChip kind={row.status} />
           </div>
-          <p className="text-sm uppercase tracking-wide opacity-70">{row.room}</p>
-          <div className="mt-3 flex gap-3">
+          <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-text-3">
+            {row.room}
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2">
             {frame(row.beforeCheckup, row.beforeSide, "Before")}
             {frame(row.afterCheckup, row.afterSide, "After")}
           </div>
-        </article>
+        </Card>
       ))}
     </main>
   );

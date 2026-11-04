@@ -49,21 +49,24 @@ export default function EvidenceFrame({
         height: `${(bbox[3] - bbox[1]) * 100}%`,
       }
     : null;
+  // The frame renders at its natural aspect (not a cropped 16:9
+  // cover): the SAM overlay uses normalized coordinates, and a cover
+  // crop would misalign the box on vertical footage.
   return (
     <div
-      className={`relative aspect-video w-full overflow-hidden bg-surface-3 ${
+      className={`relative w-full overflow-hidden bg-surface-3 ${
         topCornersOnly ? "rounded-t-card" : "rounded-card"
       }`}
     >
-      {src && (
+      {src ? (
         <img
           src={src}
           alt={alt}
           loading="lazy"
-          className={`absolute inset-0 h-full w-full object-cover ${
-            dimmed ? "opacity-45 grayscale-[0.6]" : ""
-          }`}
+          className={`block h-auto w-full ${dimmed ? "opacity-45 grayscale-[0.6]" : ""}`}
         />
+      ) : (
+        <div className="aspect-video w-full" />
       )}
       {!dimmed && bbox && !absenceAnchor && (
         <svg
@@ -114,7 +117,7 @@ export default function EvidenceFrame({
             className="flex h-12 w-12 items-center justify-center rounded-full"
             style={{ backgroundColor: "var(--overlay)" }}
           >
-            <EyeOff size={28} color="#fff" strokeWidth={1.75} />
+            <EyeOff size={28} color="white" strokeWidth={1.75} />
           </span>
         </span>
       )}

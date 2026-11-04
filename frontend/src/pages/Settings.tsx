@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
 
 interface SettingsView {
   provider: string; cache_mode: string; budget_usd: number; verify_mode: string;
@@ -25,28 +27,31 @@ export default function SettingsPage() {
     setMessage(res.ok ? "Everything was deleted." : "Delete failed.");
   }
 
+  const rowDt = "mt-3 border-t border-border pt-3 font-medium first:mt-0 first:border-0 first:pt-0";
+
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Settings</h1>
+      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Settings</h1>
       {settings && (
-        <dl className="mt-4">
-          <dt className="font-medium">Provider</dt><dd>{settings.provider} (cache: {settings.cache_mode})</dd>
-          <dt className="mt-2 font-medium">Verify mode</dt><dd>{settings.verify_mode}</dd>
-          <dt className="mt-2 font-medium">Run budget</dt><dd>${settings.budget_usd}</dd>
-          <dt className="mt-2 font-medium">Video retention</dt><dd>30 days by default (set at consent)</dd>
-          <dt className="mt-2 font-medium">Languages</dt>
-          <dd>{settings.languages.map((l) => l.label).join("; ")}</dd>
-          <dd className="text-sm opacity-80">{settings.translation_status}</dd>
-        </dl>
+        <Card className="mt-4">
+          <dl>
+            <dt className={rowDt}>Provider</dt><dd>{settings.provider} (cache: {settings.cache_mode})</dd>
+            <dt className={rowDt}>Verify mode</dt><dd>{settings.verify_mode}</dd>
+            <dt className={rowDt}>Run budget</dt><dd className="font-mono tabular-nums">${settings.budget_usd}</dd>
+            <dt className={rowDt}>Video retention</dt><dd>30 days by default (set at consent)</dd>
+            <dt className={rowDt}>Languages</dt>
+            <dd>{settings.languages.map((l) => l.label).join("; ")}</dd>
+            <dd className="text-[14px] text-text-2">{settings.translation_status}</dd>
+          </dl>
+        </Card>
       )}
-      <section className="mt-8 rounded border border-red-400 p-4" aria-label="Privacy controls">
-        <h2 className="font-semibold">Privacy</h2>
+      <section className="mt-8 rounded-card border border-border bg-surface p-4" aria-label="Privacy controls">
+        <h2 className="text-[17px] font-semibold">Privacy</h2>
         <p className="mt-1">Raw video is never kept unless you ask. Deleting is one tap and total.</p>
         {message && <p role="status" className="mt-2">{message}</p>}
-        <button type="button" onClick={() => void deleteAll()}
-          className="mt-3 rounded bg-red-700 px-4 py-3 text-white">
+        <Button type="button" variant="danger" className="mt-3" onClick={() => void deleteAll()}>
           Delete everything
-        </button>
+        </Button>
       </section>
     </main>
   );

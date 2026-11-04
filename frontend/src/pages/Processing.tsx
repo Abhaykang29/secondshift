@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import { Check, Loader2 } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
+import Card from "../components/ui/Card";
 
 /**
- * Processing screen (Pass 3 spec 4.3 step 4): a live step list with
- * real counts while the check runs. The scan endpoint runs the job
- * synchronously and stores it (GET /api/jobs/{id}); with ?job=<id> this
- * page just polls that job. Otherwise it starts the scan itself (with
- * ?capture=<id> for an uploaded walkthrough) and shows: frames from
- * the capture's keyframe list, then the pipeline steps as the request
- * progresses. Leaving is fine - the job is persisted server-side.
+ * Processing screen (Pass 3 spec 4.3 step 4, redesign spec 5.7): a
+ * vertical stepper with real counts while the check runs. The scan
+ * endpoint runs the job synchronously and stores it
+ * (GET /api/jobs/{id}); with ?job=<id> this page just polls that job.
+ * Otherwise it starts the scan itself (with ?capture=<id> for an
+ * uploaded walkthrough) and shows: frames from the capture's keyframe
+ * list, then the pipeline steps as the request progresses. Leaving is
+ * fine - the job is persisted server-side.
  */
 
 type StepState = "done" | "active" | "todo";
@@ -135,38 +138,68 @@ export default function Processing() {
 
   return (
     <main className="p-4">
-      <h1 className="text-2xl font-semibold">Checking the home</h1>
+      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">
+        Checking the home
+      </h1>
       <p className="mt-2" role="status">
         {phase === "running" && `Working... ${mm}:${ss} so far. A 1-minute video usually takes 2-4 minutes.`}
         {phase === "done" && "Done - taking you to the report."}
         {phase === "failed" && "Something went wrong."}
       </p>
-      <ol className="mt-5 grid gap-2">
-        {steps.map((step) => (
-          <li
-            key={step.label}
-            className={`flex items-start gap-3 rounded border bg-white p-3 ${
-              step.state === "active" ? "border-[#1f3d2b]" : ""
-            }`}
-          >
-            <span aria-hidden className="text-xl">
-              {step.state === "done" ? "✅" : step.state === "active" ? "⏳" : "⚪"}
-            </span>
-            <span>
-              <span className="font-medium">{step.label}</span>
-              {step.detail && <span className="block text-sm opacity-75">{step.detail}</span>}
-              {step.state === "active" && (
-                <span className="block text-sm opacity-75">Checking now...</span>
-              )}
-            </span>
-          </li>
-        ))}
-      </ol>
-      {error && <p role="alert" className="mt-4 text-red-700">{error}</p>}
-      <p className="mt-5 rounded bg-white p-3 text-sm">
-        You can leave this screen — the check keeps running, and the home
-        card will show the report when it is ready.
-      </p>
+      <div className="mt-5">
+        <Card>
+          <ol className="grid gap-4">
+            {steps.map((step) => (
+              <li key={step.label} className="flex items-center gap-3">
+                {step.state === "done" ? (
+                  <span
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ok"
+                    aria-hidden
+                  >
+                    <Check size={14} strokeWidth={1.75} className="text-text-inverse" />
+                  </span>
+                ) : step.state === "active" ? (
+                  <span
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-accent"
+                    aria-hidden
+                  >
+                    <Loader2 size={14} strokeWidth={1.75} className="animate-spin text-accent" />
+                  </span>
+                ) : (
+                  <span
+                    className="h-6 w-6 shrink-0 rounded-full border border-border-strong"
+                    aria-hidden
+                  />
+                )}
+                <span className="min-w-0 flex-1">
+                  <span className="text-[15px] font-medium">{step.label}</span>
+                  {step.detail && (
+                    <span className="block text-[14px] text-text-2">{step.detail}</span>
+                  )}
+                </span>
+                {step.state === "active" && (
+                  <span className="shrink-0 font-mono text-[12.5px] tabular-nums text-text-3">
+                    Checking now...
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </Card>
+      </div>
+      {error && (
+        <p role="alert" className="mt-4 text-bad">
+          {error}
+        </p>
+      )}
+      <div className="mt-5">
+        <Card>
+          <p className="text-[14px] text-text-2">
+            You can leave this screen — the check keeps running, and the home
+            card will show the report when it is ready.
+          </p>
+        </Card>
+      </div>
     </main>
   );
 }

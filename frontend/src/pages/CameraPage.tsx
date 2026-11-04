@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { Video } from "lucide-react";
+import Button from "../components/ui/Button";
 
 /**
  * The phone-as-camera page (Phase 6.5): open this on the old phone,
@@ -56,16 +58,16 @@ export default function CameraPage() {
 
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Phone camera for Watch</h1>
+      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Phone camera for Watch</h1>
       <p className="mt-2" role="status">{status}</p>
-      <video ref={videoRef} autoPlay playsInline muted className="mt-4 w-full rounded bg-black" />
+      <video ref={videoRef} autoPlay playsInline muted className="mt-4 w-full rounded-card bg-black" />
       <div className="mt-4 flex gap-3">
-        <button type="button" onClick={() => void start()} className="rounded bg-blue-700 px-4 py-3 text-white">
+        <Button type="button" variant="primary" icon={Video} onClick={() => void start()}>
           Start streaming
-        </button>
-        <button type="button" onClick={stop} className="rounded border px-4 py-3">Stop</button>
+        </Button>
+        <Button type="button" variant="secondary" onClick={stop}>Stop</Button>
       </div>
-      <p className="mt-3 text-sm opacity-80">
+      <p className="mt-3 text-[14px] text-text-2">
         Prop the phone facing the one spot the rule watches. Frames only - no recording, no audio.
       </p>
     </main>

@@ -1,19 +1,19 @@
 import type { ReactNode } from "react";
+import { GitBranch } from "lucide-react";
 import type { Hazard } from "../api/types";
+import Chip from "./ui/Chip";
+import VerdictChip from "./ui/VerdictChip";
+import EvidenceFrame from "./ui/EvidenceFrame";
+import { PackChip } from "./ui/PackIcon";
 
-/* Severity colours (Pass 3 spec 4.8): high red, medium amber, low
-   yellow - the SAM overlay uses a 40% fill with a 2px outline. */
-const SEVERITY_FILL: Record<number, string> = { 3: "#d33", 2: "#e90", 1: "#ec0" };
 const SEVERITY_LABEL: Record<number, string> = { 3: "High", 2: "Medium", 1: "Low" };
 
 /**
- * One hazard card: the evidence frame area with the SAM mask drawn as
- * an SVG overlay (polygon when the mask has one, otherwise the SAM
- * bounding box - normalized coords scale to any width), a
- * "Found by SAM (box)" badge, pack chips, and the plain-language why.
- * For absence hazards the anchor outline is drawn and labelled missing.
- * The evidence is the single selected SAM frame (backend guarantee);
- * a missing timestamp is shown as no timestamp, never as 0s.
+ * One hazard card (redesign spec 5.3): the evidence frame with the
+ * SAM overlay (normalized coords), verdict + pack + severity chips,
+ * the plain-language reason, and the production chain in mono.
+ * For absence hazards the anchor outline is drawn and labelled
+ * missing. A missing timestamp shows no chip, never 0s.
  */
 /** The chain that produced this verdict, from the stored fields:
  * Spark proposed it, SAM's mask (label = mask.prompt) is the proof,
@@ -52,111 +52,63 @@ export default function HazardCard({
   const mask = hazard.evidence.masks?.[0];
   const isAbsence = hazard.kind === "absence";
   const evidenceT = hazard.evidence.timestamps?.[0];
-  const color = SEVERITY_FILL[hazard.severity] ?? "#888";
   const tags = hazard.pack_tags && hazard.pack_tags.length > 0
     ? hazard.pack_tags
     : [hazard.pack_id];
+  const chain = chainFor(hazard);
   return (
     <article
-      className={`mt-4 rounded border-2 bg-white p-4${flash ? " refilm-flash" : ""}`}
-      style={{ borderColor: color }}
+      className={`mt-3 overflow-hidden rounded-card border border-border bg-surface${flash ? " refilm-flash" : ""}`}
       aria-label={hazard.title}
     >
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="text-xl font-medium">
+      <EvidenceFrame
+        src={frameUrl}
+        alt={`Evidence frame for ${hazard.title}`}
+        mask={mask ? { bbox: mask.bbox, polygon: mask.polygon, prompt: mask.prompt } : null}
+        absenceAnchor={isAbsence ? hazard.title : null}
+        t={evidenceT}
+        blurry={blurry}
+        topCornersOnly
+      />
+      <div className="p-4">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {hazard.verification === "confirmed" && <VerdictChip kind="confirmed" />}
+          {hazard.verification === "needs_human" && <VerdictChip kind="needs_human" />}
+          {hazard.verification === "rejected" && <VerdictChip kind="rejected" />}
+          {tags.map((tag) =>
+            packTitles && packTitles[tag] && packTitles[tag] !== tag ? (
+              <Chip key={tag}>{packTitles[tag]}</Chip>
+            ) : (
+              <PackChip key={tag} packId={tag} />
+            ),
+          )}
+          {SEVERITY_LABEL[hazard.severity] && <Chip>{SEVERITY_LABEL[hazard.severity]}</Chip>}
+          {hazard.origin === "follow_up" && <Chip variant="accent">From follow-up clip</Chip>}
+        </div>
+        <h3 className="mt-2 text-[16px] font-semibold leading-[22px]">
           {hazard.rank ? `#${hazard.rank} ` : ""}
           {hazard.title}
         </h3>
-        {hazard.verification === "confirmed" && mask && (
-          <span className="shrink-0 rounded bg-green-100 px-2 py-1 text-sm">Found by SAM (box)</span>
+        <p className="mt-0.5 text-[13px] capitalize text-text-3">
+          {hazard.room}
+          {hazard.on_routine_path ? " · on the walking path" : ""}
+        </p>
+        <p className="mt-2 text-[14px] leading-[20px] text-text-2">{hazard.description}</p>
+        <p className="mt-1 text-[14px] leading-[20px] text-text-2">
+          <em>Why it matters:</em> {hazard.why_it_matters}
+        </p>
+        <p className="mt-1 text-[14px] leading-[20px] text-text-2">{hazard.verification_reason}</p>
+        {chain && (
+          <>
+            <div className="mt-3 border-t border-border" />
+            <p className="mt-3 flex items-start gap-1.5 font-mono text-[12.5px] tabular-nums text-text-3">
+              <GitBranch size={14} strokeWidth={1.75} className="mt-0.5 shrink-0" aria-hidden />
+              <span>{chain}</span>
+            </p>
+          </>
         )}
-        {hazard.verification === "confirmed" && !mask && (
-          <span className="shrink-0 rounded bg-green-100 px-2 py-1 text-sm">Confirmed</span>
-        )}
-        {hazard.verification === "needs_human" && (
-          <span className="shrink-0 rounded bg-amber-100 px-2 py-1 text-sm">Needs a human look</span>
-        )}
-        {hazard.origin === "follow_up" && (
-          <span className="shrink-0 rounded bg-blue-100 px-2 py-1 text-sm">From follow-up clip</span>
-        )}
+        {footer}
       </div>
-      <p className="text-sm uppercase tracking-wide opacity-70">
-        {hazard.room} - {SEVERITY_LABEL[hazard.severity] ?? ""} severity
-        {hazard.on_routine_path ? " - on the walking path" : ""}
-      </p>
-      <div className="mt-2 flex flex-wrap gap-1">
-        {tags.map((tag) => (
-          <span key={tag} className="rounded-full bg-[#e9f2ec] px-2 py-0.5 text-xs font-medium text-[#1f3d2b]">
-            {packTitles?.[tag] ?? tag}
-          </span>
-        ))}
-      </div>
-      <div className="relative mt-3 w-full overflow-hidden rounded bg-neutral-700">
-        {frameUrl ? (
-          <img
-            src={frameUrl}
-            alt={`Evidence frame for ${hazard.title}`}
-            className="mx-auto block max-h-[520px] w-auto max-w-full"
-          />
-        ) : (
-          <div className="aspect-video w-full" />
-        )}
-        <span className="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-sm text-white">
-          {evidenceT !== undefined ? `Evidence frame at ${evidenceT}s` : "Evidence frame"}
-        </span>
-        {blurry && (
-          <span className="absolute right-2 top-2 rounded bg-black/55 px-2 py-0.5 text-sm text-white">
-            blurry frame
-          </span>
-        )}
-        {mask && (
-          <svg
-            className="absolute inset-0 h-full w-full"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            aria-hidden
-          >
-            {mask.polygon ? (
-              <polygon
-                points={mask.polygon.map(([x, y]) => `${x * 100},${y * 100}`).join(" ")}
-                fill={isAbsence ? "transparent" : color}
-                fillOpacity={isAbsence ? 0 : 0.4}
-                stroke={isAbsence ? "#4ea1ff" : color}
-                strokeWidth={2}
-                strokeDasharray={isAbsence ? "4 2" : undefined}
-                vectorEffect="non-scaling-stroke"
-              />
-            ) : (
-              <rect
-                x={mask.bbox[0] * 100}
-                y={mask.bbox[1] * 100}
-                width={(mask.bbox[2] - mask.bbox[0]) * 100}
-                height={(mask.bbox[3] - mask.bbox[1]) * 100}
-                fill={isAbsence ? "transparent" : color}
-                fillOpacity={isAbsence ? 0 : 0.4}
-                stroke={isAbsence ? "#4ea1ff" : color}
-                strokeWidth={2}
-                strokeDasharray={isAbsence ? "4 2" : undefined}
-                vectorEffect="non-scaling-stroke"
-              />
-            )}
-          </svg>
-        )}
-        {isAbsence && (
-          <span className="absolute bottom-2 right-2 rounded bg-blue-600 px-2 py-1 text-sm text-white">
-            Missing here: {hazard.title}
-          </span>
-        )}
-      </div>
-      <p className="mt-3">{hazard.description}</p>
-      <p className="mt-1">
-        <em>Why it matters:</em> {hazard.why_it_matters}
-      </p>
-      <p className="mt-1 text-sm opacity-80">{hazard.verification_reason}</p>
-      {chainFor(hazard) && (
-        <p className="mt-1 text-sm font-medium text-[#1f3d2b]">{chainFor(hazard)}</p>
-      )}
-      {footer}
     </article>
   );
 }

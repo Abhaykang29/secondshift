@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "../components/ui/Button";
 
 interface Answer { answer: string; follow_up?: string | null }
 
@@ -25,24 +26,30 @@ export default function AskPage() {
 
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Ask about a report</h1>
+      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Ask about a report</h1>
       <label className="mt-4 block">Checkup ID (from the report page URL)
         <input value={checkupId} onChange={(e) => setCheckupId(e.target.value)}
-          className="mt-1 block w-full rounded border p-3" />
+          className="mt-1 block w-full rounded-btn border border-border-strong bg-surface p-3 text-[15px]" />
       </label>
       <label className="mt-3 block">Your question
         <input value={question} onChange={(e) => setQuestion(e.target.value)}
-          className="mt-1 block w-full rounded border p-3" />
+          className="mt-1 block w-full rounded-btn border border-border-strong bg-surface p-3 text-[15px]" />
       </label>
-      {error && <p role="alert" className="mt-2 text-red-700">{error}</p>}
-      <button type="button" disabled={!checkupId.trim()} onClick={() => void ask()}
-        className="mt-4 w-full rounded bg-blue-700 px-4 py-3 text-white disabled:opacity-40">
+      {error && <p role="alert" className="mt-2 text-[14px] text-bad">{error}</p>}
+      <Button
+        type="button"
+        variant="primary"
+        fullWidth
+        disabled={!checkupId.trim()}
+        onClick={() => void ask()}
+        className="mt-4"
+      >
         Ask
-      </button>
+      </Button>
       {answer && (
-        <section className="mt-5 rounded border p-4" aria-label="Answer">
+        <section className="mt-5 rounded-card border border-border bg-surface p-4" aria-label="Answer">
           <p>{answer.answer}</p>
-          {answer.follow_up && <p className="mt-2 text-sm opacity-80">{answer.follow_up}</p>}
+          {answer.follow_up && <p className="mt-2 text-[14px] text-text-2">{answer.follow_up}</p>}
         </section>
       )}
     </main>

@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { HelpCircle } from "lucide-react";
 import { api } from "../api/client";
 import en from "../i18n/en.json";
+import Button from "../components/ui/Button";
+import Card from "../components/ui/Card";
+import Chip from "../components/ui/Chip";
 
 const EXAMPLES = [
   "Make sure there's no rug on the stairs.",
@@ -37,69 +41,90 @@ export default function RulesPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Rules</h1>
-      <p className="mt-2">
+    <main className="mx-auto max-w-2xl p-4">
+      <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Rules</h1>
+      <p className="mt-2 text-[15px] leading-[22px] text-text-2">
         Type what you want checked, in plain words. If a camera can't see it, I'll say so -
         and offer what I can check instead.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         {EXAMPLES.map((ex) => (
-          <button key={ex} type="button" className="rounded border px-3 py-2 text-sm"
+          <Button key={ex} type="button" variant="secondary"
             onClick={() => { setText(ex); void compile(ex, mode); }}>
             {ex}
-          </button>
+          </Button>
         ))}
       </div>
       <label className="mt-4 block">
         Your rule
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3}
-          className="mt-1 block w-full rounded border p-3" />
+          className="mt-1 block w-full rounded-btn border border-border-strong bg-surface p-3 text-[15px]" />
       </label>
       <label className="mt-2 block">
         Mode{" "}
-        <select value={mode} onChange={(e) => setMode(e.target.value)} className="rounded border p-2">
+        <select value={mode} onChange={(e) => setMode(e.target.value)}
+          className="rounded-btn border border-border-strong bg-surface px-3 py-2 text-[15px]">
           <option value="checkup">Check-up (at each re-check)</option>
           <option value="watch">Watch (one spot, live)</option>
         </select>
       </label>
-      <button type="button" disabled={!text.trim()} onClick={() => void compile(text, mode)}
-        className="mt-4 w-full rounded bg-blue-700 px-4 py-3 text-white disabled:opacity-40">
+      <Button type="button" variant="primary" fullWidth disabled={!text.trim()}
+        className="mt-4" onClick={() => void compile(text, mode)}>
         Compile this rule
-      </button>
+      </Button>
 
       {result?.status === "compiled" && (
-        <section className="mt-6 rounded border border-green-600 p-4" aria-label="Compiled rule">
-          <h2 className="font-semibold">Compiled</h2>
-          <p className="mt-1">{result.human_summary}</p>
-          <p className="mt-1 text-sm opacity-80">
-            Checks: {(result.conditions ?? []).map((c) => c.primitive).join(" + ")}
-          </p>
-          <button type="button" className="mt-2 text-sm underline"
+        <section aria-label="Compiled rule" className="mt-8">
+        <Card>
+          <Chip variant="accent">Compiled</Chip>
+          <p className="mt-3 text-[15px] font-semibold leading-[22px]">{result.human_summary}</p>
+          {(result.conditions ?? []).length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {(result.conditions ?? []).map((c) => (
+                <Chip key={c.primitive}>
+                  <span className="font-mono text-[12.5px]">{c.primitive}</span>
+                </Chip>
+              ))}
+            </div>
+          )}
+          <Button type="button" variant="ghost" className="mt-2"
             onClick={() => setShowJson((v) => !v)}>
             {showJson ? "Hide" : "Show"} JSON
-          </button>
-          {showJson && <pre className="mt-2 overflow-auto text-xs">{JSON.stringify(result, null, 2)}</pre>}
+          </Button>
+          {showJson && (
+            <pre className="mt-2 overflow-auto rounded-btn bg-surface-2 p-3 font-mono text-[12px] leading-[18px]">
+              {JSON.stringify(result, null, 2)}
+            </pre>
+          )}
+        </Card>
         </section>
       )}
       {result?.status === "refused" && (
-        <section className="mt-6 rounded border border-red-500 p-4" aria-label="Refused rule">
-          <h2 className="font-semibold">{en.refusal_lead_in}</h2>
-          <p className="mt-1">{result.refusal_reason}</p>
+        <section aria-label="Refused rule" className="mt-8">
+        <Card dashed>
+          <span className="inline-flex h-6 items-center gap-1.5 rounded-chip border border-dashed border-border-strong bg-unk-bg px-2.5 text-[12px] font-semibold text-unk">
+            <HelpCircle size={14} strokeWidth={1.75} aria-hidden />
+            Can&rsquo;t be checked by camera
+          </span>
+          <h2 className="mt-3 text-[16px] font-semibold leading-[22px]">{en.refusal_lead_in}</h2>
+          <p className="mt-1 text-[14px] leading-[20px] text-text-2">{result.refusal_reason}</p>
           <div className="mt-3 grid gap-2">
             {(result.alternatives ?? []).map((alt) => (
-              <button key={alt} type="button" className="rounded border px-3 py-2 text-left"
+              <Button key={alt} type="button" variant="secondary" fullWidth
                 onClick={() => { setText(alt); void compile(alt, mode); }}>
                 {alt}
-              </button>
+              </Button>
             ))}
           </div>
+        </Card>
         </section>
       )}
       {result?.status === "needs_clarification" && (
-        <section className="mt-6 rounded border border-amber-500 p-4" aria-label="Needs clarification">
-          <h2 className="font-semibold">One question first</h2>
-          <p className="mt-1">{result.clarifying_question}</p>
+        <section aria-label="Needs clarification" className="mt-8">
+        <Card>
+          <h2 className="text-[16px] font-semibold leading-[22px]">One question first</h2>
+          <p className="mt-1 text-[15px] leading-[22px]">{result.clarifying_question}</p>
+        </Card>
         </section>
       )}
     </main>
