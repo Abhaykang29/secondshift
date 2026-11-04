@@ -231,3 +231,24 @@ def test_all_frames_blur_failed_stops_scan_plain(tmp_path, monkeypatch) -> None:
         "Try again in a minute."
     )
     assert called == []
+
+
+def test_scan_unreachable_api_message(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """Item 4: a connection-level failure shows the couldn't-reach
+    message (internet/firewall), never raw transport text."""
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    fresh = TestClient(create_app(), raise_server_exceptions=False)
+    checkup_id = _make_checkup(fresh)
+
+    import secondshift.api.scan as scan_api
+
+    def boom(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("<urlopen error [Errno 111] Connection refused>")
+
+    monkeypatch.setattr(scan_api, "run_scan_job", boom)
+    res = fresh.post(f"/api/checkups/{checkup_id}/scan", json={})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["job_status"] == "failed"
+    assert body["error"].startswith("Couldn't reach Meta's API")
+    assert "urlopen" not in body["error"]

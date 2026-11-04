@@ -38,6 +38,23 @@ def plain_scan_error(exc: BaseException | str) -> str:
     text = str(exc).lower()
     if "couldn't blur people" in text:
         return BLUR_FAILED_MESSAGE
+    if (
+        "urlopen error" in text
+        or "connection refused" in text
+        or "connection reset" in text
+        or "connection aborted" in text
+        or "name or service not known" in text
+        or "name resolution" in text
+        or "network is unreachable" in text
+        or "remote end closed" in text
+        or "certificate" in text
+        or "ssl" in text
+        or "broken pipe" in text
+    ):
+        return (
+            "Couldn't reach Meta's API - check your internet or firewall, "
+            "then try again. Your video is saved - you don't need to film again."
+        )
     if "429" in text or "rate limit" in text or "too many requests" in text:
         return (
             "Meta's AI service is busy right now (rate limit). Wait a minute "
