@@ -442,3 +442,48 @@ def test_blur_keyframes_runs_in_parallel_and_blurs(tmp_path) -> None:  # type: i
         cv2.imwrite(str(path), frame)
         paths.append(str(path))
     assert blur_keyframes(paths, PersonSeg()) == [1, 1, 1]
+
+
+def test_assemble_report_moves_cannot_assess_hazards() -> None:
+    """Item 2 regression (final fix pass): a hazard with verification
+    == cannot_assess must land in report.cannot_assess with its
+    reason - as a hazard the UI drops it, and with cannot_assess
+    empty the summary wrongly says everything could be checked."""
+    from datetime import UTC, datetime
+
+    from secondshift.domain.checkup import Checkup, Consent
+    from secondshift.pipeline.scan import ScanOutput, assemble_report
+
+    confirmed = _hazard("FALL-FLOOR-CORD", Verification.CONFIRMED)
+    hidden = _hazard("FIRE-SMOKE-ALARM-ABSENT", Verification.CANNOT_ASSESS)
+    hidden.verification_reason = "The ceiling was too dark to see the alarm."
+    checkup = Checkup(
+        id="c1",
+        created_at=datetime.now(UTC),
+        home_label="Home",
+        resident_label="resident",
+        pack_ids=["falls_older_adults"],
+        consent=Consent(resident_informed=True, no_private_moments=True),
+    )
+    output = ScanOutput(
+        hazards=[confirmed, hidden],
+        cannot_assess=[],
+        routine_insights=[],
+        fix_first=[hidden.id, confirmed.id],
+        rooms_seen=["living"],
+    )
+    report = assemble_report(
+        checkup, output, {"hazards": 2.0, "confirmed": 1.0, "cost_usd": 0.5}
+    )
+    assert [h.id for h in report.hazards] == [confirmed.id]
+    assert len(report.cannot_assess) == 1
+    entry = report.cannot_assess[0]
+    assert entry.area == "FIRE-SMOKE-ALARM-ABSENT"
+    assert entry.reason == "too_dark"
+    assert entry.detail == "The ceiling was too dark to see the alarm."
+    assert report.fix_first == [confirmed.id]
+    assert report.stats["hazards"] == 1.0
+    assert report.stats["confirmed"] == 1.0
+    assert report.stats["cost_usd"] == 0.5
+    assert "Everything on the checklist could be checked" not in report.summary
+    assert "Couldn't check 1 item" in report.summary

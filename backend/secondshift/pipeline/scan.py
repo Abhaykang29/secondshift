@@ -9,7 +9,7 @@ Depends on: pipeline/*, providers.registry, checklists.loader, domain.
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal
 
 from secondshift.checklists.loader import Pack
 from secondshift.domain.checkup import Checkup, Keyframe, Measurement, NarrationFact
@@ -309,6 +309,29 @@ def plain_summary(
 
 
 
+def _cannot_reason(
+    detail: str,
+) -> Literal[
+    "not_filmed",
+    "too_dark",
+    "too_blurry",
+    "occluded",
+    "needs_measurement",
+    "not_visible_by_design",
+]:
+    """Pick the closest CannotAssess reason for a free-text verdict reason."""
+    text = detail.lower()
+    if "dark" in text:
+        return "too_dark"
+    if "blur" in text:
+        return "too_blurry"
+    if "measure" in text:
+        return "needs_measurement"
+    if "not filmed" in text or "not shown" in text or "no frame" in text:
+        return "not_filmed"
+    return "occluded"
+
+
 def assemble_report(
     checkup: Checkup,
     output: ScanOutput,
@@ -322,20 +345,50 @@ def assemble_report(
     kept for signature compatibility; model-written summaries are
     no longer used (demo cleanup, 2026-10-30).
     """
-    summary = plain_summary(
-        output.hazards, output.cannot_assess, output.fix_first, checkup.pack_ids
-    )
+    # Final fix pass (item 2): a hazard whose verdict is cannot_assess
+    # belongs in cannot_assess, not in hazards - rendered as a hazard
+    # the UI drops it, and with cannot_assess empty the summary would
+    # wrongly claim everything could be checked. Move them, then
+    # recompute fix_first, the stats tally and the summary from what
+    # remains.
+    kept: list[Hazard] = []
+    moved: list[CannotAssess] = []
+    seen_areas = {entry.area for entry in output.cannot_assess}
+    for hazard in output.hazards:
+        if hazard.verification is Verification.CANNOT_ASSESS:
+            if hazard.item_id not in seen_areas:
+                seen_areas.add(hazard.item_id)
+                moved.append(
+                    CannotAssess(
+                        area=hazard.item_id,
+                        reason=_cannot_reason(hazard.verification_reason),
+                        detail=hazard.verification_reason,
+                    )
+                )
+        else:
+            kept.append(hazard)
+    cannot_assess = [*output.cannot_assess, *moved]
+    kept_ids = {h.id for h in kept}
+    fix_first = [fid for fid in output.fix_first if fid in kept_ids]
+    stats = {
+        **stats,
+        "hazards": float(len(kept)),
+        "confirmed": float(
+            sum(1 for h in kept if h.verification is Verification.CONFIRMED)
+        ),
+    }
+    summary = plain_summary(kept, cannot_assess, fix_first, checkup.pack_ids)
     return Report(
         checkup_id=checkup.id,
         generated_at=datetime.now(UTC),
         pack_ids=checkup.pack_ids,
         summary=summary,
-        fix_first=output.fix_first,
-        hazards=output.hazards,
+        fix_first=fix_first,
+        hazards=kept,
         fixes=[],
         visualizations=[],
         routine_insights=output.routine_insights,
-        cannot_assess=output.cannot_assess,
+        cannot_assess=cannot_assess,
         stats=stats,
         disclaimer=DISCLAIMER,
     )
