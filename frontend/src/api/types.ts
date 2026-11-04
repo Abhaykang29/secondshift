@@ -28,6 +28,7 @@ export interface Capture {
   checkup_id: string;
   kind: CaptureKind;
   file_path?: string | null;
+  video_sha256?: string | null;
   duration_s: number;
   width: number;
   height: number;

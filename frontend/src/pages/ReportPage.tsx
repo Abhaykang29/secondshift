@@ -362,6 +362,30 @@ export default function ReportPage() {
         <button type="button" onClick={() => window.print()} className="rounded border bg-white px-4 py-3">
           Print the report
         </button>
+        {/* Dev-only: results are cached per video, so a normal
+            re-scan returns the stored report. ?dev=1 on this page's
+            URL reveals a forced fresh analysis. */}
+        {new URLSearchParams(window.location.search).get("dev") === "1" &&
+          (() => {
+            const kfId = report.hazards.find((h) => h.evidence?.keyframe_ids?.length)
+              ?.evidence.keyframe_ids[0];
+            const captureId = kfId ? kfId.split("-kf-")[0] : null;
+            if (!captureId) return null;
+            return (
+              <button
+                type="button"
+                className="rounded border border-dashed bg-white px-4 py-3"
+                onClick={() => {
+                  void api
+                    .scan(id, undefined, captureId, true)
+                    .then((r) => setReport(r.report))
+                    .catch(() => setError("Re-analyze failed - is the backend in live mode?"));
+                }}
+              >
+                Re-analyze (dev)
+              </button>
+            );
+          })()}
       </div>
       <p className="mt-4 text-sm opacity-80">{report.disclaimer}</p>
     </main>

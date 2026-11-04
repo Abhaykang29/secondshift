@@ -46,6 +46,9 @@ class Capture(BaseModel):
     checkup_id: str
     kind: CaptureKind
     file_path: str | None = None
+    # sha256 of the uploaded video bytes; half of the result-cache
+    # key (same video + same checklists + same engine = same report).
+    video_sha256: str | None = None
     duration_s: float
     width: int
     height: int

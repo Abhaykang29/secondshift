@@ -11,7 +11,10 @@ Results are cached per (path, mtime) so re-processing a scan is cheap.
 Depends on: providers.base (Segmenter), opencv.
 """
 
+import hashlib
+import json
 import logging
+import os
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -25,6 +28,46 @@ logger = logging.getLogger(__name__)
 
 _cache: dict[tuple[str, float], int] = {}
 _cache_lock = threading.Lock()
+
+# Persistent person-box cache (consistency pass, 2026-11-03): SAM's
+# boxes for a frame are stored under the sha256 of the frame's
+# pristine bytes, so a re-upload of the same video blurs the exact
+# same regions without a new SAM call - blur is identical across
+# runs. (A re-scan of an already-blurred capture hashes the blurred
+# bytes and misses; fresh uploads are the identical-blur path.)
+_box_cache: dict[str, list[list[float]]] | None = None
+_box_cache_lock = threading.Lock()
+
+
+def _box_cache_path() -> Path:
+    return Path(os.environ.get("DATA_DIR", "data")) / "blur_boxes.json"
+
+
+def _load_box_cache() -> dict[str, list[list[float]]]:
+    global _box_cache
+    if _box_cache is None:
+        try:
+            _box_cache = json.loads(_box_cache_path().read_text())
+        except (OSError, ValueError):
+            _box_cache = {}
+    return _box_cache
+
+
+def _cached_boxes(frame_sha: str) -> list[list[float]] | None:
+    with _box_cache_lock:
+        return _load_box_cache().get(frame_sha)
+
+
+def _store_boxes(frame_sha: str, boxes: list[list[float]]) -> None:
+    with _box_cache_lock:
+        cache = _load_box_cache()
+        cache[frame_sha] = boxes
+        try:
+            path = _box_cache_path()
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(cache))
+        except OSError:
+            logger.warning("could not persist the blur box cache")
 
 
 def _blur_region(frame: np.ndarray, bbox: tuple[float, ...]) -> None:
@@ -59,19 +102,26 @@ def blur_persons(image_path: str, segmenter: Segmenter) -> int:
     frame = cv2.imread(str(path))
     if frame is None:
         return -1
-    ref = ImageRef(path=str(path), keyframe_id=path.stem)
-    try:
-        masks = segmenter.segment(ref, ["person"])
-    except Exception:
-        logger.warning("person segmentation failed for %s", path.name)
-        return -1
-    for mask in masks:
-        _blur_region(frame, mask.bbox)
-    if masks:
+    frame_sha = hashlib.sha256(path.read_bytes()).hexdigest()
+    cached = _cached_boxes(frame_sha)
+    if cached is not None:
+        boxes: list[tuple[float, ...]] = [tuple(b) for b in cached]
+    else:
+        ref = ImageRef(path=str(path), keyframe_id=path.stem)
+        try:
+            masks = segmenter.segment(ref, ["person"])
+        except Exception:
+            logger.warning("person segmentation failed for %s", path.name)
+            return -1
+        boxes = [tuple(m.bbox) for m in masks]
+        _store_boxes(frame_sha, [list(b) for b in boxes])
+    for bbox in boxes:
+        _blur_region(frame, bbox)
+    if boxes:
         cv2.imwrite(str(path), frame)
     with _cache_lock:
-        _cache[key] = len(masks)
-    return len(masks)
+        _cache[key] = len(boxes)
+    return len(boxes)
 
 
 def blur_keyframes(image_paths: list[str], segmenter: Segmenter, max_workers: int = 8) -> list[int]:

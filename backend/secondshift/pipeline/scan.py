@@ -52,6 +52,10 @@ class ScanInput:
     sweep_budget: int | None = None
     thin_sweep_budget: int | None = None
     propose_model: str = "spark"  # recorded in stats; model choice is config
+    # Stable first run: propose twice (natural + reversed keyframe
+    # order), union candidates, dedupe by item + room. Set from
+    # Settings.stable_propose on the API path.
+    stable_propose: bool = False
 
 
 @dataclass
@@ -109,6 +113,7 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
         scan_input.keyframes,
         scan_input.narration_facts,
         scan_input.measurements,
+        stable=scan_input.stable_propose,
     )
     hazards, verify_cannot = verify_mod.verify_proposals(
         providers.segmenter,

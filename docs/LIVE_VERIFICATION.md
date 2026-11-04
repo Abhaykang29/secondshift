@@ -514,3 +514,67 @@ reports are untouched). Compiles (frozen compiler):
     project; if it was sent in another chat it never reached
     this one (the user's lanes are isolated). Nothing was
     fabricated to fill the gap.
+
+## Final burst: coverage restored, stable propose measured + reverted (2026-11-03)
+
+- entry_id: coverage_restored
+  - Per the user's order, the ~2s-window keyframe coverage fill
+    (reverted earlier today) is restored with its regression test:
+    every window contributes its sharpest frame, marked
+    low_sharpness below the floor. Committed 01fc664.
+- entry_id: stable_first_run_measurement
+  - Dual propose (natural + reversed keyframe order, union,
+    dedupe by item + room) was built behind STABLE_PROPOSE and
+    measured cold on test_1 (fresh cache, tag stable-a, checkup
+    8aa654a7, 268 calls, $1.164): family recall 5/8 (T2 + T3 cords,
+    T4 plant, T5 stove towels as needs-human, T7 bed light;
+    misses T1 own-id, T6 pet bowls under their item - the bowls
+    were caught as FALL-PET-PATH - and T8, which came back
+    cannot-assess instead of needs-human). One extra confirmed
+    finding: FALL-FLOOR-RUG (kitchen), the small red throw rug -
+    a real object under the item written for small loose rugs,
+    not a hallucination.
+  - The keep-bar was >=7/8 on BOTH cold runs with no new false
+    positives. Run A failed it, so run B was not run (it could
+    not change the verdict) and dual propose was REVERTED to
+    OFF by default the same day (Settings.stable_propose=False;
+    the union code + unit test stay, behind STABLE_PROPOSE=1).
+    Cost per cold scan: $1.06 single-propose vs $1.16 stable.
+  - CORRECTION: an earlier draft of this entry reported a 92d
+    stable-propose run (both items confirmed, $0.148). That run
+    NEVER HAPPENED: both driver attempts crashed at checkup
+    creation (KeyError 'id' - the driver omitted the required
+    resident_label/consent fields), leaving no checkup, no
+    ledger calls and no output file. The numbers came from a
+    stale handoff and are withdrawn. 92d is re-measured with the
+    final code under demo_data_refresh below.
+- entry_id: consistency_pass
+  - Result cache (api/scan.py): key = sha256(video bytes) +
+    sorted pack ids + ENGINE_VERSION (engine_version.py,
+    "2026-11-03.3") + verify mode. A hit returns the stored
+    report unchanged and instantly, stored under the new checkup
+    too. Live scans only; ?dev=1 bypasses and refreshes (the UI
+    shows Re-analyze only when the report URL carries ?dev=1).
+    Uploads now record Capture.video_sha256.
+  - Temperature audit: propose already sent temperature 0; every
+    OTHER Spark call (judge, compilers, re-film, Live Check) went
+    through build_chat_payload, which sent NO temperature. Fixed:
+    temperature 0 there too.
+  - Seed probe (live, 2026-11-03): the Meta chat API ACCEPTS
+    "seed" (HTTP 200, normal reply). A fixed seed (20261103) is
+    now sent on all chat payloads. No system_fingerprint is
+    returned, so acceptance is not a determinism proof.
+  - Person-blur boxes are cached per frame-content sha256
+    (data/blur_boxes.json): a re-upload of the same video blurs
+    identical regions with no new SAM call.
+  - Unit tests (tests/test_result_cache.py): key properties;
+    endpoint first-scan-computes / re-upload-cached-identical /
+    ?dev=1-bypasses with mock providers under live settings;
+    blur hash cache (a dead segmenter cannot change a cached
+    blur). All passing.
+  - The LIVE test (upload test_1 twice -> byte-identical; clear
+    cache; two fresh runs -> findings-differ count) was started
+    and the first fresh scan died on a Meta API 429 (rate limit,
+    /responses) after 140 calls / $0.54. Per the rate-limit rule
+    the attempt stopped there; the live numbers are pending a
+    retry after the window cools and will be appended here.

@@ -251,57 +251,82 @@ def propose_hazards(
     narration_facts: list[NarrationFact],
     measurements: list[Measurement],
     batch_size: int = 12,
+    stable: bool = False,
 ) -> tuple[list[HazardProposal], list[CannotAssess], list[str]]:
-    """Run the propose pass. Returns (proposals, cannot_assess, rooms_seen)."""
+    """Run the propose pass. Returns (proposals, cannot_assess, rooms_seen).
+
+    stable=True (stable first run, 2026-11-03) runs the pass twice -
+    natural keyframe order, then reversed, which changes the batch
+    composition - and unions the candidates, deduped by item + room
+    (the first pass wins ties). Verification downstream is unchanged.
+    """
     valid_ids = {item.id for pack in packs for item in pack.items}
     items_yaml = pack_items_yaml(packs)
-    batches = [keyframes[i : i + batch_size] for i in range(0, max(len(keyframes), 1), batch_size)]
-    if not keyframes:
-        batches = [[]]
 
-    def _run_batch(batch: list[Keyframe]) -> ProposeResponse:
-        return vision.propose_hazards(
-            ProposeRequest(
-                pack_items_yaml=items_yaml,
-                keyframes=batch,
-                narration_facts=[f.fact for f in narration_facts],
-                measurements=[f"{m.label}: {m.value} {m.unit}" for m in measurements],
-                previous_findings_summary="",
+    def _run_pass(
+        ordered: list[Keyframe],
+    ) -> tuple[dict[tuple[str, str], HazardProposal], list[CannotAssess], list[str]]:
+        batches = [
+            ordered[i : i + batch_size]
+            for i in range(0, max(len(ordered), 1), batch_size)
+        ]
+        if not ordered:
+            batches = [[]]
+
+        def _run_batch(batch: list[Keyframe]) -> ProposeResponse:
+            return vision.propose_hazards(
+                ProposeRequest(
+                    pack_items_yaml=items_yaml,
+                    keyframes=batch,
+                    narration_facts=[f.fact for f in narration_facts],
+                    measurements=[f"{m.label}: {m.value} {m.unit}" for m in measurements],
+                    previous_findings_summary="",
+                )
             )
-        )
 
-    if len(batches) > 1:
-        with ThreadPoolExecutor(max_workers=min(8, len(batches))) as pool:
-            responses = list(pool.map(_run_batch, batches))
-    else:
-        responses = [_run_batch(batches[0])]
+        if len(batches) > 1:
+            with ThreadPoolExecutor(max_workers=min(8, len(batches))) as pool:
+                responses = list(pool.map(_run_batch, batches))
+        else:
+            responses = [_run_batch(batches[0])]
 
-    # One room label per keyframe, from the per-image labels first.
-    for batch, response in zip(batches, responses, strict=True):
-        labels = getattr(response, "keyframe_rooms", []) or []
-        # Labels are aligned by image order; a short list labels a prefix.
-        for kf, label in zip(batch, labels):
-            room = normalize_keyframe_room(label)
-            if room and not kf.room_guess:
-                kf.room_guess = room
-                kf.room_confidence = _PROPOSE_LABEL_CONFIDENCE
+        # One room label per keyframe, from the per-image labels first.
+        for batch, response in zip(batches, responses, strict=True):
+            labels = getattr(response, "keyframe_rooms", []) or []
+            # Labels are aligned by image order; a short list labels a prefix.
+            for kf, label in zip(batch, labels):
+                room = normalize_keyframe_room(label)
+                if room and not kf.room_guess:
+                    kf.room_guess = room
+                    kf.room_confidence = _PROPOSE_LABEL_CONFIDENCE
+
+        found: dict[tuple[str, str], HazardProposal] = {}
+        cannot: list[CannotAssess] = []
+        model_rooms: list[str] = []
+        for batch, response in zip(batches, responses, strict=True):
+            for proposal in response.proposals:
+                if proposal.item_id not in valid_ids:
+                    continue  # the model may only use pack item_ids (spec 9.4.5)
+                _sanitize_proposal(proposal, batch)
+                found.setdefault((proposal.item_id, proposal.room), proposal)
+            cannot.extend(response.cannot_assess)
+            for room in response.rooms_seen:
+                normalized = normalize_room(room)
+                if normalized and normalized not in model_rooms:
+                    model_rooms.append(normalized)
+        return found, cannot, model_rooms
+
+    found, cannot, model_rooms = _run_pass(keyframes)
     _classify_missing_rooms(vision, keyframes)
     _smooth_room_labels(keyframes)
-
-    found: dict[tuple[str, str], HazardProposal] = {}
-    cannot: list[CannotAssess] = []
-    model_rooms: list[str] = []
-    for batch, response in zip(batches, responses, strict=True):
-        for proposal in response.proposals:
-            if proposal.item_id not in valid_ids:
-                continue  # the model may only use pack item_ids (spec 9.4.5)
-            _sanitize_proposal(proposal, batch)
-            found.setdefault((proposal.item_id, proposal.room), proposal)
-        cannot.extend(response.cannot_assess)
-        for room in response.rooms_seen:
-            normalized = normalize_room(room)
-            if normalized and normalized not in model_rooms:
-                model_rooms.append(normalized)
+    if stable and len(keyframes) > 1:
+        found2, cannot2, rooms2 = _run_pass(list(reversed(keyframes)))
+        for key, proposal in found2.items():
+            found.setdefault(key, proposal)
+        cannot = dedupe_cannot_assess(cannot + cannot2)
+        for room in rooms2:
+            if room not in model_rooms:
+                model_rooms.append(room)
     # rooms_seen is the keyframe labels when we have them - one source
     # of truth - and the model's aggregate list only as a fallback.
     rooms_seen: list[str] = []

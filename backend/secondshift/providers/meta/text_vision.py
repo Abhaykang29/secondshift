@@ -75,6 +75,15 @@ def build_chat_payload(
     content.extend(image_part(image) for image in images)
     payload: dict[str, Any] = {
         "model": MODEL_BY_ROLE[model_role],
+        # Consistency pass (2026-11-03): temperature 0 on EVERY Spark
+        # call, not just propose - this builder serves the judge, the
+        # checklist/rule compilers, re-film and Live Check too. The
+        # seed probe the same day: the API ACCEPTS "seed" (HTTP 200),
+        # so a fixed seed is sent as well. Acceptance is not a
+        # determinism proof (no system_fingerprint is returned) -
+        # measured variance lives in LIVE_VERIFICATION.md.
+        "temperature": 0,
+        "seed": 20261103,
         "messages": [{"role": "user", "content": content}],
         # TODO(API): some deployments want {"response_format": {"type": "json_object"}}
     }
@@ -116,9 +125,11 @@ def build_propose_payload(
     return {
         "model": MODEL_BY_ROLE[model_role],
         # Propose stability (2026-10-30): temperature 0 is accepted by
-        # the API (probed live, HTTP 200) and costs nothing extra -
-        # preferred over running propose twice and merging.
+        # the API (probed live, HTTP 200) and costs nothing extra.
+        # Consistency pass (2026-11-03): fixed seed added (accepted,
+        # HTTP 200) - see build_chat_payload's note.
         "temperature": 0,
+        "seed": 20261103,
         "messages": [{"role": "user", "content": content}],
     }
 

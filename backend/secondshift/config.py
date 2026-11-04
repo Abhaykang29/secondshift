@@ -85,6 +85,13 @@ class Settings:
     verify_frames: int = 3
     min_mask_score: float = 0.5
     verify_mode: str = "sam_plus_judge"  # none | sam | sam_plus_judge
+    # Stable first run (2026-11-03): propose twice on different
+    # keyframe orderings and union the candidates. MEASURED and
+    # REVERTED the same day: a cold stable run of test_1 scored
+    # family recall 5/8 against the keep-bar of >=7/8 twice (the
+    # single-propose band is 5/8-7/8), so dual propose stays OFF
+    # by default; STABLE_PROPOSE=1 re-enables it for experiments.
+    stable_propose: bool = False
     image_tokens_estimate: int = 1200  # measured 2026-10-28
     routine_send_unblurred: bool = False
     # Watch (spec section 9.14)
@@ -142,6 +149,7 @@ class Settings:
             verify_frames=_i("VERIFY_FRAMES", 3),
             min_mask_score=_f("MIN_MASK_SCORE", 0.5),
             verify_mode=os.environ.get("VERIFY_MODE", "sam_plus_judge"),
+            stable_propose=os.environ.get("STABLE_PROPOSE", "0") == "1",
             image_tokens_estimate=_i("IMAGE_TOKENS_ESTIMATE", 1200),
             routine_send_unblurred=os.environ.get("ROUTINE_SEND_UNBLURRED", "0") == "1",
             watch_fps=_f("WATCH_FPS", 1.0),

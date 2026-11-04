@@ -106,6 +106,63 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         narration_facts = extract_facts(segments)
     except Exception:
         narration_facts = []
+    # Result cache (consistency pass, 2026-11-03): the same video
+    # bytes + the same checklists + the same engine version return
+    # the stored report unchanged, instantly - a judge re-uploading
+    # a clip sees the identical answer. Live scans only (never the
+    # mock/demo scenarios). ?dev=1 bypasses the lookup and refreshes
+    # the entry; the UI exposes that only behind ?dev=1.
+    cache_key: str | None = None
+    if (
+        scenario is None
+        and body.capture_id
+        and request.app.state.settings.provider.value != "mock"
+    ):
+        import hashlib
+        import uuid as _uuid
+        from pathlib import Path as _Path
+
+        from secondshift.engine_version import result_cache_key
+
+        capture_raw = store.get("capture", body.capture_id) or {}
+        video_sha = capture_raw.get("video_sha256")
+        if not video_sha and capture_raw.get("file_path"):
+            try:
+                video_sha = hashlib.sha256(
+                    _Path(capture_raw["file_path"]).read_bytes()
+                ).hexdigest()
+            except OSError:
+                video_sha = None
+        if video_sha:
+            cache_key = result_cache_key(
+                video_sha,
+                checkup.pack_ids,
+                verify_mode=request.app.state.settings.verify_mode,
+            )
+            if request.query_params.get("dev") != "1":
+                hit = store.get("result_cache", cache_key)
+                if hit:
+                    report_dict = hit["report"]
+                    store.put("report", checkup_id, report_dict)
+                    job_id = _uuid.uuid4().hex
+                    store.put(
+                        "job",
+                        job_id,
+                        {
+                            "id": job_id,
+                            "kind": "scan",
+                            "steps": ["scan", "fixes", "visualize", "assemble"],
+                            "completed_steps": ["scan", "fixes", "visualize", "assemble"],
+                            "status": "done",
+                            "error": None,
+                        },
+                    )
+                    return {
+                        "job_id": job_id,
+                        "job_status": "done",
+                        "report": report_dict,
+                        "cached": True,
+                    }
     scan_input = ScanInput(
         checkup=checkup,
         packs=packs,
@@ -114,6 +171,7 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         narration_facts=narration_facts,
         verify_mode=request.app.state.settings.verify_mode,
         sweep=scenario is None,
+        stable_propose=request.app.state.settings.stable_propose,
     )
     job, report = run_scan_job(
         store,
@@ -121,6 +179,18 @@ def start_scan(checkup_id: str, body: ScanRequest, request: Request) -> dict[str
         scan_input,
         data_dir=request.app.state.settings.data_dir,
     )
+    if cache_key:
+        from secondshift.engine_version import ENGINE_VERSION
+
+        store.put(
+            "result_cache",
+            cache_key,
+            {
+                "report": report.model_dump(mode="json"),
+                "checkup_id": checkup_id,
+                "engine_version": ENGINE_VERSION,
+            },
+        )
     return {"job_id": job.id, "job_status": job.status, "report": report.model_dump(mode="json")}
 
 

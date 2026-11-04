@@ -38,7 +38,11 @@ async def upload_capture(
     base = Path(settings.data_dir) / checkup_id / capture_id
     base.mkdir(parents=True, exist_ok=True)
     video_path = base / f"capture{Path(file.filename or 'video.mp4').suffix or '.mp4'}"
-    video_path.write_bytes(await file.read())
+    video_bytes = await file.read()
+    video_path.write_bytes(video_bytes)
+    import hashlib
+
+    video_sha256 = hashlib.sha256(video_bytes).hexdigest()
     try:
         probe = probe_video(str(video_path), max_minutes=settings.max_capture_minutes)
     except CaptureTooLong as exc:
@@ -48,6 +52,7 @@ async def upload_capture(
         checkup_id=checkup_id,
         kind=CaptureKind(kind),
         file_path=str(video_path),
+        video_sha256=video_sha256,
         duration_s=probe.duration_s,
         width=probe.width,
         height=probe.height,

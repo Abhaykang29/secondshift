@@ -136,3 +136,53 @@ def test_path_obstacle_detection() -> None:
     path = path_points(person)  # type: ignore[arg-type]
     assert on_path((0.38, 0.8, 0.55, 0.95), path) is True
     assert on_path((0.85, 0.05, 0.95, 0.2), path) is False
+
+
+
+def test_stable_propose_unions_both_orderings() -> None:
+    """Stable first run (2026-11-03): the propose pass runs on the
+    natural and the reversed keyframe order; candidates from both
+    are unioned and deduped by item + room."""
+    from secondshift.checklists.loader import load_pack
+    from secondshift.domain.checkup import Keyframe
+    from secondshift.domain.hazards import HazardProposal
+    from secondshift.pipeline.propose import propose_hazards
+    from secondshift.providers.base import ProposeResponse
+
+    class FlipVision:
+        """Proposes the cord when a batch runs early->late and the
+        rug when it runs late->early (batch order changes output)."""
+
+        def propose_hazards(self, req):  # type: ignore[no-untyped-def]
+            batch = req.keyframes
+            forward = not batch or batch[0].t <= batch[-1].t
+            item = "FALL-FLOOR-CORD" if forward else "FALL-FLOOR-RUG"
+            return ProposeResponse(
+                proposals=[
+                    HazardProposal(
+                        item_id=item,
+                        room="living",
+                        description="stub",
+                        evidence_timestamps=[batch[0].t] if batch else [],
+                        sam_prompts=["cord"],
+                        confidence=0.9,
+                        why_risky="stub",
+                    )
+                ],
+                rooms_seen=["living"],
+            )
+
+    from secondshift.checklists.loader import PACKS_DIR
+
+    pack = load_pack(PACKS_DIR / "falls_older_adults.yaml")
+    keyframes = [
+        Keyframe(
+            id=f"kf-{i}", capture_id="cap", t=float(i * 5), image_path="",
+            sharpness=500.0, brightness=120.0, usable=True,
+        )
+        for i in range(6)
+    ]
+    single, _, _ = propose_hazards(FlipVision(), [pack], keyframes, [], [])
+    assert {p.item_id for p in single} == {"FALL-FLOOR-CORD"}
+    both, _, _ = propose_hazards(FlipVision(), [pack], keyframes, [], [], stable=True)
+    assert {p.item_id for p in both} == {"FALL-FLOOR-CORD", "FALL-FLOOR-RUG"}
