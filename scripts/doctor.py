@@ -15,6 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 FAILURES = 0
 WARNINGS = 0
+KEY_FOUND = False
 
 
 def ok(name: str, detail: str = "") -> None:
@@ -122,11 +123,14 @@ def check_ports() -> None:
 
 
 def check_key() -> None:
+    global KEY_FOUND
     if os.environ.get("META_API_KEY"):
+        KEY_FOUND = True
         ok("Meta API key", "META_API_KEY is set - live scans available")
         return
     env_file = ROOT / ".env"
     if env_file.exists() and "META_API_KEY" in env_file.read_text(errors="ignore"):
+        KEY_FOUND = True
         ok("Meta API key", "found in .env - live scans available")
         return
     warn(
@@ -170,7 +174,10 @@ def main() -> int:
     if WARNINGS:
         print(f"No blockers. {WARNINGS} warning(s) above - the demo still runs. Try: make demo")
         return 0
-    print("All good. Try: make demo  (or PROVIDER=meta make dev for live scans)")
+    if KEY_FOUND:
+        print("All good. Try: make live")
+    else:
+        print("All good. Try: make demo")
     return 0
 
 

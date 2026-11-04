@@ -8,7 +8,15 @@ SecondShift turns plain-English rules into checks a camera can run. You give it 
 video (or a live camera), and every item comes back **Yes / No / Can't tell**
 with the frame that proves it.
 
-## 1. Check the machine
+## 1. Install
+
+```bash
+make setup
+```
+
+This creates `.venv/` and installs the frontend packages (about 1–2 minutes).
+
+## 2. Check the machine
 
 ```bash
 make doctor
@@ -24,14 +32,6 @@ at this point.
 - ffmpeg missing: macOS `brew install ffmpeg`; Ubuntu/WSL
   `sudo apt-get install -y ffmpeg`.
 
-## 2. Install
-
-```bash
-make setup
-```
-
-This creates `.venv/` and installs the frontend packages (about 1–2 minutes).
-
 ## 3. Show it working with no key (always do this first)
 
 ```bash
@@ -41,7 +41,7 @@ make demo
 Then tell the person: **"Open http://localhost:8000"**. They'll see recorded real
 results from Meta's models (marked "Recorded real result"): evidence frames,
 SAM boxes, and the honest "can't tell" items. Nothing is sent anywhere in this mode.
-Stop it with Ctrl+C before step 5.
+Stop it with Ctrl+C (or stop the server process) before step 5.
 
 ## 4. Ask for the API key (only if they want to try their own videos)
 
@@ -49,7 +49,7 @@ Ask the person for their **Meta Model API key** (from the Meta developer
 dashboard). Then:
 
 ```bash
-cp -n .env.example .env
+[ -f .env ] || cp .env.example .env
 ```
 
 and set the line `META_API_KEY=<their key>` in `.env`.

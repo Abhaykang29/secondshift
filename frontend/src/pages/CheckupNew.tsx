@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BrickWall, Mic, Smartphone, Turtle, type LucideIcon } from "lucide-react";
+import { BrickWall, Smartphone, Turtle, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import en from "../i18n/en.json";
@@ -21,7 +21,6 @@ const GUIDE: { icon: LucideIcon; title: string; text: string }[] = [
   { icon: Turtle, title: "Walk slowly", text: "Room by room: entry, living, kitchen, hallway, bedroom, stairs." },
   { icon: Smartphone, title: "Hold landscape", text: "Turn the phone sideways, lights on, keep it steady." },
   { icon: BrickWall, title: "Show floors and walls", text: "Include floors, stair edges, outlets and where cords run." },
-  { icon: Mic, title: "Pause and narrate", text: "Pause on each hazard and say what it is out loud." },
 ];
 
 export default function CheckupNew() {

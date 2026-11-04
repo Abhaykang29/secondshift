@@ -29,7 +29,7 @@ Then open http://localhost:8000. On a phone: `make phone`.
   the scripted demo, fully offline.
 - **A Meta API key is needed only for live scans** (a new video
   analysed on the spot): `cp .env.example .env`, set `META_API_KEY`,
-  then run `PROVIDER=meta make dev`. `make check` (lint + types +
+  then run `make live`. `make check` (lint + types +
   tests) and `make demo-check` (offline demo proof) need no key.
 - **Videos are processed by Meta's API** — frames from a live scan
   are sent to Meta's models (Muse Spark, SAM) for analysis; people
