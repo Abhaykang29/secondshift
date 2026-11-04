@@ -9,7 +9,7 @@ stale answers instead of serving them forever.
 
 import hashlib
 
-ENGINE_VERSION = "2026-11-03.3"
+ENGINE_VERSION = "2026-11-03.4"
 
 
 def result_cache_key(

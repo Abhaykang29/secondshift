@@ -14,6 +14,7 @@ import HomesPage from "./pages/HomesPage";
 import LearnPage from "./pages/LearnPage";
 import LivePage from "./pages/LivePage";
 import Processing from "./pages/Processing";
+import ComparePage from "./pages/ComparePage";
 import RecheckPage from "./pages/RecheckPage";
 import ReportPage from "./pages/ReportPage";
 import RulesPage from "./pages/RulesPage";
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="/checkup/:id/report" element={<ReportPage />} />
           <Route path="/checkup/:id/fixes" element={<Fixes />} />
           <Route path="/checkup/:id/recheck" element={<RecheckPage />} />
+          <Route path="/compare/:beforeId/:afterId" element={<ComparePage />} />
           <Route path="/rules" element={<RulesPage />} />
           <Route path="/watch/setup" element={<WatchSetup />} />
           <Route path="/camera" element={<CameraPage />} />

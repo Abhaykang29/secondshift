@@ -1,4 +1,4 @@
-.PHONY: setup doctor dev dev-backend dev-frontend check check-backend check-frontend test demo demo-check demo-reset eval smoke-meta types
+.PHONY: setup doctor dev dev-backend dev-frontend phone check check-backend check-frontend test demo demo-check demo-reset eval smoke-meta types
 
 VENV=.venv
 PY=$(VENV)/bin/python
@@ -24,6 +24,9 @@ dev-https:
 
 dev-frontend:
 	cd frontend && npm run dev
+
+phone:
+	$(PY) scripts/phone.py $(if $(TUNNEL),--tunnel,)
 
 check: check-backend check-frontend
 

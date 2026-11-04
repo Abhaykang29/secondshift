@@ -60,6 +60,18 @@ export default function LearnPage() {
 
       <HonestyCard />
 
+      <section aria-label="Consistency" className="mt-6 rounded border bg-white p-4">
+        <h2 className="text-xl font-semibold">Same video, same answer</h2>
+        <p className="mt-2">
+          Results are cached per video, so the same video always gives the
+          same answer. A fresh analysis can differ: in our measured pair of
+          independent runs of the same video (2026-11-03), the two runs
+          agreed exactly on 4 of the 8 problems found across both runs —
+          1 changed verdict and 3 appeared in only one run. Every finding
+          shows its evidence frame so you can judge it yourself.
+        </p>
+      </section>
+
       <section aria-label="Honest limits" className="mt-6">
         <h2 className="text-xl font-semibold">Honest limits</h2>
         <ul className="mt-2 list-disc pl-6">

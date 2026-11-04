@@ -109,4 +109,6 @@ export const api = {
     sendJson<Record<string, unknown>>(`/checkups/${checkupId}/recheck`, "POST", { scenario }),
   evalLatest: () => getJson<Record<string, unknown>>("/eval/latest"),
   imageUrl: (checkupId: string, name: string) => `${BASE}/reports/${checkupId}/image/${name}`,
+  frameUrl: (checkupId: string, keyframeId: string) =>
+    `${BASE}/reports/${checkupId}/frame/${keyframeId}`,
 };

@@ -16,6 +16,7 @@ import json
 import logging
 import os
 import threading
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -53,21 +54,40 @@ def _load_box_cache() -> dict[str, list[list[float]]]:
     return _box_cache
 
 
-def _cached_boxes(frame_sha: str) -> list[list[float]] | None:
+def _cache_key(frame_sha: str, segmenter: Segmenter) -> str:
+    """Cache entries are per segmenter: a stub's boxes must never be
+    served to the real provider or vice versa (a shared key once let
+    a demo run's cached boxes mask a provider failure in a test)."""
+    return f"{frame_sha}:{type(segmenter).__module__}.{type(segmenter).__name__}"
+
+
+def _cached_boxes(frame_sha: str, segmenter: Segmenter) -> list[list[float]] | None:
     with _box_cache_lock:
-        return _load_box_cache().get(frame_sha)
+        return _load_box_cache().get(_cache_key(frame_sha, segmenter))
 
 
-def _store_boxes(frame_sha: str, boxes: list[list[float]]) -> None:
+def _store_boxes(frame_sha: str, segmenter: Segmenter, boxes: list[list[float]]) -> None:
     with _box_cache_lock:
         cache = _load_box_cache()
-        cache[frame_sha] = boxes
+        cache[_cache_key(frame_sha, segmenter)] = boxes
         try:
             path = _box_cache_path()
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(json.dumps(cache))
         except OSError:
             logger.warning("could not persist the blur box cache")
+
+
+def _write_atomic(path: Path, frame: np.ndarray) -> None:
+    """Write a JPEG via a unique temp file + atomic rename, so a
+    concurrent reader (the sweep crops frames while visualizations
+    re-blur them) never sees a half-written file. A direct imwrite
+    truncated the file mid-read and intermittently failed scans
+    with PIL's UnidentifiedImageError (2026-11-03)."""
+    suffix = path.suffix or ".jpg"
+    tmp = path.with_name(f".{path.stem}-{uuid.uuid4().hex[:8]}.tmp{suffix}")
+    cv2.imwrite(str(tmp), frame)
+    os.replace(tmp, path)
 
 
 def _blur_region(frame: np.ndarray, bbox: tuple[float, ...]) -> None:
@@ -103,7 +123,7 @@ def blur_persons(image_path: str, segmenter: Segmenter) -> int:
     if frame is None:
         return -1
     frame_sha = hashlib.sha256(path.read_bytes()).hexdigest()
-    cached = _cached_boxes(frame_sha)
+    cached = _cached_boxes(frame_sha, segmenter)
     if cached is not None:
         boxes: list[tuple[float, ...]] = [tuple(b) for b in cached]
     else:
@@ -114,11 +134,11 @@ def blur_persons(image_path: str, segmenter: Segmenter) -> int:
             logger.warning("person segmentation failed for %s", path.name)
             return -1
         boxes = [tuple(m.bbox) for m in masks]
-        _store_boxes(frame_sha, [list(b) for b in boxes])
+        _store_boxes(frame_sha, segmenter, [list(b) for b in boxes])
     for bbox in boxes:
         _blur_region(frame, bbox)
     if boxes:
-        cv2.imwrite(str(path), frame)
+        _write_atomic(path, frame)
     with _cache_lock:
         _cache[key] = len(boxes)
     return len(boxes)
@@ -156,5 +176,5 @@ def blur_all_but(image_path: str, keep_bbox: tuple[float, ...] | None) -> bool:
         blurred[max(0, y0) : max(0, y1), max(0, x0) : max(0, x1)] = frame[
             max(0, y0) : max(0, y1), max(0, x0) : max(0, x1)
         ]
-    cv2.imwrite(str(path), blurred)
+    _write_atomic(path, blurred)
     return True

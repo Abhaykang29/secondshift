@@ -578,3 +578,82 @@ reports are untouched). Compiles (frozen compiler):
     /responses) after 140 calls / $0.54. Per the rate-limit rule
     the attempt stopped there; the live numbers are pending a
     retry after the window cools and will be appended here.
+
+## Final burst, part 2: consistency live test, demo refresh, robustness, phone (2026-11-03)
+
+- entry_id: consistency_live_test
+  - The live test from the consistency entry above, completed:
+    test_1 uploaded fresh (checkup 2b6f5c78, 406s, 9 findings,
+    family recall 6/8 - the best test_1 report stored; designated
+    the demo's test_1 report), then re-uploaded: the second scan
+    returned in 4.5s with cached=True and a BYTE-IDENTICAL report
+    (canonical JSON compare). The result cache works as designed.
+  - The variance half needs care, because two invalid measurements
+    came first and are corrected here: (1) a "fresh" run that
+    shared the first run's transport recordings cache replayed 207
+    of 208 calls and trivially agreed; (2) a retry forgot ?dev=1
+    and hit the result cache itself (0 model calls). A third
+    attempt with both caches bypassed was stopped by a Meta API
+    429 (rate limit) at 71 calls and, per the rate-limit rule, not
+    retried. The number reported in the README and Learn tab
+    therefore comes from the two genuinely independent cold runs
+    of test_1 made on 2026-11-03 (checkups 2b6f5c78 and bffc3615,
+    the second run before the temperature/seed change): 8 distinct
+    found items across both runs - 4 agreed exactly, 1 changed
+    verdict (stove: needs-human vs confirmed), 3 appeared in only
+    one run. Cannot-assess sets differed by 4 entries.
+- entry_id: demo_data_refresh
+  - With the final code: 4896 problems checklist (checkup
+    7cc8f1c4): CUSTOM-01 + CUSTOM-02 CONFIRMED (t=5.5s, t=21.5s),
+    18 keyframes, 0 cannot-assess. 92d problems checklist (checkup
+    84064bd1): CUSTOM-01 CONFIRMED t=12.5s, CUSTOM-02 CONFIRMED
+    t=36.0s, 20 keyframes, 0 cannot-assess. test_1's designated
+    demo report is 2b6f5c78 (6/8 family, supersedes 83a3995c as the
+    best stored). The new robot pair the user planned to upload
+    (A = cluttered counter, B = cleared) has not arrived; when it
+    does, run it as a re-check with custom-e574bc2e.
+- entry_id: robustness_sweep
+  - 16 ffmpeg variants through the real upload -> scan path: 14
+    scanned normally (HEVC/H.264/4K/720p/30-240fps/vertical/8s/
+    4.6-min/dark/shaky/no-audio); the truncated file and the
+    non-video file crashed the upload with a 500. Fixed the same
+    day (CaptureUnreadable -> 422 with a plain message, 3
+    regression tests, re-verified 422 on both files). Full table:
+    docs/ROBUSTNESS.md.
+- entry_id: phone_mode
+  - make phone (scripts/phone.py): builds the frontend, serves it
+    from the backend (SERVE_FRONTEND=1, SPA fallback) over HTTPS
+    with a generated cert whose SAN includes the machine's current
+    LAN IP, prints the URL + a terminal QR code; TUNNEL=1 adds a
+    cloudflared quick tunnel with a credits warning (cloudflared
+    is not installed on this VM - the command prints the install
+    line and keeps serving on LAN, so the tunnel itself is NOT
+    verified). A key in env/.env switches serving to live mode
+    automatically; no key -> demo mode, banner on screen.
+  - Verified at 390px (headless Chromium, fake camera): app loads
+    from the HTTPS backend origin, deep links work, the Live tab
+    started a live watch with a simulated camera and streamed a
+    verdict ("Can't see" on the test-pattern feed).
+    NOT verified without a physical phone: LAN reachability from a
+    second device (this VM's host address is intercepted by its
+    sandbox proxy), iOS certificate trust for the camera, and a
+    live-provider Live Check through a real phone camera.
+  - Bug found + fixed during verification: the SPA fallback
+    caught fastapi's HTTPException subclass while StaticFiles
+    raises starlette's - deep links 404'd until the except clause
+    named the right class. Regression test:
+    tests/test_phone_serving.py.
+- entry_id: blur_atomic_writes
+  - Two late test failures traced to the blur layer after the
+    burst's changes: (1) the persistent blur-box cache was keyed
+    by frame bytes alone, so boxes cached by one segmenter (a
+    demo mock run) were served to another and masked a provider
+    failure that must return -1 - keys are now per segmenter
+    class; (2) visualizations re-blur evidence frames in
+    parallel, and the in-place imwrite truncated files mid-read,
+    intermittently killing scans with PIL UnidentifiedImageError
+    - blur writes are now atomic (unique temp file + rename,
+    original suffix preserved). Regression tests:
+    test_concurrent_blur_of_one_frame_never_corrupts_it plus the
+    result-cache suite green 6/6 runs. ENGINE_VERSION bumped to
+    2026-11-03.4 (blur output changed).

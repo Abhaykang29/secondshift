@@ -74,11 +74,39 @@ API keys. Live mode resolves the Meta key from the environment,
 `docs/LIVE_VERIFICATION.md` for what is verified live and what is
 not, and `docs/ROBUSTNESS.md` for how odd videos are handled.
 
+## Use it on your phone
+
+```bash
+make phone            # same Wi-Fi
+make phone TUNNEL=1   # Wi-Fi isolates clients (offices, venues)
+```
+
+One command builds the frontend and serves the **whole app from the
+backend** over HTTPS at `https://<this-machine's-LAN-IP>:8000`, and
+prints that URL with a QR code in the terminal — scan it and the
+full app opens on the phone, no app store, no separate dev server.
+The certificate is generated on the spot with the machine's current
+LAN IP in it; the phone will show a one-time certificate warning
+(tap Advanced → Proceed). For the **camera on iPhone**, iOS may
+also require trusting that certificate (Settings → General → About
+→ Certificate Trust Settings) — the `TUNNEL=1` variant avoids this:
+it opens a temporary Cloudflare tunnel with a normally trusted
+HTTPS address. **Warning: anyone with the tunnel link can use your
+API credits while it is open — stop it when you are done (Ctrl+C).**
+If `cloudflared` is not installed, the command prints how to
+install it and keeps serving on the LAN.
+
+The Meta API key stays on this machine (environment or `.env`); it
+is never sent to the browser. When a key is configured, `make phone`
+serves in live mode automatically (`PROVIDER=mock make phone`
+forces demo mode); with no key configured, the app loads in demo
+mode and the Check and Live screens say so plainly.
+
 ## Install on iPhone
 
-Serve the app over HTTPS (`make dev-https`, or a tunnel such as
-`npx localtunnel --port 5173`), open it in Safari, then Share →
-Add to Home Screen. Details in `frontend/PWA_NOTES.md`.
+With the app open from `make phone`, use Safari's Share → Add to
+Home Screen for an app-icon install. Details in
+`frontend/PWA_NOTES.md`.
 
 ## The engine layer
 
@@ -99,6 +127,14 @@ not connected (the transcription endpoint was never located), and
 the routine analysis runs only in the scripted demo — the live
 routine step is hidden until a team routine clip exists to verify
 it against.
+
+**Consistency.** Results are cached per video, so the same video
+always gives the same answer. A fresh analysis can differ: in our
+measured pair of independent runs of the same video (2026-11-03),
+the two runs agreed exactly on 4 of the 8 problems found across
+both runs — 1 changed verdict and 3 appeared in only one run.
+Every finding shows its evidence frame so you can judge it
+yourself.
 
 ## Data note
 

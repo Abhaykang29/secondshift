@@ -15,16 +15,39 @@ const SEVERITY_LABEL: Record<number, string> = { 3: "High", 2: "Medium", 1: "Low
  * The evidence is the single selected SAM frame (backend guarantee);
  * a missing timestamp is shown as no timestamp, never as 0s.
  */
+/** The chain that produced this verdict, from the stored fields:
+ * Spark proposed it, SAM's mask (label = mask.prompt) is the proof,
+ * and the verdict follows. Absence items invert the SAM step. */
+function chainFor(hazard: Hazard): string {
+  const mask = hazard.evidence.masks?.[0];
+  if (hazard.verification === "confirmed") {
+    if (mask) return `Spark proposed \u2192 SAM found \u201C${mask.prompt}\u201D \u2192 Spark confirmed`;
+    if (hazard.kind === "absence")
+      return "Spark proposed \u2192 SAM searched where it should be \u2192 Spark confirmed it\u2019s missing";
+    return "Spark proposed \u2192 Spark confirmed";
+  }
+  if (hazard.verification === "needs_human") {
+    if (mask)
+      return `Spark proposed \u2192 SAM found \u201C${mask.prompt}\u201D \u2192 a human should confirm`;
+    return "Spark proposed \u2192 SAM couldn\u2019t settle it \u2192 a human should look";
+  }
+  return "";
+}
+
 export default function HazardCard({
   hazard,
   packTitles,
   footer,
   flash,
+  frameUrl,
+  blurry,
 }: {
   hazard: Hazard;
   packTitles?: Record<string, string>;
   footer?: ReactNode;
   flash?: boolean;
+  frameUrl?: string;
+  blurry?: boolean;
 }) {
   const mask = hazard.evidence.masks?.[0];
   const isAbsence = hazard.kind === "absence";
@@ -68,10 +91,24 @@ export default function HazardCard({
           </span>
         ))}
       </div>
-      <div className="relative mt-3 aspect-video w-full overflow-hidden rounded bg-neutral-700">
-        <span className="absolute left-2 top-2 text-sm text-white">
+      <div className="relative mt-3 w-full overflow-hidden rounded bg-neutral-700">
+        {frameUrl ? (
+          <img
+            src={frameUrl}
+            alt={`Evidence frame for ${hazard.title}`}
+            className="mx-auto block max-h-[520px] w-auto max-w-full"
+          />
+        ) : (
+          <div className="aspect-video w-full" />
+        )}
+        <span className="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-sm text-white">
           {evidenceT !== undefined ? `Evidence frame at ${evidenceT}s` : "Evidence frame"}
         </span>
+        {blurry && (
+          <span className="absolute right-2 top-2 rounded bg-black/55 px-2 py-0.5 text-sm text-white">
+            blurry frame
+          </span>
+        )}
         {mask && (
           <svg
             className="absolute inset-0 h-full w-full"
@@ -116,6 +153,9 @@ export default function HazardCard({
         <em>Why it matters:</em> {hazard.why_it_matters}
       </p>
       <p className="mt-1 text-sm opacity-80">{hazard.verification_reason}</p>
+      {chainFor(hazard) && (
+        <p className="mt-1 text-sm font-medium text-[#1f3d2b]">{chainFor(hazard)}</p>
+      )}
       {footer}
     </article>
   );

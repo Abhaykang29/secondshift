@@ -3,7 +3,7 @@ import { plural } from "../plural";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { PackItemSummary } from "../api/extra";
-import type { Report } from "../api/types";
+import type { Keyframe, Report } from "../api/types";
 import BeforeAfter from "../components/BeforeAfter";
 import HazardCard from "../components/HazardCard";
 import RefilmCard from "../components/RefilmCard";
@@ -45,6 +45,22 @@ export default function ReportPage() {
   const [missedRoom, setMissedRoom] = useState("living");
   const [missedTs, setMissedTs] = useState("");
   const [missedSaved, setMissedSaved] = useState(false);
+  // Evidence-first UI (2026-11-03): the report's capture keyframes,
+  // for evidence frame URLs + the blurry-frame tag + can't-tell
+  // closest frames. Derived from the first evidence keyframe id.
+  const [kfById, setKfById] = useState<Map<string, Keyframe>>(new Map());
+
+  useEffect(() => {
+    if (!report) return;
+    const kfId = report.hazards.find((h) => h.evidence?.keyframe_ids?.length)?.evidence
+      .keyframe_ids[0];
+    if (!kfId) return;
+    const captureId = kfId.split("-kf-")[0];
+    api
+      .keyframes(captureId)
+      .then((r) => setKfById(new Map(r.keyframes.map((k) => [k.id, k]))))
+      .catch(() => undefined);
+  }, [report]);
 
   const refreshLabelCount = useCallback(() => {
     api
@@ -219,6 +235,15 @@ export default function ReportPage() {
               packTitles={packTitles}
               footer={reviewControls(h.id)}
               flash={justRefilmed && h.origin === "follow_up"}
+              frameUrl={
+                h.evidence?.keyframe_ids?.[0]
+                  ? api.frameUrl(id, h.evidence.keyframe_ids[0])
+                  : undefined
+              }
+              blurry={Boolean(
+                h.evidence?.keyframe_ids?.[0] &&
+                  kfById.get(h.evidence.keyframe_ids[0])?.low_sharpness,
+              )}
             />
             {vizByHazard.has(h.id) && (
               <BeforeAfter
@@ -268,6 +293,15 @@ export default function ReportPage() {
               packTitles={packTitles}
               footer={reviewControls(h.id)}
               flash={justRefilmed && h.origin === "follow_up"}
+              frameUrl={
+                h.evidence?.keyframe_ids?.[0]
+                  ? api.frameUrl(id, h.evidence.keyframe_ids[0])
+                  : undefined
+              }
+              blurry={Boolean(
+                h.evidence?.keyframe_ids?.[0] &&
+                  kfById.get(h.evidence.keyframe_ids[0])?.low_sharpness,
+              )}
             />
           ))}
         </section>
@@ -285,6 +319,48 @@ export default function ReportPage() {
       {report.cannot_assess.length > 0 && (
         <section aria-label="Couldn't check" className="mt-8">
           <h2 className="text-xl font-semibold">Couldn&rsquo;t check</h2>
+          {/* Can't-tell cards: the closest frame we have of the room,
+              why it couldn't be settled, and the re-film instruction. */}
+          {(report.refilm_instructions ?? []).map((ins) => {
+            const roomFrames = [...kfById.values()].filter((k) => k.room_guess === ins.room);
+            const closest = roomFrames.sort((a, b) => b.sharpness - a.sharpness)[0];
+            const why = report.cannot_assess.find((c) => c.area === ins.room);
+            const title = packItems.find((p) => p.id === ins.item_id)?.title ?? ins.item_id;
+            return (
+              <article key={ins.item_id} className="mt-3 rounded border-2 border-dashed bg-white p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-lg font-medium">{title}</h3>
+                  <span className="shrink-0 rounded bg-neutral-200 px-2 py-1 text-sm">Can&rsquo;t tell</span>
+                </div>
+                <p className="text-sm uppercase tracking-wide opacity-70">{ins.room}</p>
+                {closest && (
+                  <div className="relative mt-2">
+                    <img
+                      src={api.frameUrl(id, closest.id)}
+                      alt={`Closest frame of the ${ins.room}`}
+                      className="mx-auto block max-h-[420px] w-auto max-w-full rounded"
+                    />
+                    <span className="absolute left-2 top-2 rounded bg-black/55 px-2 py-0.5 text-sm text-white">
+                      Closest frame we have
+                    </span>
+                    {closest.low_sharpness && (
+                      <span className="absolute right-2 top-2 rounded bg-black/55 px-2 py-0.5 text-sm text-white">
+                        blurry frame
+                      </span>
+                    )}
+                  </div>
+                )}
+                {why && (
+                  <p className="mt-2 text-sm opacity-80">
+                    {REASON_LABELS[why.reason] ?? why.reason} — {why.detail}
+                  </p>
+                )}
+                <p className="mt-2">
+                  <strong>Re-film:</strong> {ins.instruction}
+                </p>
+              </article>
+            );
+          })}
           {[...cannotByReason.entries()].map(([reason, entries]) => (
             <div key={reason} className="mt-3">
               <h3 className="font-medium">{REASON_LABELS[reason] ?? reason}</h3>

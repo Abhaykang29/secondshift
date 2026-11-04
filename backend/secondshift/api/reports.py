@@ -57,6 +57,28 @@ def get_image(checkup_id: str, name: str, request: Request) -> FileResponse:
     return FileResponse(str(path), media_type="image/png")
 
 
+@router.get("/{checkup_id}/frame/{keyframe_id}")
+def get_frame(checkup_id: str, keyframe_id: str, request: Request) -> FileResponse:
+    """Serve one evidence keyframe image (evidence-first UI, 2026-11-03).
+
+    The id is resolved through the stored keyframe records of the
+    checkup's own capture only - a client-supplied path is never
+    trusted, and another checkup's frames are not served here.
+    """
+    store = request.app.state.store
+    capture_id = keyframe_id.split("-kf-")[0]
+    capture = store.get("capture", capture_id)
+    if capture is None or capture.get("checkup_id") != checkup_id:
+        raise HTTPException(status_code=404, detail="Frame not found.")
+    stored = store.get("keyframes", capture_id) or {}
+    for kf in stored.get("keyframes", []):
+        if kf.get("id") == keyframe_id and kf.get("image_path"):
+            path = Path(kf["image_path"])
+            if path.exists():
+                return FileResponse(str(path), media_type="image/jpeg")
+    raise HTTPException(status_code=404, detail="Frame not found.")
+
+
 class FixUpdate(BaseModel):
     """A fix-tracker update."""
 

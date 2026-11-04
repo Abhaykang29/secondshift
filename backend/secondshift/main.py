@@ -86,6 +86,45 @@ def create_app() -> FastAPI:
         "/v1",
         build_v1_app(app.state.settings, app.state.providers, app.state.store),
     )
+
+    # Phone mode (make phone): serve the built frontend from the same
+    # origin as the API, so a phone loads the whole app from one URL.
+    # Off unless SERVE_FRONTEND=1 - dev/demo flows are unchanged.
+    import os
+
+    if os.environ.get("SERVE_FRONTEND") == "1":
+        from pathlib import Path as _Path
+
+        from fastapi.staticfiles import StaticFiles
+        from starlette.responses import Response
+        from starlette.types import Scope
+
+        class _SpaStaticFiles(StaticFiles):
+            """StaticFiles with an SPA fallback: unknown non-API paths
+            return index.html so client routes (/checkup/:id/report,
+            /live, ...) load directly from a phone's home screen."""
+
+            async def get_response(self, path: str, scope: "Scope") -> "Response":
+                from starlette.exceptions import HTTPException
+
+                try:
+                    response = await super().get_response(path, scope)
+                except HTTPException as exc:
+                    if exc.status_code == 404 and not path.startswith(
+                        ("api/", "v1/")
+                    ):
+                        return await super().get_response("index.html", scope)
+                    raise
+                if response.status_code == 404 and not path.startswith(
+                    ("api/", "v1/")
+                ):
+                    return await super().get_response("index.html", scope)
+                return response
+
+        _dist = _Path(__file__).resolve().parents[2] / "frontend" / "dist"
+        if _dist.is_dir():
+            app.mount("/", _SpaStaticFiles(directory=str(_dist), html=True))
+
     return app
 
 

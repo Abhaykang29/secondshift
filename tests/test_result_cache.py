@@ -13,7 +13,6 @@ import cv2
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
-
 from secondshift.config import Settings
 from secondshift.engine_version import result_cache_key
 from secondshift.main import create_app
@@ -30,14 +29,19 @@ def test_result_cache_key_properties() -> None:
 
 
 def _tiny_video(path: Path) -> None:
-    writer = cv2.VideoWriter(
-        str(path), cv2.VideoWriter_fourcc(*"mp4v"), 10.0, (320, 240)
+    """A 4s test-pattern clip via ffmpeg. (cv2.VideoWriter output was
+    intermittently undecodable at frame 1 - the flake this replaces.)"""
+    import subprocess
+
+    subprocess.run(
+        [
+            "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+            "-f", "lavfi", "-i", "testsrc2=duration=4:size=320x240:rate=10",
+            "-c:v", "libx264", "-pix_fmt", "yuv420p", str(path),
+        ],
+        check=True,
+        capture_output=True,
     )
-    for i in range(30):
-        frame = np.full((240, 320, 3), 40 + i * 4, dtype=np.uint8)
-        cv2.rectangle(frame, (20 + i * 3, 60), (90 + i * 3, 140), (200, 200, 200), -1)
-        writer.write(frame)
-    writer.release()
 
 
 def _scan(client: TestClient, video: Path, dev: bool = False) -> dict:  # type: ignore[type-arg]
@@ -114,3 +118,31 @@ def test_blur_boxes_cached_per_frame_hash(tmp_path: Path, monkeypatch: pytest.Mo
     # so even a dead segmenter cannot change the blur.
     assert blur_mod.blur_persons(str(two), StubSegmenter(fail=True)) == 1
     blur_mod._box_cache = None
+
+
+def test_concurrent_blur_of_one_frame_never_corrupts_it(tmp_path: Path) -> None:
+    """Regression (2026-11-03): visualizations re-blur evidence frames
+    in parallel; a direct imwrite truncated the file mid-read and
+    scans intermittently died with PIL UnidentifiedImageError. Blur
+    writes are atomic now - parallel blurs of one path all succeed
+    and leave a valid JPEG."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from PIL import Image
+    from secondshift.privacy import blur as blur_mod
+
+    class StubSegmenter:
+        def segment(self, ref, prompts):  # type: ignore[no-untyped-def]
+            class M:
+                bbox = (0.1, 0.1, 0.5, 0.9)
+
+            return [M()]
+
+    frame = np.full((120, 160, 3), 120, dtype=np.uint8)
+    cv2.rectangle(frame, (20, 10), (80, 110), (240, 240, 240), -1)
+    path = tmp_path / "shared.jpg"
+    cv2.imwrite(str(path), frame)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(lambda _: blur_mod.blur_persons(str(path), StubSegmenter()), range(8)))
+    assert all(r == 1 for r in results)
+    Image.open(str(path)).verify()
