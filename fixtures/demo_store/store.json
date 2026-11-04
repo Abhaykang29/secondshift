@@ -869,37 +869,44 @@
    {
     "area": "FALL-STAIRS-RAIL-MISSING",
     "reason": "not_filmed",
-    "detail": "no stairs filmed"
+    "detail": "no stairs filmed",
+    "title": "Missing handrail on stairs"
    },
    {
     "area": "FALL-BATH-GRAB-MISSING",
     "reason": "not_filmed",
-    "detail": "no bathroom filmed"
+    "detail": "no bathroom filmed",
+    "title": "No grab bar in bath / by toilet"
    },
    {
     "area": "FALL-BATH-NONSLIP-MISSING",
     "reason": "not_filmed",
-    "detail": "no bathroom filmed"
+    "detail": "no bathroom filmed",
+    "title": "No non-slip mat in tub or shower"
    },
    {
     "area": "FALL-PATH-NIGHT-LIGHT",
     "reason": "not_filmed",
-    "detail": "no hallway bedroom-to-bathroom path filmed"
+    "detail": "no hallway bedroom-to-bathroom path filmed",
+    "title": "No night light on the bedroom-to-bathroom path"
    },
    {
     "area": "FALL-ENTRY-STEP-RAIL",
     "reason": "not_filmed",
-    "detail": "no entry step filmed"
+    "detail": "no entry step filmed",
+    "title": "No rail at an entry step"
    },
    {
     "area": "FIRE-SMOKE-ALARM-ABSENT",
     "reason": "not_filmed",
-    "detail": "no bedroom or hallway ceiling visible"
+    "detail": "no bedroom or hallway ceiling visible",
+    "title": "No smoke alarm visible"
    },
    {
     "area": "FIRE-CO-ALARM-ABSENT",
     "reason": "not_filmed",
-    "detail": "no hallway or bedroom area visible"
+    "detail": "no hallway or bedroom area visible",
+    "title": "No carbon-monoxide alarm visible"
    },
    {
     "area": "unknown area",
@@ -1733,7 +1740,8 @@
    {
     "area": "CUSTOM-03",
     "reason": "not_filmed",
-    "detail": "countertop not visible in any frame, cannot tell if knife on counter"
+    "detail": "countertop not visible in any frame, cannot tell if knife on counter",
+    "title": "Knife left on counter"
    }
   ],
   "refilm_instructions": [

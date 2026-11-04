@@ -21,6 +21,7 @@ export interface CannotAssess {
   area: string;
   reason: "not_filmed" | "too_dark" | "too_blurry" | "occluded" | "needs_measurement" | "not_visible_by_design";
   detail: string;
+  title?: string | null;
 }
 
 export interface Capture {

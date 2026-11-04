@@ -185,6 +185,7 @@ def _verify_one(
                 area=proposal.item_id,
                 reason="not_visible_by_design",
                 detail=item.always_cannot_assess,
+                title=item.title,
             )
         )
     elif verify_mode == "none":
@@ -192,7 +193,7 @@ def _verify_one(
     elif not search_frames and item.kind in (ItemKind.PRESENCE, ItemKind.ABSENCE):
         verification = Verification.CANNOT_ASSESS
         reason = "No evidence frames were supplied for this finding."
-        cannot.append(CannotAssess(area=proposal.item_id, reason="not_filmed", detail=reason))
+        cannot.append(CannotAssess(area=proposal.item_id, reason="not_filmed", detail=reason, title=item.title))
     elif item.kind is ItemKind.PRESENCE:
         masks: list[Mask] = []
         for frame in search_frames:
@@ -334,6 +335,7 @@ def _verify_one(
                     area=proposal.item_id,
                     reason="not_visible_by_design",
                     detail=reason,
+                    title=item.title,
                 )
             )
     elif item.kind is ItemKind.MEASUREMENT:
@@ -361,6 +363,7 @@ def _verify_one(
                     area=proposal.item_id,
                     reason="needs_measurement",
                     detail=reason,
+                    title=item.title,
                 )
             )
     else:  # INTERACTION - routine step decides; start at needs_human

@@ -437,7 +437,7 @@ export default function ReportPage() {
               <h3 className="text-[15px] font-semibold">{REASON_LABELS[reason] ?? reason}</h3>
               {entries.map((c) => (
                 <p key={`${c.area}-${c.detail}`} className="mt-1 text-[15px] text-text-2">
-                  {en.cannot_tell.replace("<reason>", `${c.area}: ${c.detail}`)}
+                  {en.cannot_tell.replace("<reason>", `${c.title ?? c.area}: ${c.detail}`)}
                 </p>
               ))}
             </div>

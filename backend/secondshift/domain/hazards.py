@@ -151,6 +151,9 @@ class CannotAssess(BaseModel):
         "not_visible_by_design",
     ]
     detail: str
+    # The checklist item's display title when `area` is an item id -
+    # the UI shows this, never the raw id (final fix pass, item 5).
+    title: str | None = None
 
 
 class Report(BaseModel):

@@ -228,6 +228,7 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
                 if entry.area == item.id:
                     entry.reason = "not_visible_by_design"
                     entry.detail = item.always_cannot_assess
+                    entry.title = item.title
                     break
             else:
                 cannot.append(
@@ -235,6 +236,7 @@ def run_scan(providers: Providers, scan_input: ScanInput) -> ScanOutput:
                         area=item.id,
                         reason="not_visible_by_design",
                         detail=item.always_cannot_assess,
+                        title=item.title,
                     )
                 )
     return ScanOutput(
@@ -363,6 +365,7 @@ def assemble_report(
                         area=hazard.item_id,
                         reason=_cannot_reason(hazard.verification_reason),
                         detail=hazard.verification_reason,
+                        title=hazard.title,
                     )
                 )
         else:
