@@ -45,6 +45,9 @@ test:
 demo:
 	$(PY) scripts/demo.py
 
+live:
+	$(PY) scripts/demo.py --live
+
 demo-check:
 	$(PY) scripts/demo_check.py
 

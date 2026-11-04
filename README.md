@@ -1,17 +1,29 @@
 # SecondShift
 
-[![CI](https://github.com/Abhaykang29/SecondShift/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhaykang29/SecondShift/actions/workflows/ci.yml)
 
 **SecondShift turns plain-English rules into checks a camera can
 run, and answers each with Yes, No, or Can't tell — plus the proof.**
 
-## Quickstart (3 commands)
+## Try it in one sentence
+
+Open this repo in Claude Code, Muse Code, Codex or Cursor and say:
+
+> **"Set up SecondShift and let me try it."**
+
+The agent follows [`AGENTS.md`](AGENTS.md): it checks your machine, installs,
+shows recorded real results with no key, then asks for your Meta API key and
+starts live mode so you can upload a video or record one.
+
+## Quickstart (by hand)
 
 ```bash
 make setup    # 1. backend venv + frontend deps
 make doctor   # 2. checks your machine; every problem prints its exact fix
-make demo     # 3. the app, running on stored reports - no key needed
+make demo     # 3. the app on recorded real results - no key needed
+make live     # 4. your own videos, analysed by Meta's models (needs META_API_KEY in .env)
 ```
+
+Then open http://localhost:8000. On a phone: `make phone`.
 
 - **No key needed** for `make demo`: it replays stored reports and
   the scripted demo, fully offline.
