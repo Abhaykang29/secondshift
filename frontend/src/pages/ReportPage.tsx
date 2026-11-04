@@ -252,22 +252,24 @@ export default function ReportPage() {
         </p>
       </section>
 
-      <section aria-label="Fix these first" className="mt-3 rounded-card bg-surface p-4 shadow-card">
-        <h2 className="text-[19px] font-bold leading-[24px]">{report.fix_first.length === 1 ? "Fix this one first" : `Fix these ${report.fix_first.length} first`}</h2>
-        <ol className="mt-2 list-decimal pl-6">
-          {report.fix_first.map((hid) => (
-            <li key={hid}>{byId.get(hid)?.title ?? hid}</li>
-          ))}
-        </ol>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Link to={`/checkup/${id}/fixes`} className={linkBtnPrimary}>
-            Open the fix tracker
-          </Link>
-          <Link to={`/checkup/${id}/recheck`} className={linkBtnSecondary}>
-            Re-check this home
-          </Link>
-        </div>
-      </section>
+      {report.fix_first.length > 0 && (
+        <section aria-label="Fix these first" className="mt-3 rounded-card bg-surface p-4 shadow-card">
+          <h2 className="text-[19px] font-bold leading-[24px]">{report.fix_first.length === 1 ? "Fix this one first" : `Fix these ${report.fix_first.length} first`}</h2>
+          <ol className="mt-2 list-decimal pl-6">
+            {report.fix_first.map((hid) => (
+              <li key={hid}>{byId.get(hid)?.title ?? hid}</li>
+            ))}
+          </ol>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link to={`/checkup/${id}/fixes`} className={linkBtnPrimary}>
+              Open the fix tracker
+            </Link>
+            <Link to={`/checkup/${id}/recheck`} className={linkBtnSecondary}>
+              Re-check this home
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section aria-label="Hazards">
         {confirmed.map((h, i) => (

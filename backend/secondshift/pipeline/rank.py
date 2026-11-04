@@ -135,10 +135,9 @@ def rank_hazards(
     )
     for position, hazard in enumerate(ranked, start=1):
         hazard.rank = position
+    # Fix-first lists Confirmed problems only (final fix pass, item
+    # 6): needs-human items are not "fix these first" - the report
+    # shows them after, under their own "Needs a human look" heading.
     fix_first = [h.id for h in ranked if h.verification is Verification.CONFIRMED][:5]
-    if len(fix_first) < 5:
-        fix_first += [h.id for h in ranked if h.verification is Verification.NEEDS_HUMAN][
-            : 5 - len(fix_first)
-        ]
     ordered = ranked + [h for h in scored if h.verification not in _VERIFICATION_FACTOR]
     return ordered, fix_first
