@@ -1,7 +1,28 @@
 # SecondShift
 
+[![CI](https://github.com/Abhaykang29/SecondShift/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhaykang29/SecondShift/actions/workflows/ci.yml)
+
 **SecondShift turns plain-English rules into checks a camera can
 run, and answers each with Yes, No, or Can't tell — plus the proof.**
+
+## Quickstart (3 commands)
+
+```bash
+make setup    # 1. backend venv + frontend deps
+make doctor   # 2. checks your machine; every problem prints its exact fix
+make demo     # 3. the app, running on stored reports - no key needed
+```
+
+- **No key needed** for `make demo`: it replays stored reports and
+  the scripted demo, fully offline.
+- **A Meta API key is needed only for live scans** (a new video
+  analysed on the spot): `cp .env.example .env`, set `META_API_KEY`,
+  then run `PROVIDER=meta make dev`. `make check` (lint + types +
+  tests) and `make demo-check` (offline demo proof) need no key.
+- **Videos are processed by Meta's API** — frames from a live scan
+  are sent to Meta's models (Muse Spark, SAM) for analysis; people
+  are blurred in every frame first. Nothing is sent anywhere in
+  demo mode.
 
 A safety check for the places people live and work: film a
 walkthrough, get the hazards with proof, honest "can't tell"
@@ -39,20 +60,19 @@ verdicts — yes / no / can't tell — come out.
 Core principle: **check spaces, not people.** People are blurred in
 every frame before any model reads them.
 
-## Quickstart
+## Going further
 
 ```bash
-make setup       # backend venv + frontend deps
-make dev         # backend :8000, frontend :5173
-make check       # lint + types + tests (132)
-make demo        # the app in demo configuration (scripted demo, offline)
+make dev         # backend :8000, frontend :5173 (PROVIDER=meta for live scans)
+make check       # lint + types + tests
 make demo-check  # proves the demo paths work offline (run it 3x)
 ```
 
 Default provider is `mock` — the full app works end to end with no
-API keys. Live mode resolves the Meta key from the environment or
-the local vault connector; see `docs/LIVE_VERIFICATION.md` for what
-is verified live and what is not.
+API keys. Live mode resolves the Meta key from the environment,
+`.env`, or the local vault connector; see
+`docs/LIVE_VERIFICATION.md` for what is verified live and what is
+not, and `docs/ROBUSTNESS.md` for how odd videos are handled.
 
 ## Install on iPhone
 

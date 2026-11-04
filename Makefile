@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend check check-backend check-frontend test demo demo-check demo-reset eval smoke-meta types
+.PHONY: setup doctor dev dev-backend dev-frontend check check-backend check-frontend test demo demo-check demo-reset eval smoke-meta types
 
 VENV=.venv
 PY=$(VENV)/bin/python
@@ -8,6 +8,9 @@ setup:
 	python3 -m venv $(VENV)
 	$(PIP) install -q -e ".[dev,eval]"
 	cd frontend && npm install
+
+doctor:
+	@$(PY) scripts/doctor.py 2>/dev/null || python3 scripts/doctor.py
 
 dev:
 	@echo "Backend: http://127.0.0.1:8000  Frontend: http://127.0.0.1:5173"
