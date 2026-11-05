@@ -55,6 +55,7 @@ export default function Processing() {
   const [jobDone, setJobDone] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [elapsed, setElapsed] = useState(0);
+  const [reconnecting, setReconnecting] = useState(false);
   const startedRef = useRef(false);
 
   // Elapsed timer.
@@ -123,8 +124,32 @@ export default function Processing() {
         navigate(`/checkup/${id}/report`);
       })
       .catch(() => {
-        setPhase("failed");
-        setError(GENERIC_SCAN_ERROR);
+        // The long scan request can be cut by the connection (a phone
+        // tunnel drops requests after ~100 s) while the server keeps
+        // working. Don't call that a failure: wait for the report.
+        setReconnecting(true);
+        const started = Date.now();
+        const poll = () => {
+          api
+            .report(id)
+            .then(() => {
+              setReconnecting(false);
+              setPhase("done");
+              navigate(`/checkup/${id}/report`);
+            })
+            .catch(() => {
+              if (Date.now() - started > 12 * 60 * 1000) {
+                setReconnecting(false);
+                setPhase("failed");
+                setError(
+                  "This is taking longer than expected. The check may still finish - open Homes in a few minutes, or try again.",
+                );
+                return;
+              }
+              window.setTimeout(poll, 5000);
+            });
+        };
+        window.setTimeout(poll, 5000);
       });
   }, [id, captureId, navigate]);
 
@@ -166,6 +191,15 @@ export default function Processing() {
 
   const mm = Math.floor(elapsed / 60);
   const ss = String(elapsed % 60).padStart(2, "0");
+  // Estimated progress: the scan is one server step, so this is a time
+  // estimate from the video's frame count (measured: ~90 s + ~3.5 s per
+  // usable frame), held below 95% until the report is really ready.
+  const estSeconds = 90 + 3.5 * (frames?.usable ?? 40);
+  const pct =
+    phase === "done" ? 100 : Math.min(95, Math.round((elapsed / estSeconds) * 100));
+  const leftS = Math.max(0, Math.round(estSeconds - elapsed));
+  const leftText =
+    leftS > 60 ? `about ${Math.ceil(leftS / 60)} min left` : leftS > 0 ? "less than a minute left" : "finishing up";
 
   return (
     <main className="pt-1">
@@ -174,9 +208,30 @@ export default function Processing() {
       </h1>
       <p className="mt-2" role="status">
         {phase === "running" && `Working... ${mm}:${ss} so far. A 1-minute video usually takes 3-7 minutes.`}
+        {phase === "running" && reconnecting && " The connection dropped, but the check is still running - waiting for the result."}
         {phase === "done" && "Done - taking you to the report."}
         {phase === "failed" && "Something went wrong."}
       </p>
+      {phase !== "failed" && (
+        <div className="mt-4" aria-label="Progress">
+          <div className="flex items-baseline justify-between text-[14px]">
+            <span className="font-mono text-[22px] font-extrabold text-accent">{pct}%</span>
+            <span className="text-text-3">{phase === "done" ? "done" : `${leftText} (estimate)`}</span>
+          </div>
+          <div
+            className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-surface-3"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={pct}
+          >
+            <div
+              className="h-full rounded-full bg-accent transition-[width] duration-1000 ease-linear"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        </div>
+      )}
       <div className="mt-5">
         <Card>
           <ol className="grid gap-4">

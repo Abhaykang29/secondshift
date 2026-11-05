@@ -222,18 +222,42 @@ def _throttle(model: str) -> None:
         _time.sleep(wait)
 
 
+def _retry_wait(attempt: int, retry_after: str | None = None) -> float:
+    """Backoff for transient Meta API errors: honours Retry-After on 429,
+    otherwise 1, 2, 4, 8, 16, 20 s (+ jitter). Worst case ~1 minute in
+    total, so a short rate-limit burst or network blip never fails a scan."""
+    if retry_after:
+        try:
+            return min(30.0, max(0.5, float(retry_after)))
+        except ValueError:
+            pass
+    return float(min(20.0, 2.0**attempt)) + random.uniform(0, 0.5)
+
+
+MAX_ATTEMPTS = 7
+
+
 def _raw_post(
     path: str, body: dict[str, Any], explicit_key: str | None, timeout: float
 ) -> dict[str, Any]:
-    """One authenticated POST with retries on 429/5xx (max 3, backoff)."""
+    """One authenticated POST with retries on transient failures.
+
+    Retried: HTTP 408/429/5xx, connection errors, resets and read
+    timeouts (a read timeout is TimeoutError, not URLError, so it used to
+    escape the retry loop and fail the whole scan). Other HTTP errors
+    (400/401/403/404) fail at once - retrying cannot fix them.
+    """
+    import http.client
+    import logging
     import urllib.error
     import urllib.request
 
     from secondshift.providers.cost import ProviderUnavailable
 
+    log = logging.getLogger("secondshift.meta")
     data = _json.dumps(body).encode()
     last_exc: Exception | None = None
-    for attempt in range(4):
+    for attempt in range(MAX_ATTEMPTS):
         request = urllib.request.Request(f"{BASE_URL}{path}", data=data, method="POST")
         request.add_header("Content-Type", "application/json")
         for name, value in auth_headers(explicit_key).items():
@@ -244,16 +268,45 @@ def _raw_post(
                 return parsed
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode(errors="replace")[:300]
-            if exc.code == 429 or exc.code >= 500:
+            if exc.code in (408, 429) or exc.code >= 500:
                 last_exc = ProviderUnavailable(f"Meta API {path} HTTP {exc.code}: {detail}")
-                _time.sleep(0.5 * (2**attempt) + random.uniform(0, 0.25))
+                wait = _retry_wait(attempt, exc.headers.get("Retry-After") if exc.headers else None)
+                log.warning(
+                    "Meta API %s HTTP %s - retry %d/%d in %.1fs",
+                    path,
+                    exc.code,
+                    attempt + 1,
+                    MAX_ATTEMPTS - 1,
+                    wait,
+                )
+                if attempt < MAX_ATTEMPTS - 1:
+                    _time.sleep(wait)
                 continue
             raise ProviderUnavailable(
                 f"Meta API {path} returned HTTP {exc.code}: {detail}"
             ) from exc
-        except urllib.error.URLError as exc:
+        except (
+            urllib.error.URLError,
+            TimeoutError,
+            ConnectionError,
+            http.client.HTTPException,
+            OSError,
+            ValueError,
+        ) as exc:
+            # ValueError covers a truncated / non-JSON body from a dropped connection.
             last_exc = exc
-            _time.sleep(0.5 * (2**attempt) + random.uniform(0, 0.25))
+            wait = _retry_wait(attempt)
+            log.warning(
+                "Meta API %s %s: %s - retry %d/%d in %.1fs",
+                path,
+                type(exc).__name__,
+                exc,
+                attempt + 1,
+                MAX_ATTEMPTS - 1,
+                wait,
+            )
+            if attempt < MAX_ATTEMPTS - 1:
+                _time.sleep(wait)
     raise ProviderUnavailable(f"Meta API {path} failed after retries: {last_exc}")
 
 
