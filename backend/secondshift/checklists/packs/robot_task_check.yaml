@@ -1,0 +1,737 @@
+version: 1
+status: approved
+pack_id: robot_task_check
+title: 'Job check: is the task done, and is it safe?'
+audience: Anyone checking what a robot or a person left behind after a task - cooking, cleanup, tidying
+  or leaving the house
+high_risk_zones:
+- kitchen
+- living
+- hallway
+severity_weights:
+  1: 1.0
+  2: 2.0
+  3: 3.0
+items:
+- id: JOB-STOVE-LEFT-ON
+  title: Stove or cooktop left on
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: A burner or cooktop zone visibly on after the task - lit indicator lights, glowing
+    coil or flame
+  sam_prompts:
+  - cooktop
+  - stove burner
+  - stove indicator light
+  - gas flame
+  safety_prompts: []
+  cannot_see_note: A camera can show a burner is on; it cannot promise one is off. Check the controls
+    in person.
+  fixes:
+  - id: fix-stove-left-on
+    title: Turn the cooktop off
+    how: Switch the burner off at its control, move the pan off the hot zone, and wait for the hot-surface
+      light to go out.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: switch the burner off at its control, move
+      the pan off the hot zone, and wait for the hot-surface light to go out.'
+  sources:
+  - NFPA home fire safety guidance (paraphrased) - unattended cooking is a leading cause of home fires
+  dedupe_key: stove_left_on
+- id: JOB-PAN-ON-HOT-STOVE
+  title: Pot or pan left on the stove
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: A pot or pan still sitting on the cooktop after cooking
+  sam_prompts:
+  - pot on stove
+  - frying pan on stove
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-pan-on-hot-stove
+    title: Move the pan off the stove
+    how: Take the pot or pan off the cooktop once cooking is finished.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: take the pot or pan off the cooktop once
+      cooking is finished.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-BURNABLE-NEAR-STOVE
+  title: Something that can burn on or next to the cooktop
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Towel, paper, packaging or plastic on or touching the cooktop or oven
+  sam_prompts:
+  - dish towel
+  - paper towel roll
+  - towel hanging on oven handle
+  - plastic bag
+  - cardboard box
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-burnable-near-stove
+    title: Clear the area around the cooktop
+    how: Move towels, paper and packaging away from the cooktop and oven handle.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: move towels, paper and packaging away from
+      the cooktop and oven handle.'
+  sources:
+  - NFPA home fire safety guidance (paraphrased)
+  dedupe_key: stove_combustibles
+  thin_object: true
+  sweep_anchor_prompts:
+  - stove
+  - cooktop
+  - oven
+- id: JOB-OVEN-DOOR-OPEN
+  title: Oven door left open
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: The oven door standing open
+  sam_prompts:
+  - open oven door
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-oven-door-open
+    title: Close the oven
+    how: Close the oven door and check the oven is switched off.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close the oven door and check the oven is
+      switched off.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-ELECTRONICS-NEAR-WATER
+  title: Laptop, phone or charger in or next to the sink
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Electronics placed in the sink or right beside running water - something that should
+    not have been moved there
+  sam_prompts:
+  - laptop in sink
+  - phone in sink
+  - laptop next to sink
+  - charger near sink
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-electronics-near-water
+    title: Move electronics away from water
+    how: Take the laptop, phone or charger out of the sink area and keep it dry; unplug it first if it
+      is wet.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: take the laptop, phone or charger out of
+      the sink area and keep it dry; unplug it first if it is wet.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-WRONG-ITEM-IN-SINK
+  title: Something that doesn't belong in the sink
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Non-dish items put in the sink - books, paper, bags, clothing, devices
+  sam_prompts:
+  - book in sink
+  - paper in sink
+  - bag in sink
+  - clothing in sink
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-wrong-item-in-sink
+    title: Take it out of the sink
+    how: Remove anything that isn't a dish, pan or utensil from the sink.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: remove anything that isn''t a dish, pan
+      or utensil from the sink.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-KNIFE-LEFT-OUT
+  title: Knife left out on the counter or table
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: A kitchen knife left loose on the counter, table or near an edge
+  sam_prompts:
+  - kitchen knife
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-knife-left-out
+    title: Put the knife away
+    how: Place the knife in the block, drawer or dishwasher, blade down.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: place the knife in the block, drawer or
+      dishwasher, blade down.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+  thin_object: true
+- id: JOB-POT-HANDLE-OUT
+  title: Pot handle sticking out over the edge
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: A pot or pan handle pointing out past the edge of the stove or counter
+  sam_prompts:
+  - pot handle
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-pot-handle-out
+    title: Turn handles inward
+    how: Turn pot and pan handles toward the back of the stove.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: turn pot and pan handles toward the back
+      of the stove.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+  sweep_anchor_prompts:
+  - stove
+  - cooktop
+- id: JOB-CANDLE-UNATTENDED
+  title: Candle left burning
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: A lit candle left burning in the room
+  sam_prompts:
+  - lit candle
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-candle-unattended
+    title: Blow the candle out
+    how: Put out candles before leaving the room.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: put out candles before leaving the room.'
+  sources:
+  - NFPA home fire safety guidance (paraphrased)
+- id: JOB-IRON-LEFT-OUT
+  title: Iron left out or plugged in
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: A clothes iron left standing or plugged in after use
+  sam_prompts:
+  - clothes iron
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-iron-left-out
+    title: Unplug and put the iron away
+    how: Unplug the iron, let it cool upright, then put it away.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: unplug the iron, let it cool upright, then
+      put it away.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-SPILL-ON-FLOOR
+  title: Spill or wet patch left on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Liquid, food or a wet patch left on the floor
+  sam_prompts:
+  - spill on floor
+  - wet floor
+  - water puddle on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-spill-on-floor
+    title: Wipe up the spill
+    how: Dry the floor completely so nobody slips.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: dry the floor completely so nobody slips.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-BROKEN-GLASS
+  title: Broken glass or sharp debris on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 3
+  observable_evidence: Shards of glass or sharp pieces on the floor
+  sam_prompts:
+  - broken glass
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-broken-glass
+    title: Clear the broken glass
+    how: Sweep up the pieces, then wipe the area with a damp paper towel to catch splinters.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: sweep up the pieces, then wipe the area
+      with a damp paper towel to catch splinters.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-CHEMICALS-LEFT-OUT
+  title: Cleaning products left out
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Spray bottles, bleach or detergent left out within reach after cleaning
+  sam_prompts:
+  - spray bottle
+  - bleach bottle
+  - detergent bottle
+  - cleaning products
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-chemicals-left-out
+    title: Put cleaning products away
+    how: Close the bottles and store them up high or in a latched cabinet.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close the bottles and store them up high
+      or in a latched cabinet.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-DISHES-ON-COUNTER
+  title: Dishes, pans or utensils left on the counter
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Used plates, bowls, pans or utensils left on the counter
+  sam_prompts:
+  - dirty plate on counter
+  - bowl on counter
+  - pan on counter
+  - cooking utensils on counter
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-dishes-on-counter
+    title: Finish the cleanup
+    how: Load the dishes into the dishwasher or sink and wipe the counter.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: load the dishes into the dishwasher or sink
+      and wipe the counter.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-SINK-NOT-CLEARED
+  title: Sink still full of dishes
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Dishes, pans or cutlery still sitting in the sink
+  sam_prompts:
+  - dishes in sink
+  - pan in sink
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-sink-not-cleared
+    title: Clear the sink
+    how: Wash or load the dishes from the sink and rinse it.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: wash or load the dishes from the sink and
+      rinse it.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-TABLE-NOT-CLEARED
+  title: 'Table not cleared: dishes, glasses, cans or bottles still on it'
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Plates, cups, glasses, cans or bottles still on the table after clearing - only
+    these are expected to be picked up; laptops, books and decor can stay
+  sam_prompts:
+  - plate on table
+  - glass on table
+  - cup on table
+  - soda can on table
+  - bottle on table
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-table-not-cleared
+    title: Clear the table
+    how: Pick up the plates, glasses, cans and bottles; leave laptops, books and decor where they are.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: pick up the plates, glasses, cans and bottles;
+      leave laptops, books and decor where they are.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-FOOD-LEFT-OUT
+  title: Food or open containers left out
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Open food packages, containers or leftovers left out
+  sam_prompts:
+  - open food container
+  - food package on counter
+  - leftover food
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-food-left-out
+    title: Put food away
+    how: Close the containers and put perishable food back in the fridge.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close the containers and put perishable
+      food back in the fridge.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-FRIDGE-OPEN
+  title: Fridge or freezer door left open
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: The refrigerator or freezer door standing open
+  sam_prompts:
+  - open refrigerator door
+  - open freezer door
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-fridge-open
+    title: Close the fridge
+    how: Close the fridge or freezer door until it seals.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close the fridge or freezer door until it
+      seals.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-DISHWASHER-OPEN
+  title: Dishwasher door left open
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: The dishwasher door down in the walkway
+  sam_prompts:
+  - open dishwasher door
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-dishwasher-open
+    title: Close the dishwasher
+    how: Close the dishwasher door so nobody trips over it.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close the dishwasher door so nobody trips
+      over it.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-CABINET-OPEN
+  title: Cabinet or drawer left open
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: A cabinet door or drawer left standing open
+  sam_prompts:
+  - open cabinet door
+  - open drawer
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-cabinet-open
+    title: Close cabinets and drawers
+    how: Close every cabinet door and drawer.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close every cabinet door and drawer.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-TRASH-OVERFLOWING
+  title: Trash overflowing or bag left out
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: An overflowing bin or a full trash bag left on the floor
+  sam_prompts:
+  - overflowing trash can
+  - trash bag on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-trash-overflowing
+    title: Take the trash out
+    how: Tie off the bag and take it out; put in a fresh liner.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: tie off the bag and take it out; put in
+      a fresh liner.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-CHAIRS-OUT
+  title: Chairs not pushed in
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Chairs left pulled out from the table into the walkway
+  sam_prompts:
+  - chair pulled out
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-chairs-out
+    title: Push the chairs in
+    how: Push the chairs under the table.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: push the chairs under the table.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-CLEANING-TOOLS-OUT
+  title: Mop, bucket or vacuum left out
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Cleaning tools left standing in the room or walkway
+  sam_prompts:
+  - mop
+  - bucket
+  - vacuum cleaner
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-cleaning-tools-out
+    title: Put the cleaning tools away
+    how: Empty the bucket and put the mop and vacuum back in storage.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: empty the bucket and put the mop and vacuum
+      back in storage.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-FLOOR-CLUTTER
+  title: Things left on the floor in a walkway
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Items, bags or boxes left on the floor where people walk
+  sam_prompts:
+  - item on floor
+  - bag on floor
+  - box on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-floor-clutter
+    title: Clear the walkway
+    how: Pick up items from the floor.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: pick up items from the floor.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+  dedupe_key: floor_clutter
+- id: JOB-CORD-ACROSS-FLOOR
+  title: Cord across the walking path
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: An electrical or charging cord running across the floor where people walk
+  sam_prompts:
+  - cord on floor
+  - power cord
+  - charging cable on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-cord-across-floor
+    title: Reroute the cord
+    how: Run the cord along the wall or behind furniture.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: run the cord along the wall or behind furniture.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+  dedupe_key: cord_reroute
+  thin_object: true
+- id: JOB-SHOES-IN-WALKWAY
+  title: Shoes left in the walkway
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Shoes left in a path or doorway
+  sam_prompts:
+  - shoes on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-shoes-in-walkway
+    title: Put the shoes away
+    how: Line shoes up by the door or on a rack, out of the path.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: line shoes up by the door or on a rack,
+      out of the path.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-CLOTHES-ON-FLOOR
+  title: Clothes or towels left on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Clothing or towels dropped on the floor
+  sam_prompts:
+  - clothes on floor
+  - towel on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-clothes-on-floor
+    title: Pick up the clothes
+    how: Put clothes in the hamper and hang towels up.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: put clothes in the hamper and hang towels
+      up.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-TOYS-ON-FLOOR
+  title: Toys left on the floor
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: Toys left where people walk
+  sam_prompts:
+  - toy on floor
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-toys-on-floor
+    title: Put the toys away
+    how: Pick up toys into a bin.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: pick up toys into a bin.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-BED-NOT-MADE
+  title: Bed not made
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: Bedding left unmade or piled up
+  sam_prompts:
+  - unmade bed
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-bed-not-made
+    title: Make the bed
+    how: Straighten the sheets and duvet and set the pillows.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: straighten the sheets and duvet and set
+      the pillows.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-WINDOW-OPEN
+  title: Window left open
+  kind: presence
+  rooms:
+  - any
+  severity: 1
+  observable_evidence: A window visibly open
+  sam_prompts:
+  - open window
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-window-open
+    title: Close the window
+    how: Close and latch the window.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close and latch the window.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-DOOR-LEFT-OPEN
+  title: Outside or balcony door left open
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: An exterior or balcony door standing open
+  sam_prompts:
+  - open door
+  - open balcony door
+  safety_prompts: []
+  cannot_see_note: null
+  fixes:
+  - id: fix-door-left-open
+    title: Close the door
+    how: Close and lock the outside door.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: close and lock the outside door.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)
+- id: JOB-WATER-LEFT-RUNNING
+  title: Tap visibly running
+  kind: presence
+  rooms:
+  - any
+  severity: 2
+  observable_evidence: A visible stream of water from a tap
+  sam_prompts:
+  - running water from faucet
+  safety_prompts: []
+  cannot_see_note: A still frame can miss running water; check the taps in person.
+  fixes:
+  - id: fix-water-left-running
+    title: Turn the tap off
+    how: Turn the tap off fully.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: 'Show the same view after this fix: turn the tap off fully.'
+  sources:
+  - SecondShift job-check checklist (team-written, not an external standard)

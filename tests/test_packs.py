@@ -18,6 +18,7 @@ def test_all_packs_load_and_validate() -> None:
         "home_safety_inspection",
         "workplace_safety",
         "car_seat_check",
+        "robot_task_check",
     }
 
 

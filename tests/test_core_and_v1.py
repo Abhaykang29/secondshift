@@ -35,7 +35,7 @@ def test_compile_checklist_packs_and_custom() -> None:
     from secondshift.providers.registry import build_providers
 
     packs = compile_checklist(["falls_older_adults", "fire_safety"])
-    assert packs.source == "packs" and len(packs.pack.items) == 26
+    assert packs.source == "packs" and len(packs.pack.items) == 27  # falls 16 + fire 11
     vision = build_providers(Settings()).vision
     custom = compile_checklist(
         ["loose cords across the floor", "the extinguisher is bolted down tight"],
@@ -77,7 +77,7 @@ def test_custom_checklist_api_roundtrip(tmp_path, monkeypatch) -> None:  # type:
     from secondshift.main import create_app
 
     client = TestClient(create_app())
-    too_few = client.post("/api/custom-checklists", json={"lines": ["only one"]})
+    too_few = client.post("/api/custom-checklists", json={"lines": ["   ", ""]})
     assert too_few.status_code == 422
     r = client.post(
         "/api/custom-checklists",

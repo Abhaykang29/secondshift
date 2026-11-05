@@ -1,6 +1,6 @@
 """Custom checklists (Pass 3 P4, spec 5.3): bring your own checklist.
 
-The user types 3-10 plain-English lines; Spark compiles each line
+The user types 1-10 plain-English lines; Spark compiles each line
 into a checklist item or refuses it with a reason. The compiled pack
 is a DRAFT labelled "Custom checklist - not reviewed by an expert",
 stored server-side so a normal check-up can run it by id. Draft
@@ -45,9 +45,9 @@ def _summary(checklist: Any) -> dict[str, Any]:
 @router.post("")
 def compile_custom(body: CompileBody, request: Request) -> dict[str, Any]:
     lines = [line.strip() for line in body.lines if line.strip()]
-    if not 3 <= len(lines) <= 10:
+    if not 1 <= len(lines) <= 10:
         raise HTTPException(
-            status_code=422, detail="A custom checklist needs 3 to 10 lines."
+            status_code=422, detail="A custom checklist needs 1 to 10 lines."
         )
     checklist = compile_checklist(lines, vision=request.app.state.providers.vision)
     if not checklist.pack.items:

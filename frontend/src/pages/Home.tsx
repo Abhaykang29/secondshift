@@ -6,7 +6,7 @@
  * (same key as before).
  */
 import { useEffect, useState } from "react";
-import { BadgeCheck, Check, ChevronRight, Info } from "lucide-react";
+import { BadgeCheck, Bot, Check, ChevronRight, Info, type LucideIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { plural } from "../plural";
@@ -19,6 +19,7 @@ import { PACKS } from "../components/ui/packs";
 
 /** Use-case order from the Pass 3 spec (falls is the hero). */
 const PACK_ORDER = [
+  "robot_task_check",
   "falls_older_adults",
   "babyproofing",
   "home_safety_inspection",
@@ -52,6 +53,16 @@ export default function Home() {
     }
   });
 
+  function quickStart(packIds: string[]) {
+    try {
+      sessionStorage.setItem("pack_selection", JSON.stringify(packIds));
+    } catch {
+      /* private mode: the selection still applies for this navigation */
+    }
+    setSelected(packIds);
+    navigate("/checkup/new");
+  }
+
   function togglePack(packId: string) {
     setSelected((prev) => {
       const next = prev.includes(packId)
@@ -84,6 +95,16 @@ export default function Home() {
         Film a walkthrough, get the hazards with proof — and an honest
         &ldquo;can&rsquo;t tell&rdquo; when a camera can&rsquo;t know.
       </p>
+
+      <section aria-label="Just film it" className="mt-6">
+        <QuickCard
+          icon={Bot}
+          title="Just film it: is the job done, and is it safe?"
+          line="No choosing, no typing. Film the room after any task (cooking, cleaning, tidying, leaving) done by a robot or a person. It checks what was left undone and anything unsafe: stove left on, things near the stove, electronics by the sink, table not cleared, open doors, spills, clutter, plus home and fire safety."
+          onClick={() => quickStart(["robot_task_check", "fire_safety", "home_safety_inspection"])}
+          hero
+        />
+      </section>
 
       {homes.length > 0 && (
         <section aria-label="Recent checks" className="mt-5">
@@ -125,7 +146,12 @@ export default function Home() {
         </section>
       )}
 
-      <section aria-label="Choose what to check" className="mt-6">
+      <details className="group mt-6" open={selected.length > 0}>
+        <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between rounded-card bg-surface px-4 py-3 shadow-card">
+          <span className="text-[16px] font-bold">More checklists</span>
+          <span className="text-[13px] text-text-3">{packs.length} specialised checks, optional</span>
+        </summary>
+      <section aria-label="Choose what to check" className="mt-4">
         <div className="flex items-baseline justify-between gap-2 px-1">
           <h2 className="text-[19px] font-bold leading-[24px]">Choose what to check</h2>
           <span className="font-mono text-[12.5px] tabular-nums text-text-3">
@@ -196,18 +222,20 @@ export default function Home() {
                 Your own checklist
               </span>
               <span className="mt-1 block text-[13px] leading-[18px] text-text-2">
-                Type 3-10 lines in your own words - checked like any pack.
+                Type 1-10 lines in your own words, e.g. &ldquo;Nothing blocking the exit door.&rdquo; Checked like any pack.
                 Custom checklist - not reviewed by an expert.
               </span>
             </Link>
           </div>
         )}
       </section>
+      </details>
 
       <div className="mt-6">
         <Banner kind="privacy">{en.data_note}</Banner>
       </div>
 
+      {selected.length > 0 && (
       <div className="sticky bottom-16 z-20 -mx-4 mt-6 border-t border-border bg-surface px-4 py-3">
         <Button
           variant="primary"
@@ -219,6 +247,7 @@ export default function Home() {
           Start the check
         </Button>
       </div>
+      )}
 
       {about && (
         <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={PACKS[about.pack_id]?.name ?? about.title}>
@@ -251,5 +280,38 @@ export default function Home() {
         </div>
       )}
     </main>
+  );
+}
+
+function QuickCard({
+  icon: Icon,
+  title,
+  line,
+  onClick,
+  hero,
+}: {
+  icon: LucideIcon;
+  title: string;
+  line: string;
+  onClick: () => void;
+  hero?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-start gap-3 rounded-card p-4 text-left shadow-card transition-colors duration-[120ms] ${
+        hero ? "bg-accent text-text-inverse hover:bg-accent-hover" : "bg-surface hover:bg-surface-2"
+      }`}
+    >
+      <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${hero ? "bg-white/20" : "bg-accent"} text-text-inverse`} aria-hidden>
+        <Icon size={22} strokeWidth={2} />
+      </span>
+      <span className="min-w-0">
+        <span className={`block font-bold ${hero ? "text-[18px] leading-[23px]" : "text-[16px] leading-[21px]"}`}>{title}</span>
+        <span className={`mt-1 block text-[13.5px] leading-[19px] ${hero ? "text-white/90" : "text-text-2"}`}>{line}</span>
+      </span>
+      <ChevronRight size={20} strokeWidth={1.75} className={`ml-auto mt-3 shrink-0 ${hero ? "text-white" : "text-text-3"}`} aria-hidden />
+    </button>
   );
 }

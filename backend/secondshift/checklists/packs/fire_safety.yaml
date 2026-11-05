@@ -76,8 +76,33 @@ items:
     visualization_prompt: Show one power strip plugged directly into the wall outlet and the second strip removed.
   sources:
   - NFPA home fire safety guidance (paraphrased)
+- id: FIRE-STOVE-LEFT-ON
+  title: Stove or cooktop left on
+  kind: presence
+  rooms:
+  - kitchen
+  severity: 3
+  observable_evidence: A burner or cooktop zone that is visibly on - lit indicator lights, glowing coil or flame
+  sam_prompts:
+  - cooktop
+  - stove burner
+  - stove indicator light
+  - gas flame
+  safety_prompts: []
+  dedupe_key: stove_left_on
+  cannot_see_note: A camera can show a burner is on; it cannot promise one is off. Check the controls in person.
+  fixes:
+  - id: stove-off
+    title: Never leave cooking unattended
+    how: Turn the burner off whenever you leave the kitchen, and move the pan off the hot zone.
+    difficulty: easy
+    cost_estimate: free
+    visualization_prompt: Show the cooktop with every indicator light off and the pan moved off the burner.
+  sources:
+  - NFPA home fire safety guidance (paraphrased) - unattended cooking is a leading cause of home fires
 - id: FIRE-STOVE-COMBUSTIBLES
   title: Things that can burn on or next to the stovetop
+  dedupe_key: stove_combustibles
   kind: presence
   rooms:
   - kitchen
@@ -169,12 +194,12 @@ items:
   sources:
   - 'TODO(SOURCE): NFPA / US Fire Administration CO alarm guidance - team to link the exact page'
 - id: FIRE-EXTINGUISHER-ABSENT
-  title: No fire extinguisher visible in the kitchen
+  title: No fire extinguisher seen in the kitchen (recommended, not required)
   kind: absence
   rooms:
   - kitchen
-  severity: 2
-  observable_evidence: Kitchen visible with no fire extinguisher visible
+  severity: 1
+  observable_evidence: Kitchen visible with no fire extinguisher visible - many homes keep one out of sight or don't have one; this is a suggestion, not a hazard
   sam_prompts:
   - kitchen counter
   - stove

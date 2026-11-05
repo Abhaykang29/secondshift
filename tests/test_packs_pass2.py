@@ -16,7 +16,7 @@ PACKS_DIR = Path(__file__).parent.parent / "backend" / "secondshift" / "checklis
 EXPECTED = {
     "falls_older_adults": 16,
     "babyproofing": 13,
-    "fire_safety": 10,
+    "fire_safety": 11,
     "earthquake_ready": 10,
     "pet_safety": 10,
     "home_from_hospital": 11,
@@ -24,6 +24,7 @@ EXPECTED = {
     "home_safety_inspection": 14,
     "workplace_safety": 10,
     "car_seat_check": 8,
+    "robot_task_check": 32,
 }
 
 

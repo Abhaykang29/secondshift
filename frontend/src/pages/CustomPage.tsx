@@ -5,7 +5,7 @@ import type { CustomChecklistResponse } from "../api/extra";
 import Banner from "../components/ui/Banner";
 import Button from "../components/ui/Button";
 
-/** Bring your own checklist (Pass 3 P4): type 3-10 plain-English lines,
+/** Bring your own checklist (Pass 3 P4): type 1-10 plain-English lines,
  * Spark compiles each into a checkable item or refuses it with a reason.
  * Drafts are labelled and excluded from eval. */
 
@@ -47,7 +47,7 @@ export default function CustomPage() {
     <main className="mx-auto w-full max-w-[720px] p-4 pb-28">
       <h1 className="text-[24px] font-[650] leading-[30px] tracking-[-0.01em]">Your own checklist</h1>
       <p className="mt-2 text-text-2">
-        Type what you want checked, one line each (3 to 10 lines). Each line is
+        Type what you want checked, one line each (1 to 10 lines). Each line is
         turned into something a camera can verify - or refused, with the reason.
       </p>
       <div className="mt-2">
@@ -61,13 +61,13 @@ export default function CustomPage() {
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <p className="mt-1 font-mono text-[12.5px] tabular-nums text-text-3">{lines.length} line(s) - needs 3 to 10</p>
+      <p className="mt-1 font-mono text-[12.5px] tabular-nums text-text-3">{lines.length} line(s) - 1 to 10</p>
       <Button
         type="button"
         variant="primary"
         size="lg"
         fullWidth
-        disabled={busy || lines.length < 3 || lines.length > 10}
+        disabled={busy || lines.length < 1 || lines.length > 10}
         onClick={compile}
         className="mt-3"
       >

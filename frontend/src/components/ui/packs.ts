@@ -2,6 +2,7 @@ import {
   Accessibility,
   Activity,
   Baby,
+  Bot,
   Bug,
   Car,
   Flame,
@@ -35,6 +36,7 @@ export const PACKS: Record<string, PackIdentity> = {
   earthquake_ready: { name: "Earthquake-ready home", icon: Activity, color: "#78716C" },
   home_from_hospital: { name: "Home from hospital", icon: Accessibility, color: "#0369A1" },
   mosquito_breeding: { name: "Mosquito breeding sites", icon: Bug, color: "#334155" },
+  robot_task_check: { name: "Job check (robot or person)", icon: Bot, color: "#0891B2" },
 };
 
 export const CUSTOM_PACK: PackIdentity = {
